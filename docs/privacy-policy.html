@@ -1,0 +1,485 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - DriveVault Dashcam</title>
+    <meta name="description" content="DriveVault Dashcam privacy policy. Learn how we handle your data.">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a2e;
+            --text-primary: #f0f0f5;
+            --text-secondary: #a0a0b5;
+            --accent: #6c5ce7;
+            --accent-light: #a29bfe;
+            --border: rgba(255, 255, 255, 0.06);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 64px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .logo svg { width: 32px; height: 32px; }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--text-primary); }
+        .nav-links a.active { color: var(--accent-light); }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .header {
+            padding: 140px 0 60px;
+            text-align: center;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 400px;
+            background: radial-gradient(ellipse, rgba(108, 92, 231, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            position: relative;
+        }
+
+        .content {
+            padding: 60px 0 100px;
+        }
+
+        .content h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 48px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .content h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-top: 28px;
+            margin-bottom: 8px;
+        }
+
+        .content p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .content ul {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            padding-left: 24px;
+        }
+
+        .content li {
+            margin-bottom: 8px;
+        }
+
+        .highlight-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+
+        .highlight-box.green {
+            border-left: 3px solid #00b894;
+        }
+
+        .highlight-box.amber {
+            border-left: 3px solid #fdcb6e;
+        }
+
+        .highlight-box h4 {
+            margin-bottom: 8px;
+        }
+
+        .highlight-box p {
+            margin-bottom: 0;
+            font-size: 0.9rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 24px;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        td {
+            color: var(--text-secondary);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .tag-green { background: rgba(0, 184, 148, 0.15); color: #00b894; }
+        .tag-amber { background: rgba(253, 203, 110, 0.15); color: #fdcb6e; }
+        .tag-blue { background: rgba(9, 132, 227, 0.15); color: #74b9ff; }
+
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent-light);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.8rem; }
+            .nav-links { display: none; }
+            th, td { padding: 8px 12px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="container">
+        <a href="index.html" class="logo">
+            <svg viewBox="0 0 32 32" fill="none">
+                <rect width="32" height="32" rx="8" fill="url(#g1)"/>
+                <path d="M8 16l4-4 4 4-4 4-4-4z" fill="white" opacity="0.9"/>
+                <path d="M16 16l4-4 4 4-4 4-4-4z" fill="white" opacity="0.6"/>
+                <defs><linearGradient id="g1" x1="0" y1="0" x2="32" y2="32"><stop stop-color="#6c5ce7"/><stop offset="1" stop-color="#a29bfe"/></linearGradient></defs>
+            </svg>
+            DriveVault
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="privacy-policy.html" class="active">Privacy Policy</a></li>
+            <li><a href="https://github.com/chartmann1590/DriveVault" target="_blank">GitHub</a></li>
+        </ul>
+    </div>
+</nav>
+
+<section class="header">
+    <div class="container">
+        <h1>Privacy Policy</h1>
+        <p>Last updated: June 8, 2026</p>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container">
+
+        <div class="highlight-box green">
+            <h4>The short version</h4>
+            <p>DriveVault stores all your recordings, GPS data, and settings locally on your device. Nothing is uploaded to any server unless you explicitly configure a sync destination. We do not sell, share, or monetize your data.</p>
+        </div>
+
+        <h2>1. Data We Collect</h2>
+
+        <h3>Data created by you (stored locally)</h3>
+        <p>When you use DriveVault, the following data is created and stored exclusively on your Android device:</p>
+        <ul>
+            <li><strong>Video recordings</strong> &mdash; Camera footage saved as MP4 files on your device storage</li>
+            <li><strong>GPS and telemetry data</strong> &mdash; Latitude, longitude, speed, altitude, and compass heading recorded alongside each clip</li>
+            <li><strong>Clip metadata</strong> &mdash; Timestamps, duration, file size, camera mode, and lock status stored in a local Room database</li>
+            <li><strong>App settings</strong> &mdash; Your preferences for recording quality, storage limits, camera mode, and other options</li>
+        </ul>
+
+        <div class="highlight-box green">
+            <h4>All of this data stays on your device</h4>
+            <p>None of the above data is transmitted anywhere unless you take an explicit action such as sharing a clip or configuring Immich sync.</p>
+        </div>
+
+        <h3>Data collected automatically (app health)</h3>
+        <p>DriveVault uses Firebase to monitor app health and stability. This data is anonymized and cannot be linked to you personally:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Purpose</th>
+                    <th>Identifiable?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Crash reports</td>
+                    <td>Fix bugs and improve stability</td>
+                    <td><span class="tag tag-green">No</span></td>
+                </tr>
+                <tr>
+                    <td>Performance metrics</td>
+                    <td>Monitor app speed and responsiveness</td>
+                    <td><span class="tag tag-green">No</span></td>
+                </tr>
+                <tr>
+                    <td>Analytics events</td>
+                    <td>Understand feature usage patterns</td>
+                    <td><span class="tag tag-green">No</span></td>
+                </tr>
+                <tr>
+                    <td>Firebase Cloud Messaging token</td>
+                    <td>Receive push notifications (if enabled)</td>
+                    <td><span class="tag tag-amber">Device token only</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>Firebase Analytics events are limited to privacy-safe interactions such as "recording started" or "clip exported." We do <strong>not</strong> log your location coordinates, speed, routes, or any video content to Firebase.</p>
+
+        <h2>2. Data We Do NOT Collect</h2>
+
+        <div class="highlight-box green">
+            <h4>DriveVault does not:</h4>
+            <p>
+                Collect, upload, or transmit your video recordings to any cloud service by default<br>
+                Track your GPS location remotely<br>
+                Require you to create an account or provide personal information<br>
+                Share your data with third parties for advertising or any other purpose<br>
+                Access your contacts, messages, or other app data<br>
+                Use any third-party analytics beyond Firebase (which uses anonymized data)
+            </p>
+        </div>
+
+        <h2>3. Third-Party Services</h2>
+
+        <h3>Firebase</h3>
+        <p>DriveVault uses Google Firebase for:</p>
+        <ul>
+            <li>Crashlytics &mdash; Automatic crash reporting</li>
+            <li>Analytics &mdash; Anonymized usage patterns</li>
+            <li>Performance Monitoring &mdash; App responsiveness metrics</li>
+            <li>Cloud Messaging &mdash; Push notification delivery</li>
+            <li>Remote Config &mdash; Feature flag management</li>
+        </ul>
+        <p>Firebase data is processed under Google's privacy policy: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a></p>
+
+        <h3>Immich (optional, user-configured)</h3>
+        <p>If you choose to enable Immich sync, DriveVault will upload clips to <strong>your own</strong> Immich server. Key points:</p>
+        <ul>
+            <li>This feature is <strong>off by default</strong> and requires manual setup</li>
+            <li>You provide the server URL and API key &mdash; we do not host or operate any Immich servers</li>
+            <li>Your API key is stored locally using Android EncryptedSharedPreferences</li>
+            <li>Uploaded data goes directly from your device to your server &mdash; it never passes through our systems</li>
+            <li>You can disable and disconnect Immich sync at any time in Settings</li>
+        </ul>
+        <p>Immich's privacy practices are governed by your own server configuration. Learn more at <a href="https://immich.app" target="_blank" rel="noopener">immich.app</a>.</p>
+
+        <h3>OpenStreetMap</h3>
+        <p>The mini map overlay uses OpenStreetMap tile servers to render map images. When the map is visible, your device may request map tiles from OSM servers. These requests contain approximate viewport coordinates but no personally identifiable information. See <a href="https://wiki.osmfoundation.org/wiki/Privacy_Policy" target="_blank" rel="noopener">OSM's privacy policy</a>.</p>
+
+        <h2>4. Permissions</h2>
+
+        <p>DriveVault requests the following Android permissions. Each is required for core functionality:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Permission</th>
+                    <th>Purpose</th>
+                    <th>Data stored?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Camera</td>
+                    <td>Record video of your drives</td>
+                    <td>Locally as video files</td>
+                </tr>
+                <tr>
+                    <td>Microphone</td>
+                    <td>Record audio with video clips</td>
+                    <td>Locally within video files</td>
+                </tr>
+                <tr>
+                    <td>Location (Fine / Coarse)</td>
+                    <td>GPS coordinates, speed, heading overlay</td>
+                    <td>Locally per clip</td>
+                </tr>
+                <tr>
+                    <td>Notifications</td>
+                    <td>Show recording status and controls</td>
+                    <td>Not stored</td>
+                </tr>
+                <tr>
+                    <td>Read Media / Storage</td>
+                    <td>Save exports to gallery, read clips</td>
+                    <td>Local files only</td>
+                </tr>
+                <tr>
+                    <td>Foreground Service</td>
+                    <td>Keep recording running in background</td>
+                    <td>Not stored</td>
+                </tr>
+                <tr>
+                    <td>Wake Lock</td>
+                    <td>Prevent recording interruption</td>
+                    <td>Not stored</td>
+                </tr>
+                <tr>
+                    <td>Internet</td>
+                    <td>Optional Immich sync, map tiles</td>
+                    <td>Only if sync enabled</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>5. Data Storage &amp; Security</h2>
+
+        <h3>Local storage</h3>
+        <ul>
+            <li>Video files are stored in the app's external files directory on your device</li>
+            <li>Clip metadata is stored in an encrypted Room SQLite database</li>
+            <li>Settings are stored using Android DataStore with encrypted preferences</li>
+            <li>Immich API keys are stored using Android EncryptedSharedPreferences</li>
+        </ul>
+
+        <h3>Data retention</h3>
+        <ul>
+            <li>Recordings are kept until you delete them or they are auto-deleted by loop recording</li>
+            <li>Locked clips are never auto-deleted</li>
+            <li>You can delete all app data at any time by clearing app data in Android Settings or uninstalling the app</li>
+        </ul>
+
+        <h3>Encryption</h3>
+        <p>Sensitive data such as Immich API keys are encrypted at rest using the Android Keystore system. Video files are stored using standard file system permissions that restrict access to the DriveVault app.</p>
+
+        <h2>6. Data Sharing</h2>
+
+        <p>DriveVault will only share your data when you take an explicit action:</p>
+        <ul>
+            <li><strong>Share button</strong> &mdash; Uses Android's share sheet to send clips to apps you choose</li>
+            <li><strong>Export</strong> &mdash; Saves video, GPX, or JSON files to a location you select</li>
+            <li><strong>Immich sync</strong> &mdash; Uploads to your self-hosted Immich server (only when configured)</li>
+        </ul>
+        <p>We never share your data without your direct action.</p>
+
+        <h2>7. Children's Privacy</h2>
+        <p>DriveVault is not directed at children under 13. We do not knowingly collect personal information from children. If you believe a child has used the app and you have concerns, please uninstall the app to remove all local data.</p>
+
+        <h2>8. Your Rights</h2>
+        <p>Because DriveVault stores data locally on your device, you have full control:</p>
+        <ul>
+            <li><strong>Access</strong> &mdash; All your data is visible within the app's clip library</li>
+            <li><strong>Delete</strong> &mdash; Delete individual clips, or clear all app data via Android Settings</li>
+            <li><strong>Export</strong> &mdash; Export any clip's video, metadata, or GPS data at any time</li>
+            <li><strong>Opt out</strong> &mdash; Disable Firebase Analytics in your device settings, or disable Immich sync in app settings</li>
+        </ul>
+
+        <h2>9. International Users</h2>
+        <p>DriveVault does not operate servers or transfer data internationally. All data remains on your device. If you use Immich sync, data transfer to your Immich server is governed by the location of your server and applicable laws.</p>
+
+        <h2>10. Changes to This Policy</h2>
+        <p>We may update this privacy policy from time to time. Changes will be reflected in the "Last updated" date at the top of this page. Continued use of the app after changes constitutes acceptance of the updated policy.</p>
+
+        <h2>11. Contact</h2>
+        <div class="highlight-box amber">
+            <h4>Questions or concerns?</h4>
+            <p>If you have questions about this privacy policy or DriveVault's data practices, you can:</p>
+            <ul>
+                <li>Open an issue on <a href="https://github.com/chartmann1590/DriveVault/issues" target="_blank" rel="noopener">GitHub Issues</a></li>
+                <li>Review the source code at <a href="https://github.com/chartmann1590/DriveVault" target="_blank" rel="noopener">github.com/chartmann1590/DriveVault</a></li>
+            </ul>
+            <p>Since DriveVault is open source, you can independently verify all data handling by reviewing the source code.</p>
+        </div>
+
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2026 DriveVault. <a href="privacy-policy.html">Privacy Policy</a> &middot; <a href="https://github.com/chartmann1590/DriveVault">GitHub</a></p>
+    </div>
+</footer>
+
+</body>
+</html>

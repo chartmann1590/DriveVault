@@ -2,6 +2,8 @@
 
 <div align="center">
 
+**[Privacy Policy](https://chartmann1590.github.io/DriveVault/privacy-policy.html)**
+
 **Privacy-first dashcam for Android**
 
 Record your drives with GPS overlays, dual-camera support, and full control over your data.
@@ -142,5 +144,7 @@ This project is provided as-is for personal use.
 ---
 
 <div align="center">
+
+**[Privacy Policy](https://chartmann1590.github.io/DriveVault/privacy-policy.html)**
 Made with care for drivers who value privacy.
 </div>
