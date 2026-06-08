@@ -33,6 +33,7 @@ class MainActivity : ComponentActivity() {
                 val recordingViewModel = remember { RecordingViewModel(application) }
                 val clipLibraryViewModel = remember { ClipLibraryViewModel(application) }
                 val settingsViewModel = remember { SettingsViewModel(application) }
+                val feedbackViewModel = remember { FeedbackViewModel(application) }
 
                 var startDestination by remember { mutableStateOf<String?>(null) }
                 val scope = rememberCoroutineScope()
@@ -110,6 +111,7 @@ class MainActivity : ComponentActivity() {
                         composable(Screen.Settings.route) {
                             SettingsScreen(
                                 viewModel = settingsViewModel,
+                                feedbackViewModel = feedbackViewModel,
                                 onNavigateBack = { navController.popBackStack() }
                             )
                         }

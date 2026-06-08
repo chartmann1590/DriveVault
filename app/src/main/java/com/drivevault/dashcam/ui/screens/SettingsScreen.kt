@@ -11,13 +11,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.drivevault.dashcam.ui.components.ImmichConnectionCard
+import com.drivevault.dashcam.ui.components.SupportFeedbackSection
 import com.drivevault.dashcam.ui.theme.*
+import com.drivevault.dashcam.ui.viewmodel.FeedbackViewModel
 import com.drivevault.dashcam.ui.viewmodel.SettingsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel,
+    feedbackViewModel: FeedbackViewModel,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -159,6 +162,9 @@ fun SettingsScreen(
                 SettingsToggle("Upload Locked Only", uiState.immichUploadLockedOnly) { viewModel.setImmichUploadLockedOnly(it) }
                 SettingsToggle("Auto-Create Album", uiState.immichAutoAlbum) { viewModel.setImmichAutoAlbum(it) }
             }
+
+            SettingsSectionHeader("Support & Feedback")
+            SupportFeedbackSection(viewModel = feedbackViewModel)
 
             SettingsSectionHeader("About")
             Text("DriveVault Dashcam v1.0.0", style = MaterialTheme.typography.bodyMedium, color = OnSurfaceVariant)

@@ -43,6 +43,11 @@ android {
         resValue("string", "google_storage_bucket", localProp("FIREBASE_STORAGE_BUCKET"))
         resValue("string", "firebase_database_url", "")
         buildConfigField("String", "FIREBASE_PROJECT_ID", "\"${localProp("FIREBASE_PROJECT_ID")}\"")
+
+        buildConfigField("String", "GITHUB_API_TOKEN", "\"${localProp("github.api.token")}\"")
+        buildConfigField("String", "GITHUB_REPO_OWNER", "\"${localProp("github.repo.owner")}\"")
+        buildConfigField("String", "GITHUB_REPO_NAME", "\"${localProp("github.repo.name")}\"")
+        buildConfigField("String", "FEEDBACK_ASSETS_DIR", "\"feedback-assets\"")
     }
 
     buildTypes {
@@ -148,6 +153,8 @@ dependencies {
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
     implementation("org.osmdroid:osmdroid-android:6.1.18")
     implementation("androidx.core:core-splashscreen:1.0.1")
+
+    implementation("io.coil-kt:coil-compose:2.5.0")
 
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-analytics")
