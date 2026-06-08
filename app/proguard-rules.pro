@@ -1,0 +1,5 @@
+﻿-keepattributes *Annotation*
+-keepattributes SourceFile,LineNumberTable
+-keep public class * extends java.lang.Exception
+-keep class com.drivevault.dashcam.data.local.entity.** { *; }
+-keepclassmembers class com.drivevault.dashcam.data.local.entity.** { *; }

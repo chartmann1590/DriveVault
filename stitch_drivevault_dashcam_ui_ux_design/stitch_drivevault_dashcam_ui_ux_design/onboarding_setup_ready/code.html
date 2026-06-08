@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DriveVault Onboarding Setup</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#e5e2e1",
+                        "error": "#ffb4ab",
+                        "on-primary-container": "#5c0002",
+                        "tertiary-fixed": "#d8e2ff",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-tertiary-fixed-variant": "#004493",
+                        "tertiary-fixed-dim": "#adc6ff",
+                        "on-secondary-container": "#bab8b7",
+                        "on-surface": "#fcdbd6",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-fixed": "#001a41",
+                        "secondary": "#c8c6c5",
+                        "on-background": "#fcdbd6",
+                        "surface-container-lowest": "#190a08",
+                        "on-primary-fixed-variant": "#930005",
+                        "surface-bright": "#493431",
+                        "secondary-container": "#4a4949",
+                        "outline-variant": "#5d3f3b",
+                        "on-error": "#690005",
+                        "primary-fixed": "#ffdad5",
+                        "error-container": "#93000a",
+                        "surface-container": "#2d1b18",
+                        "on-secondary": "#313030",
+                        "tertiary-container": "#4b8eff",
+                        "surface-variant": "#44302d",
+                        "surface-container-highest": "#44302d",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "on-primary": "#690003",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "tertiary": "#adc6ff",
+                        "on-secondary-fixed-variant": "#474646",
+                        "on-surface-variant": "#e7bdb7",
+                        "outline": "#ad8883",
+                        "on-primary-fixed": "#410001",
+                        "surface-dim": "#1f0f0d",
+                        "surface": "#1f0f0d",
+                        "inverse-on-surface": "#402b29",
+                        "primary-container": "#ff5545",
+                        "inverse-surface": "#fcdbd6",
+                        "background": "#1f0f0d",
+                        "inverse-primary": "#c0000a",
+                        "primary": "#ffb4aa",
+                        "surface-container-low": "#291715",
+                        "on-tertiary": "#002e69",
+                        "on-tertiary-container": "#00285c",
+                        "surface-container-high": "#392522",
+                        "surface-tint": "#ffb4aa"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "safe-area-top": "32px",
+                        "gutter": "16px",
+                        "touch-target-min": "48dp",
+                        "container-gap": "12px",
+                        "margin-edge": "24px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md-mobile": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-xl": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "26px", "fontWeight": "400" }],
+                        "headline-md-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "18px", "fontWeight": "500" }],
+                        "label-xl": ["16px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "title-lg": ["22px", { "lineHeight": "28px", "fontWeight": "500" }],
+                        "headline-md": ["28px", { "lineHeight": "36px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>body {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuAatESpFZbdw1_s58GzuoS3LbWZfEo0bIZlX474n0oXrcHeJnEt-5nQ9E4irpvTfZpnagH_w3nWbRHgpTqhaP4dW-9Ame2zHSgLrKgg02nFW24Hvu1oxyA5BNDo_MQsLYN7u3eepVBTBd6iVvnLGvyvuPFU-T8dEo3MHMgeWOU3fl5GbfzGszmX2bNkDXcTNnGne7w3dyhTziqmk7VSbzqBjmHk7UMKwhnahM5Dve3s4vI94wUS87pYKdb9KdgWYBwU_YoZKUiE-Cxt);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed
+    }
+.glass-panel {
+    background: rgba(45, 27, 24, 0.6);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.1)
+    }
+.step-container {
+    display: none;
+    animation: fadeIn 0.4s ease-out forwards
+    }
+.step-container.active {
+    display: flex
+    }
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+        } to {
+        opacity: 1;
+        transform: translateY(0);
+        }
+    }</style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface min-h-screen flex items-center justify-center p-gutter md:p-margin-edge">
+<!-- TopAppBar suppressed due to onboarding flow -->
+<!-- BottomNavBar suppressed due to onboarding flow -->
+<!-- NavigationDrawer suppressed due to onboarding flow -->
+<!-- Main Content Canvas -->
+<main class="w-full max-w-md mx-auto h-full flex flex-col justify-center relative z-10">
+<!-- Onboarding Progress Indicators -->
+<div class="flex justify-center gap-2 mb-8">
+<div class="w-2 h-2 rounded-full bg-surface-variant"></div>
+<div class="w-2 h-2 rounded-full bg-surface-variant"></div>
+<div class="w-2 h-2 rounded-full bg-surface-variant"></div>
+<div class="w-2 h-2 rounded-full bg-primary transition-colors" id="dot-1"></div>
+<div class="w-2 h-2 rounded-full bg-surface-variant transition-colors" id="dot-2"></div>
+<div class="w-2 h-2 rounded-full bg-surface-variant transition-colors" id="dot-3"></div>
+</div>
+<!-- Step 4: Recording Setup -->
+<div class="step-container active flex-col gap-6 w-full" id="step-4">
+<div class="text-center">
+<h1 class="font-headline-md text-headline-md md:font-display-lg md:text-display-lg text-primary mb-2">Recording Setup</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Configure your capture preferences.</p>
+</div>
+<div class="glass-panel rounded-xl p-6 flex flex-col gap-6 w-full">
+<!-- Camera Mode Segmented Control -->
+<div class="flex flex-col gap-3">
+<span class="font-label-xl text-label-xl text-on-surface">Camera Mode</span>
+<div class="bg-surface-container-highest p-1 rounded-xl flex gap-1 relative overflow-hidden">
+<button class="flex-1 py-3 text-center font-label-md text-label-md rounded-lg bg-surface-variant text-on-surface-variant transition-all hover:bg-surface-container-high focus:outline-none">Front</button>
+<button class="flex-1 py-3 text-center font-label-md text-label-md rounded-lg bg-surface-variant text-on-surface-variant transition-all hover:bg-surface-container-high focus:outline-none">Rear</button>
+<button class="flex-1 py-3 text-center font-label-md text-label-md rounded-lg bg-primary-container text-on-primary-container font-bold shadow-md transition-all focus:outline-none">Dual</button>
+</div>
+</div>
+<div class="h-px w-full bg-white/10"></div>
+<!-- Toggles -->
+<div class="flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<div class="flex flex-col">
+<span class="font-label-xl text-label-xl text-on-surface">Audio Recording</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Capture in-cabin sound</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer min-h-touch-target-min min-w-touch-target-min justify-end">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex flex-col">
+<span class="font-label-xl text-label-xl text-on-surface">Telemetry Overlays</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Burn speed &amp; GPS to video</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer min-h-touch-target-min min-w-touch-target-min justify-end">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+</div>
+<div class="h-px w-full bg-white/10"></div>
+<!-- Fixed Clip Length Readout -->
+<div class="flex justify-between items-center bg-surface-container-low p-4 rounded-lg border border-white/5">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-variation-settings: 'FILL' 0;">movie</span>
+<span class="font-label-xl text-label-xl text-on-surface">Clip Length</span>
+</div>
+<span class="font-title-lg text-title-lg text-primary">60s</span>
+</div>
+</div>
+<div class="flex gap-4 mt-4">
+<button class="flex-1 glass-panel py-4 rounded-xl font-label-xl text-label-xl text-on-surface hover:bg-white/10 transition-colors focus:outline-none min-h-touch-target-min" onclick="prevStep(4)">Back</button>
+<button class="flex-[2] bg-primary-container text-on-primary-container py-4 rounded-xl font-label-xl text-label-xl font-bold hover:brightness-110 transition-all focus:outline-none min-h-touch-target-min shadow-lg" onclick="nextStep(4)">Next</button>
+</div>
+</div>
+<!-- Step 5: Immich Sync Setup -->
+<div class="step-container flex-col gap-6 w-full" id="step-5">
+<div class="text-center">
+<h1 class="font-headline-md text-headline-md md:font-display-lg md:text-display-lg text-primary mb-2">Cloud Sync</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Connect to your Immich instance.</p>
+</div>
+<div class="glass-panel rounded-xl p-6 flex flex-col gap-container-gap w-full">
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface-variant ml-2">Server URL</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" style="font-variation-settings: 'FILL' 0;">link</span>
+<input class="w-full bg-surface-container-low border border-white/10 rounded-xl py-4 pl-12 pr-4 text-on-surface font-body-lg text-body-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-on-surface-variant/50 min-h-touch-target-min" placeholder="https://immich.yourdomain.com" type="url"/>
+</div>
+</div>
+<div class="flex flex-col gap-2 mt-2">
+<label class="font-label-md text-label-md text-on-surface-variant ml-2">API Key</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" style="font-variation-settings: 'FILL' 0;">key</span>
+<input class="w-full bg-surface-container-low border border-white/10 rounded-xl py-4 pl-12 pr-4 text-on-surface font-body-lg text-body-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-on-surface-variant/50 min-h-touch-target-min" placeholder="Enter API Key" type="password"/>
+</div>
+</div>
+<button class="w-full mt-4 glass-panel py-3 rounded-xl border border-tertiary-container/30 text-tertiary-container font-label-xl text-label-xl flex items-center justify-center gap-2 hover:bg-tertiary-container/10 transition-colors focus:outline-none min-h-touch-target-min">
+<span class="material-symbols-outlined text-tertiary-container" style="font-variation-settings: 'FILL' 0;">cloud_sync</span>
+                    Test Connection
+                </button>
+</div>
+<div class="flex flex-col gap-4 mt-4">
+<div class="flex gap-4">
+<button class="flex-1 glass-panel py-4 rounded-xl font-label-xl text-label-xl text-on-surface hover:bg-white/10 transition-colors focus:outline-none min-h-touch-target-min" onclick="prevStep(5)">Back</button>
+<button class="flex-[2] bg-primary-container text-on-primary-container py-4 rounded-xl font-label-xl text-label-xl font-bold hover:brightness-110 transition-all focus:outline-none min-h-touch-target-min shadow-lg" onclick="nextStep(5)">Connect &amp; Continue</button>
+</div>
+<button class="w-full py-3 font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors focus:outline-none min-h-touch-target-min" onclick="nextStep(5)">
+                    Skip for Now
+                </button>
+</div>
+</div>
+<!-- Step 6: Ready Screen -->
+<div class="step-container flex-col gap-8 w-full items-center justify-center py-12" id="step-6">
+<div class="relative flex items-center justify-center mb-4">
+<div class="absolute w-32 h-32 rounded-full bg-primary-container/20 animate-ping"></div>
+<div class="w-24 h-24 rounded-full bg-primary-container flex items-center justify-center z-10 shadow-lg shadow-primary-container/50">
+<span class="material-symbols-outlined text-on-primary-container text-5xl" style="font-variation-settings: 'FILL' 1;">videocam</span>
+</div>
+</div>
+<div class="text-center">
+<h1 class="font-display-lg text-display-lg text-primary mb-4">Ready to record</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-[280px] mx-auto">Your DriveVault is configured and ready to secure your journey.</p>
+</div>
+<button class="w-full bg-primary text-on-primary py-6 rounded-2xl font-headline-md text-headline-md font-bold hover:brightness-110 transition-all focus:outline-none mt-8 shadow-[0_0_40px_rgba(255,180,170,0.3)] active:scale-95 flex items-center justify-center gap-3">
+<span class="w-4 h-4 rounded-full bg-error animate-pulse"></span>
+                Start Dashcam
+            </button>
+</div>
+</main>
+<script>
+        function nextStep(current) {
+            document.getElementById(`step-${current}`).classList.remove('active');
+            
+            if (current < 6) {
+                const next = current + 1;
+                document.getElementById(`step-${next}`).classList.add('active');
+                updateDots(next - 3); // Map step 4,5,6 to dot 1,2,3
+            }
+        }
+
+        function prevStep(current) {
+            document.getElementById(`step-${current}`).classList.remove('active');
+            
+            if (current > 4) {
+                const prev = current - 1;
+                document.getElementById(`step-${prev}`).classList.add('active');
+                updateDots(prev - 3);
+            } else {
+                // Should navigate back to step 3, for now just show step 4
+                document.getElementById('step-4').classList.add('active');
+            }
+        }
+
+        function updateDots(activeDot) {
+            for (let i = 1; i <= 3; i++) {
+                const dot = document.getElementById(`dot-${i}`);
+                if (i === activeDot) {
+                    dot.classList.remove('bg-surface-variant');
+                    dot.classList.add('bg-primary');
+                } else if (i < activeDot) {
+                    dot.classList.remove('bg-surface-variant', 'bg-primary');
+                    dot.classList.add('bg-primary-container');
+                } else {
+                    dot.classList.remove('bg-primary', 'bg-primary-container');
+                    dot.classList.add('bg-surface-variant');
+                }
+            }
+            
+            // Hide dots on final screen
+            if (activeDot === 3) {
+                 document.querySelector('.flex.justify-center.gap-2.mb-8').style.display = 'none';
+            }
+        }
+    </script>
+</body></html>

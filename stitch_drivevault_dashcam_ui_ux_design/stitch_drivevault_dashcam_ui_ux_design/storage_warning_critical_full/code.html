@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DriveVault - Storage Almost Full</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "on-tertiary-fixed-variant": "#004493",
+                            "on-error-container": "#ffdad6",
+                            "tertiary-container": "#4b8eff",
+                            "primary-fixed-dim": "#ffb4aa",
+                            "on-tertiary": "#002e69",
+                            "surface-container-low": "#291715",
+                            "surface-container-highest": "#44302d",
+                            "surface-container-lowest": "#190a08",
+                            "on-primary": "#690003",
+                            "surface-container": "#2d1b18",
+                            "on-secondary-container": "#bab8b7",
+                            "surface-bright": "#493431",
+                            "tertiary-fixed": "#d8e2ff",
+                            "surface-dim": "#1f0f0d",
+                            "inverse-surface": "#fcdbd6",
+                            "inverse-on-surface": "#402b29",
+                            "background": "#1f0f0d",
+                            "surface-variant": "#44302d",
+                            "secondary-container": "#4a4949",
+                            "surface-container-high": "#392522",
+                            "secondary-fixed": "#e5e2e1",
+                            "on-surface": "#fcdbd6",
+                            "surface": "#1f0f0d",
+                            "primary-fixed": "#ffdad5",
+                            "on-error": "#690005",
+                            "surface-tint": "#ffb4aa",
+                            "on-secondary-fixed": "#1c1b1b",
+                            "on-tertiary-fixed": "#001a41",
+                            "on-primary-fixed": "#410001",
+                            "tertiary-fixed-dim": "#adc6ff",
+                            "on-surface-variant": "#e7bdb7",
+                            "on-secondary-fixed-variant": "#474646",
+                            "on-primary-container": "#5c0002",
+                            "on-secondary": "#313030",
+                            "secondary": "#c8c6c5",
+                            "secondary-fixed-dim": "#c8c6c5",
+                            "inverse-primary": "#c0000a",
+                            "primary": "#ffb4aa",
+                            "outline-variant": "#5d3f3b",
+                            "on-background": "#fcdbd6",
+                            "outline": "#ad8883",
+                            "on-primary-fixed-variant": "#930005",
+                            "on-tertiary-container": "#00285c",
+                            "error-container": "#93000a",
+                            "tertiary": "#adc6ff",
+                            "primary-container": "#ff5545",
+                            "error": "#ffb4ab"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                    },
+                    "spacing": {
+                            "gutter": "16px",
+                            "touch-target-min": "48dp",
+                            "safe-area-top": "32px",
+                            "margin-edge": "24px",
+                            "container-gap": "12px"
+                    },
+                    "fontFamily": {
+                            "body-lg": ["Inter"],
+                            "headline-md-mobile": ["Inter"],
+                            "headline-md": ["Inter"],
+                            "display-lg": ["Inter"],
+                            "label-xl": ["Inter"],
+                            "label-md": ["Inter"],
+                            "title-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                            "body-lg": ["18px", {"lineHeight": "26px", "fontWeight": "400"}],
+                            "headline-md-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                            "headline-md": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                            "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                            "label-xl": ["16px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                            "label-md": ["14px", {"lineHeight": "18px", "fontWeight": "500"}],
+                            "title-lg": ["22px", {"lineHeight": "28px", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-thick {
+            font-variation-settings: 'FILL' 0, 'wght' 700, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Glassmorphism utilities */
+        .glass-panel {
+            background: rgba(31, 15, 13, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-alert {
+            background: rgba(147, 0, 10, 0.85); /* error-container with opacity */
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            border: 1px solid rgba(255, 180, 171, 0.3); /* error with opacity */
+        }
+        
+        /* Pulsing animation for critical state */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+        .pulse-indicator::before {
+            content: '';
+            position: absolute;
+            left: -4px; top: -4px; right: -4px; bottom: -4px;
+            border-radius: 50%;
+            background-color: theme('colors.primary-container');
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+            z-index: -1;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-lg min-h-screen relative overflow-hidden flex items-center justify-center p-gutter md:p-margin-edge">
+<!-- Background Context: Simulated blurred video feed to establish automotive environment -->
+<div class="absolute inset-0 z-0">
+<img alt="Blurred night time driving view from a dashboard camera, showing wet roads, city lights, and trailing taillights in high contrast." class="w-full h-full object-cover filter blur-[8px] opacity-40 brightness-50" data-alt="A blurred, low-light image of a night drive from the perspective of a dashboard camera. The scene features slick, rain-covered roads reflecting the bright red trails of leading vehicles' taillights and the cool, harsh glow of city streetlamps. The overall mood is tense and utilitarian, with deep black shadows contrasting sharply against the bright red and white artificial lights. This serves as an atmospheric background for a modern automotive interface, emphasizing the need for high visibility and critical safety." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0nA9UFukrBm1tgKXvI2_6TJ910CQYCoFHivYQDNxg8jJBlPaDI5seO9CXC08Pv6HiHKV2c6ps9E4o8t6bWKy7Q2ps-JfQ_wLs_vbLtaSyATqNEcFYJuqUR9jUdJBC4vnKCgRayBoFTAzdjA_3sve2cLCqq1DcAloMbFzcS6f9C3by-AmUjhFCtZEkAVcymwg1TGC8mi50WkLQMxywAV5XNDDzUCGB9q4MSemoj_gthWFo3bTZtybbPXv0KVL82pnxuuNKsKvruZ-q"/>
+</div>
+<!-- Critical Alert Dialog Overlay -->
+<div class="relative z-10 w-full max-w-md glass-alert rounded-[24px] shadow-2xl overflow-hidden flex flex-col transform transition-all">
+<!-- Header -->
+<div class="p-6 md:p-8 flex flex-col items-center text-center border-b border-white/10">
+<div class="relative mb-4 pulse-indicator">
+<div class="bg-primary-container text-on-primary-container w-16 h-16 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(255,85,69,0.5)]">
+<span class="material-symbols-outlined icon-thick text-4xl" data-icon="sd_storage" data-weight="fill">sd_storage</span>
+</div>
+</div>
+<h1 class="font-headline-md-mobile md:font-headline-md text-headline-md-mobile md:text-headline-md text-error mb-2">
+                Storage Almost Full
+            </h1>
+<p class="font-body-lg text-body-lg text-on-error-container/90">
+                Storage is nearly at capacity. To continue recording without interruption, please review your locked clips or clear space.
+            </p>
+</div>
+<!-- Content Area -->
+<div class="p-6 md:p-8 flex flex-col gap-6 bg-surface-container/60">
+<!-- Quick Actions section -->
+<div class="flex flex-col gap-4">
+<div class="flex justify-between items-end mb-2">
+<h2 class="font-title-lg text-title-lg text-primary-fixed">Oldest Locked Clips</h2>
+<span class="font-label-md text-label-md text-on-surface-variant">Tap to unlock</span>
+</div>
+<!-- Clip Item 1 -->
+<div class="flex items-center justify-between p-3 rounded-xl glass-panel hover:bg-white/5 transition-colors cursor-pointer active:scale-[0.98]">
+<div class="flex items-center gap-4">
+<div class="w-16 h-12 bg-surface-variant rounded-lg overflow-hidden relative flex-shrink-0 border border-white/10">
+<img alt="Thumbnail of a car dashcam video" class="w-full h-full object-cover opacity-70" data-alt="A small, dark thumbnail image representing a captured dashcam video clip. The image shows a dimly lit intersection at dusk, viewed from inside a car looking out through the windshield. The colors are muted, relying on deep charcoal grays and subtle hints of blue evening light. It has a functional, utilitarian aesthetic suitable for a high-end automotive security system interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJE94RM-1KGB4ae7qVqYjKaU_mHl-jWM8WLEGZoEeixX_KRIDzAHHZKkMt7L0FspjGxPXl2grxPwI0VraM4q6oJ79wPSRrhgCYgGzLU41GQ1N7-SRrbetT5FcUf3W5kQXCB5_tVZRnF3ndOhSsje-jM69a_RpYAcHUpYVq9j5oxZlyz6Pr2PT8L5AKws-45xNzbpvjenuIMvSkNp7dLGAxGLMjepSbrY-wnAmZyjjUCVXRlPD4yAD9PeUcuH1QeK1Wq0gyDOfEphbJ"/>
+<div class="absolute inset-0 flex items-center justify-center bg-black/30">
+<span class="material-symbols-outlined text-white text-sm">play_arrow</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-label-xl text-label-xl text-on-surface">Oct 12, 08:42</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Hard Braking Event</span>
+</div>
+</div>
+<button aria-label="Unlock clip" class="h-touch-target-min w-touch-target-min flex items-center justify-center text-primary hover:text-primary-container transition-colors">
+<span class="material-symbols-outlined icon-fill" data-icon="lock" data-weight="fill">lock</span>
+</button>
+</div>
+<!-- Clip Item 2 -->
+<div class="flex items-center justify-between p-3 rounded-xl glass-panel hover:bg-white/5 transition-colors cursor-pointer active:scale-[0.98]">
+<div class="flex items-center gap-4">
+<div class="w-16 h-12 bg-surface-variant rounded-lg overflow-hidden relative flex-shrink-0 border border-white/10">
+<img alt="Thumbnail of a car dashcam video on highway" class="w-full h-full object-cover opacity-70" data-alt="Another small thumbnail image for a dashcam video interface. This frame depicts a daytime highway scene viewed from a driver's perspective. The road stretches ahead, flanked by concrete barriers, under an overcast, grey sky. The color palette is composed of cool, high-contrast greys and blacks, fitting the sleek, modern material design theme of the application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAXucXrbr_kXnUgYlM0-nH2ZLUYlI23pa-uHzHs-gYfL9qSgFXmDcZYRjsaYTmx3E2bbOVC2N0vSm2TqyKmS7CXtfzfAM_Hgngdb8yUwFXlXMSi5A9yrJsRL0tTPTETn8TRP9vRhKWXZJQUYL3wObGW28b9ESaHdQORZ2sP3R-aU4pIQcP8NWNQE6XTcbYbTQBYgRRhce-t3Fe-buejBpff12EcZGm6URNl6QJoqxkxTpKNO_2_d4uaPdqhnDaY6N6K6GJ6HMfyNvZ"/>
+<div class="absolute inset-0 flex items-center justify-center bg-black/30">
+<span class="material-symbols-outlined text-white text-sm">play_arrow</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-label-xl text-label-xl text-on-surface">Oct 05, 17:15</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Manual Lock</span>
+</div>
+</div>
+<button aria-label="Unlock clip" class="h-touch-target-min w-touch-target-min flex items-center justify-center text-primary hover:text-primary-container transition-colors">
+<span class="material-symbols-outlined icon-fill" data-icon="lock" data-weight="fill">lock</span>
+</button>
+</div>
+</div>
+<!-- Big Clear Cache Button -->
+<button class="w-full h-touch-target-min rounded-xl border border-outline-variant hover:bg-surface-variant transition-colors flex items-center justify-center gap-2 text-on-surface font-label-xl text-label-xl active:scale-[0.98]">
+<span class="material-symbols-outlined" data-icon="cleaning_services">cleaning_services</span>
+                Clear Cache (1.2 GB)
+            </button>
+</div>
+<!-- Action Footer -->
+<div class="p-6 md:p-8 flex flex-col gap-4 bg-surface-container-high/80 border-t border-white/5">
+<button class="w-full h-touch-target-min bg-primary-container text-on-primary-container rounded-full font-label-xl text-label-xl flex items-center justify-center gap-2 hover:bg-primary transition-colors active:scale-95 shadow-lg">
+<span class="material-symbols-outlined icon-thick" data-icon="folder_open">folder_open</span>
+                Open Library
+            </button>
+<button class="w-full h-touch-target-min bg-transparent text-error border border-error/50 rounded-full font-label-xl text-label-xl flex items-center justify-center gap-2 hover:bg-error/10 transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="stop_circle">stop_circle</span>
+                Stop Recording
+            </button>
+</div>
+</div>
+<script>
+        // Simple micro-interaction for unlocking clips
+        document.querySelectorAll('button[aria-label="Unlock clip"]').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const icon = this.querySelector('.material-symbols-outlined');
+                
+                // Toggle lock/unlock visually
+                if(icon.textContent === 'lock') {
+                    icon.textContent = 'lock_open';
+                    icon.classList.remove('icon-fill');
+                    this.classList.remove('text-primary');
+                    this.classList.add('text-secondary');
+                    
+                    // Dim the parent clip container
+                    this.closest('.glass-panel').classList.add('opacity-50');
+                } else {
+                    icon.textContent = 'lock';
+                    icon.classList.add('icon-fill');
+                    this.classList.add('text-primary');
+                    this.classList.remove('text-secondary');
+                    
+                    // Restore parent clip container
+                    this.closest('.glass-panel').classList.remove('opacity-50');
+                }
+            });
+        });
+    </script>
+</body></html>

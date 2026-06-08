@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Clip Library - DriveVault</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        /* Custom scrollbar for dark theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: theme('colors.surface-variant');
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.secondary-container');
+        }
+        
+        .glass-panel {
+            background: theme('colors.surface/80');
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .clip-card-hover {
+            transition: all 0.3s ease;
+        }
+        .clip-card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px -8px rgba(0,0,0,0.5);
+            border-color: theme('colors.primary/30');
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed": "#e5e2e1",
+                      "error": "#ffb4ab",
+                      "on-primary-container": "#5c0002",
+                      "tertiary-fixed": "#d8e2ff",
+                      "secondary-fixed-dim": "#c8c6c5",
+                      "on-tertiary-fixed-variant": "#004493",
+                      "tertiary-fixed-dim": "#adc6ff",
+                      "on-secondary-container": "#bab8b7",
+                      "on-surface": "#fcdbd6",
+                      "on-error-container": "#ffdad6",
+                      "on-tertiary-fixed": "#001a41",
+                      "secondary": "#c8c6c5",
+                      "on-background": "#fcdbd6",
+                      "surface-container-lowest": "#190a08",
+                      "on-primary-fixed-variant": "#930005",
+                      "surface-bright": "#493431",
+                      "secondary-container": "#4a4949",
+                      "outline-variant": "#5d3f3b",
+                      "on-error": "#690005",
+                      "primary-fixed": "#ffdad5",
+                      "error-container": "#93000a",
+                      "surface-container": "#2d1b18",
+                      "on-secondary": "#313030",
+                      "tertiary-container": "#4b8eff",
+                      "surface-variant": "#44302d",
+                      "surface-container-highest": "#44302d",
+                      "primary-fixed-dim": "#ffb4aa",
+                      "on-primary": "#690003",
+                      "on-secondary-fixed": "#1c1b1b",
+                      "tertiary": "#adc6ff",
+                      "on-secondary-fixed-variant": "#474646",
+                      "on-surface-variant": "#e7bdb7",
+                      "outline": "#ad8883",
+                      "on-primary-fixed": "#410001",
+                      "surface-dim": "#1f0f0d",
+                      "surface": "#1f0f0d",
+                      "inverse-on-surface": "#402b29",
+                      "primary-container": "#ff5545",
+                      "inverse-surface": "#fcdbd6",
+                      "background": "#1f0f0d",
+                      "inverse-primary": "#c0000a",
+                      "primary": "#ffb4aa",
+                      "surface-container-low": "#291715",
+                      "on-tertiary": "#002e69",
+                      "on-tertiary-container": "#00285c",
+                      "surface-container-high": "#392522",
+                      "surface-tint": "#ffb4aa"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "safe-area-top": "32px",
+                      "gutter": "16px",
+                      "touch-target-min": "48dp",
+                      "container-gap": "12px",
+                      "margin-edge": "24px"
+              },
+              "fontFamily": {
+                      "display-lg": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-md-mobile": ["Inter"],
+                      "label-md": ["Inter"],
+                      "label-xl": ["Inter"],
+                      "title-lg": ["Inter"],
+                      "headline-md": ["Inter"]
+              },
+              "fontSize": {
+                      "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                      "body-lg": ["18px", { "lineHeight": "26px", "fontWeight": "400" }],
+                      "headline-md-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                      "label-md": ["14px", { "lineHeight": "18px", "fontWeight": "500" }],
+                      "label-xl": ["16px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                      "title-lg": ["22px", { "lineHeight": "28px", "fontWeight": "500" }],
+                      "headline-md": ["28px", { "lineHeight": "36px", "fontWeight": "600" }]
+              }
+            }
+          }
+        }
+      </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex flex-col md:flex-row pb-safe-area-top md:pb-0 overflow-x-hidden">
+<!-- TopAppBar (Mobile) -->
+<header class="md:hidden bg-surface/80 dark:bg-surface/80 backdrop-blur-xl fixed top-0 w-full z-50 border-b border-white/10 flat no shadows">
+<div class="flex justify-between items-center px-margin-edge h-16">
+<button aria-label="Menu" class="w-touch-target-min h-touch-target-min flex items-center justify-start text-on-surface-variant hover:bg-white/10 transition-colors active:scale-95 duration-100 rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+<h1 class="font-headline-md-mobile text-headline-md-mobile font-bold text-primary">DriveVault</h1>
+<button aria-label="Settings" class="w-touch-target-min h-touch-target-min flex items-center justify-end text-on-surface-variant hover:bg-white/10 transition-colors active:scale-95 duration-100 rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+</button>
+</div>
+</header>
+<!-- NavigationDrawer (Web) -->
+<nav class="hidden md:flex bg-surface-container dark:bg-surface-container-highest backdrop-blur-3xl fixed left-0 top-0 h-full w-72 z-[60] border-r border-white/10 shadow-xl flex-col p-4 gap-container-gap">
+<div class="flex items-center gap-4 mb-8 p-4">
+<div class="w-12 h-12 rounded-full bg-surface-variant flex items-center justify-center overflow-hidden border border-outline/30">
+<span class="material-symbols-outlined text-on-surface-variant text-2xl">directions_car</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title-lg text-title-lg font-bold text-primary">Unit 01-A</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Online - 4K HDR</span>
+</div>
+</div>
+<ul class="flex flex-col gap-2 flex-grow">
+<li>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-variant hover:bg-white/10 transition-colors rounded-r-full tap-highlight-transparent" href="#">
+<span class="material-symbols-outlined">videocam</span>
+<span class="font-label-md text-label-md">Front Camera</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 bg-secondary-container text-on-secondary-container font-bold rounded-r-full hover:bg-white/10 transition-colors tap-highlight-transparent" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">video_library</span>
+<span class="font-label-md text-label-md">Clips</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-variant hover:bg-white/10 transition-colors rounded-r-full tap-highlight-transparent" href="#">
+<span class="material-symbols-outlined">minor_crash</span>
+<span class="font-label-md text-label-md">Rear Camera</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-variant hover:bg-white/10 transition-colors rounded-r-full tap-highlight-transparent" href="#">
+<span class="material-symbols-outlined">splitscreen</span>
+<span class="font-label-md text-label-md">Dual View</span>
+</a>
+</li>
+<li class="mt-auto">
+<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-variant hover:bg-white/10 transition-colors rounded-r-full tap-highlight-transparent" href="#">
+<span class="material-symbols-outlined">cloud_sync</span>
+<span class="font-label-md text-label-md">Cloud Sync</span>
+</a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-20 md:pt-8 px-gutter md:px-margin-edge md:ml-72 pb-32 w-full max-w-7xl mx-auto flex flex-col gap-6">
+<!-- Header & Search/Filter Section -->
+<div class="flex flex-col gap-4 w-full">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-md text-headline-md text-primary hidden md:block">Clip Library</h2>
+<div class="flex items-center gap-2 ml-auto">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-variant text-on-surface-variant hover:bg-surface-container-highest transition-colors border border-outline/20">
+<span class="material-symbols-outlined text-xl">grid_view</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-transparent text-on-surface-variant hover:bg-surface-container-highest transition-colors border border-transparent">
+<span class="material-symbols-outlined text-xl">view_list</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col md:flex-row gap-4 w-full items-start md:items-center">
+<!-- Search Bar -->
+<div class="relative w-full md:w-96">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">search</span>
+<input class="w-full h-12 bg-surface-container border border-outline/30 rounded-xl pl-12 pr-4 text-on-surface placeholder:text-on-surface-variant focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-lg text-body-lg" placeholder="Search by location or date..." type="text"/>
+</div>
+<!-- Filter Chips (Scrollable on mobile) -->
+<div class="w-full overflow-x-auto hide-scrollbar pb-2 md:pb-0">
+<div class="flex gap-2 min-w-max">
+<button class="px-4 py-2 rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md border border-primary/20 hover:bg-primary/80 transition-colors whitespace-nowrap">
+                            All Clips
+                        </button>
+<button class="px-4 py-2 rounded-full bg-surface-variant text-on-surface-variant font-label-md text-label-md border border-outline/30 hover:bg-surface-container-highest transition-colors whitespace-nowrap">
+                            Today
+                        </button>
+<button class="px-4 py-2 rounded-full bg-surface-variant text-on-surface-variant font-label-md text-label-md border border-outline/30 hover:bg-surface-container-highest transition-colors whitespace-nowrap">
+                            This Week
+                        </button>
+<button class="px-4 py-2 rounded-full bg-surface-variant text-on-surface-variant font-label-md text-label-md border border-outline/30 hover:bg-surface-container-highest transition-colors whitespace-nowrap flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+                            Locked
+                        </button>
+<button class="px-4 py-2 rounded-full bg-surface-variant text-on-surface-variant font-label-md text-label-md border border-outline/30 hover:bg-surface-container-highest transition-colors whitespace-nowrap flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">cloud_done</span>
+                            Synced
+                        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Bento Grid / Card Layout -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-container-gap w-full mt-2">
+<!-- Clip Card 1 (Locked) -->
+<div class="glass-panel rounded-[24px] overflow-hidden flex flex-col clip-card-hover group relative cursor-pointer">
+<!-- Thumbnail Area -->
+<div class="relative w-full aspect-video bg-surface-container-lowest overflow-hidden">
+<img alt="Video Thumbnail" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" data-alt="A cinematic dashboard camera view looking out through a windshield at a rainy urban intersection at night. The scene is illuminated by neon signs and the stark glare of headlights reflecting off the wet asphalt. The color palette is dark moody blues and deep blacks, contrasted by bright safety reds from taillights. The aesthetic is high-tech, gritty, and utilitarian." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8ksJyJfukcwVIRAUOm4gDJ8s14N-bQ7UAeRh0IQW6Rr53OPblPsW_4wln7Xkpis_8Jt9y3oXcw0w4gEgIdvBXVvkayVEKogcOkcNWqyU0id1frOn8V7Uz1nHEKQkpXP8XZSzQ4qOwdqmqyjSdxBJ-TKNP_Iy437nfKYvDPiYrFUS27rnta72moN7hQx7A7bv4Lwy-aEVKnl89H_gQjGurZau28IP2hr96J92OEIG60-667q5stYx83dEQQ3PTHgkZSJCYJD851c_0"/>
+<!-- Play Overlay -->
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<!-- Badges Top -->
+<div class="absolute top-3 left-3 flex gap-2">
+<div class="bg-error/90 backdrop-blur-md px-2 py-1 rounded-md flex items-center gap-1 border border-error/50">
+<span class="material-symbols-outlined text-on-error text-[14px]" style="font-variation-settings: 'FILL' 1;">lock</span>
+<span class="font-label-md text-[12px] text-on-error font-bold tracking-wider">LOCKED</span>
+</div>
+</div>
+<div class="absolute top-3 right-3 flex gap-2">
+<div class="bg-tertiary-container/80 backdrop-blur-md w-8 h-8 rounded-md flex items-center justify-center border border-tertiary-container/50">
+<span class="material-symbols-outlined text-on-tertiary-container text-[16px]">cloud_done</span>
+</div>
+</div>
+<!-- Duration Bottom -->
+<div class="absolute bottom-3 right-3 bg-surface/80 backdrop-blur-md px-2 py-1 rounded-md border border-white/10">
+<span class="font-label-md text-[12px] text-on-surface">01:00</span>
+</div>
+</div>
+<!-- Metadata Area -->
+<div class="p-4 flex flex-col gap-1 bg-gradient-to-b from-transparent to-surface-container-low">
+<h3 class="font-label-xl text-label-xl text-on-surface truncate">Highway I-95 North</h3>
+<p class="font-label-md text-label-md text-on-surface-variant flex items-center gap-2">
+<span>Oct 24, 2023</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span>08:42 PM</span>
+</p>
+<div class="flex items-center gap-3 mt-2">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">speed</span>
+<span class="font-label-md text-label-md">65 mph</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">videocam</span>
+<span class="font-label-md text-label-md">Front</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Clip Card 2 -->
+<div class="glass-panel rounded-[24px] overflow-hidden flex flex-col clip-card-hover group relative cursor-pointer">
+<div class="relative w-full aspect-video bg-surface-container-lowest overflow-hidden">
+<img alt="Video Thumbnail" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" data-alt="A bright, clear dashboard camera view of a winding mountain road during early morning light. The asphalt is crisp grey, flanked by deep green pines and a pale blue sky. The scene conveys a sense of serene, high-fidelity capture, typical of a premium 4K dashcam setup. The color palette is natural, high-contrast, and realistic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_uMt0l0uURpWpImAyQlE464XF7el5MAeKG5SlhLqDe7JaWJ1McVmuNX2QkUbM7e-8QPSyW32lHyYSlUBfol4o8rLeri2emMNCKpt4ud_01X9g4vob2wqs2SjHbhnOQEf_jhr0_oPdXevWt6SynvPLNpg0Wm29o0J98YOr27MXFVnleXP3cS9eb_7ncsTHytG0UWjwXFNsYiNXI0qF-bmepVE4GSkxmiHjXq3z4UvR0scld7YMZaIChF3nu5Ik8QSSQXiLpmL8Y8b_"/>
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<div class="absolute bottom-3 right-3 bg-surface/80 backdrop-blur-md px-2 py-1 rounded-md border border-white/10">
+<span class="font-label-md text-[12px] text-on-surface">01:00</span>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-1 bg-gradient-to-b from-transparent to-surface-container-low">
+<h3 class="font-label-xl text-label-xl text-on-surface truncate">Mountain Pass Rte 7</h3>
+<p class="font-label-md text-label-md text-on-surface-variant flex items-center gap-2">
+<span>Oct 23, 2023</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span>06:15 AM</span>
+</p>
+<div class="flex items-center gap-3 mt-2">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">speed</span>
+<span class="font-label-md text-label-md">42 mph</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">minor_crash</span>
+<span class="font-label-md text-label-md">Rear</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Clip Card 3 (Synced) -->
+<div class="glass-panel rounded-[24px] overflow-hidden flex flex-col clip-card-hover group relative cursor-pointer">
+<div class="relative w-full aspect-video bg-surface-container-lowest overflow-hidden">
+<div class="w-full h-full bg-surface-container-high animate-pulse flex items-center justify-center">
+<span class="material-symbols-outlined text-outline-variant text-4xl">image_not_supported</span>
+</div>
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/40">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<div class="absolute top-3 right-3 flex gap-2">
+<div class="bg-tertiary-container/80 backdrop-blur-md w-8 h-8 rounded-md flex items-center justify-center border border-tertiary-container/50">
+<span class="material-symbols-outlined text-on-tertiary-container text-[16px]">cloud_done</span>
+</div>
+</div>
+<div class="absolute bottom-3 right-3 bg-surface/80 backdrop-blur-md px-2 py-1 rounded-md border border-white/10">
+<span class="font-label-md text-[12px] text-on-surface">00:45</span>
+</div>
+</div>
+<div class="p-4 flex flex-col gap-1 bg-gradient-to-b from-transparent to-surface-container-low">
+<h3 class="font-label-xl text-label-xl text-on-surface truncate">Downtown Parking</h3>
+<p class="font-label-md text-label-md text-on-surface-variant flex items-center gap-2">
+<span>Oct 22, 2023</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span>02:30 PM</span>
+</p>
+<div class="flex items-center gap-3 mt-2">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">speed</span>
+<span class="font-label-md text-label-md">0 mph</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">videocam</span>
+<span class="font-label-md text-label-md">Front</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden bg-surface/90 dark:bg-surface-dim/90 backdrop-blur-2xl fixed bottom-0 w-full z-50 rounded-t-xl border-t border-white/10 flat no shadows">
+<div class="flex justify-around items-center h-20 px-gutter pb-safe-area-top">
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/5 transition-all active:scale-90 duration-150 w-16 h-full tap-highlight-transparent">
+<span class="material-symbols-outlined mb-1">radio_button_checked</span>
+<span class="font-label-md text-[10px]">Record</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-6 py-1 hover:bg-white/5 transition-all active:scale-90 duration-150 tap-highlight-transparent">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">video_library</span>
+<span class="font-label-md text-[10px]">Clips</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/5 transition-all active:scale-90 duration-150 w-16 h-full tap-highlight-transparent">
+<span class="material-symbols-outlined mb-1">speed</span>
+<span class="font-label-md text-[10px]">Sensors</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/5 transition-all active:scale-90 duration-150 w-16 h-full tap-highlight-transparent">
+<span class="material-symbols-outlined mb-1">settings_remote</span>
+<span class="font-label-md text-[10px]">System</span>
+</button>
+</div>
+</nav>
+<!-- Floating Action Button (Multi-select / contextual) -->
+<button class="fixed bottom-24 right-6 md:bottom-8 md:right-8 w-14 h-14 bg-tertiary-container text-on-tertiary-container rounded-2xl shadow-lg flex items-center justify-center hover:bg-tertiary transition-colors active:scale-95 z-40 border border-tertiary/30">
+<span class="material-symbols-outlined">checklist</span>
+</button>
+</body></html>

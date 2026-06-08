@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DriveVault - Dashcam Recording</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed": "#e5e2e1",
+                    "error": "#ffb4ab",
+                    "on-primary-container": "#5c0002",
+                    "tertiary-fixed": "#d8e2ff",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "on-tertiary-fixed-variant": "#004493",
+                    "tertiary-fixed-dim": "#adc6ff",
+                    "on-secondary-container": "#bab8b7",
+                    "on-surface": "#fcdbd6",
+                    "on-error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#001a41",
+                    "secondary": "#c8c6c5",
+                    "on-background": "#fcdbd6",
+                    "surface-container-lowest": "#190a08",
+                    "on-primary-fixed-variant": "#930005",
+                    "surface-bright": "#493431",
+                    "secondary-container": "#4a4949",
+                    "outline-variant": "#5d3f3b",
+                    "on-error": "#690005",
+                    "primary-fixed": "#ffdad5",
+                    "error-container": "#93000a",
+                    "surface-container": "#2d1b18",
+                    "on-secondary": "#313030",
+                    "tertiary-container": "#4b8eff",
+                    "surface-variant": "#44302d",
+                    "surface-container-highest": "#44302d",
+                    "primary-fixed-dim": "#ffb4aa",
+                    "on-primary": "#690003",
+                    "on-secondary-fixed": "#1c1b1b",
+                    "tertiary": "#adc6ff",
+                    "on-secondary-fixed-variant": "#474646",
+                    "on-surface-variant": "#e7bdb7",
+                    "outline": "#ad8883",
+                    "on-primary-fixed": "#410001",
+                    "surface-dim": "#1f0f0d",
+                    "surface": "#1f0f0d",
+                    "inverse-on-surface": "#402b29",
+                    "primary-container": "#ff5545",
+                    "inverse-surface": "#fcdbd6",
+                    "background": "#1f0f0d",
+                    "inverse-primary": "#c0000a",
+                    "primary": "#ffb4aa",
+                    "surface-container-low": "#291715",
+                    "on-tertiary": "#002e69",
+                    "on-tertiary-container": "#00285c",
+                    "surface-container-high": "#392522",
+                    "surface-tint": "#ffb4aa"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "safe-area-top": "32px",
+                    "gutter": "16px",
+                    "touch-target-min": "48dp",
+                    "container-gap": "12px",
+                    "margin-edge": "24px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md-mobile": ["Inter"],
+                    "label-md": ["Inter"],
+                    "label-xl": ["Inter"],
+                    "title-lg": ["Inter"],
+                    "headline-md": ["Inter"]
+            },
+            "fontSize": {
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "26px", "fontWeight": "400"}],
+                    "headline-md-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "18px", "fontWeight": "500"}],
+                    "label-xl": ["16px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "title-lg": ["22px", {"lineHeight": "28px", "fontWeight": "500"}],
+                    "headline-md": ["28px", {"lineHeight": "36px", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Glassmorphism utilities */
+        .glass-panel {
+            background: rgba(31, 15, 13, 0.6);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* hide scrollbar */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background h-screen w-screen overflow-hidden flex flex-col font-body-lg">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface/80 backdrop-blur-xl border-b border-white/10 flat no shadows flex justify-between items-center px-margin-edge h-16 pt-safe-area-top box-content">
+<button aria-label="Menu" class="w-[48px] h-[48px] flex items-center justify-center text-primary dark:text-primary-fixed-dim hover:bg-white/10 transition-colors rounded-full active:scale-95 duration-100">
+<span class="material-symbols-outlined text-[24px]">videocam</span>
+</button>
+<h1 class="font-headline-md-mobile text-headline-md-mobile text-primary dark:text-primary-fixed-dim">DriveVault</h1>
+<button aria-label="Settings" class="w-[48px] h-[48px] flex items-center justify-center text-on-surface-variant hover:bg-white/10 transition-colors rounded-full active:scale-95 duration-100">
+<span class="material-symbols-outlined text-[24px]">settings</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col relative w-full h-full pt-[calc(64px+32px)] pb-[80px]">
+<!-- Video Feed Section (Top 2/3) -->
+<div class="relative h-[65%] w-full bg-surface-container-lowest">
+<!-- Primary Camera (Front) -->
+<img alt="Dashcam Front View" class="w-full h-full object-cover" data-alt="A high-definition dashcam view from inside a premium vehicle driving down a modern highway at dusk. The sky is a gradient of deep blues and purples. The road ahead is clear with smooth asphalt, illuminated by the warm glow of streetlights and passing car headlights. The image is crisp, realistic, and has a professional, high-end automotive safety aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAslbN124AaH017dZdRlCdPlGxjm1RBdk8nHUUEW8QAETotMOYVnnn5sXymcYxSbIqmMMeKDUxeY8n-mOTHodb5vRtndk0WdnMfKW3i71_iv1bN4zjCU9wh4TDmQ5Hw1p34v9FK801CRz6MGV4jSOPOfH8UWbysiOZayXCU-lF1HfYMuFcJUHzP7fqkOVFK3ZuSDKkAaoNUYD-DNJQ4PnCNUpAnCglEMqOonqf4Pvfkwe9OUoOw_L3Mp1lXfmpMVNt5q7ns3vQ1h4oG"/>
+<!-- PIP Camera (Rear) -->
+<div class="absolute top-4 right-4 w-1/3 aspect-video rounded-lg overflow-hidden border-2 border-white/20 shadow-2xl z-10">
+<img alt="Dashcam Rear View" class="w-full h-full object-cover" data-alt="A high-definition dashcam view from the rear window of a premium vehicle, showing a modern highway scene receding into the distance at dusk. The lighting is cinematic, capturing the trails of headlights and taillights. The aesthetic matches the front camera view, ensuring consistency in the high-end automotive safety style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuANCQ8r8ZElem9eIHcHM7VsQi3jSO_2aTuiRTbyiULOwS-OivlPpKZ5NOAfUfAmiC9cXfchE9mq-KlBzaOOYat6tkO_KkWJ3YiC2LQEzby6V9G_krmc_Ad1j9JkjKtI9a_RX7-YWXg95W0QMJlBINw8TV7NRoZ7Am0r6ZPOIsRIvypF3SYLjUueL-fk6UBEXCHCBxxuQ7munF_ISJs1Y6vdLPoIMf9GxbN1G3KjWsbPB1vOp7tEYrNUrhyuN7HZ6jnkN3IFoGF3AGR7"/>
+</div>
+<!-- Recording Indicator -->
+<div class="absolute top-4 left-4 glass-panel px-4 py-2 rounded-full flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-error animate-pulse"></div>
+<span class="font-label-xl text-label-xl text-error tracking-widest uppercase">REC</span>
+<span class="font-label-md text-label-md text-on-surface ml-2">00:14:32</span>
+</div>
+<!-- Status Chips -->
+<div class="absolute bottom-4 left-4 flex gap-2">
+<div class="glass-panel px-3 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-tertiary-container icon-fill">4k</span>
+<span class="font-label-md text-label-md text-on-surface">HDR</span>
+</div>
+<div class="glass-panel px-3 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-tertiary-container icon-fill">satellite_alt</span>
+<span class="font-label-md text-label-md text-on-surface">GPS Fix</span>
+</div>
+</div>
+</div>
+<!-- Controls & Data Section (Bottom 1/3) -->
+<div class="h-[35%] w-full bg-surface p-gutter flex flex-col gap-container-gap overflow-y-auto">
+<!-- Primary Actions Row -->
+<div class="flex gap-container-gap justify-between items-center h-24">
+<!-- Large Emergency Button -->
+<button class="flex-1 h-full bg-error text-on-error rounded-xl flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform shadow-lg">
+<span class="material-symbols-outlined text-[32px] icon-fill">warning</span>
+<span class="font-label-xl text-label-xl">EMERGENCY</span>
+</button>
+<!-- Secondary Actions -->
+<div class="flex gap-container-gap h-full">
+<button class="w-[80px] h-full glass-panel rounded-xl flex flex-col items-center justify-center gap-1 text-on-surface hover:bg-white/10 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[24px]">photo_camera</span>
+<span class="font-label-md text-label-md">Snapshot</span>
+</button>
+<button class="w-[80px] h-full glass-panel rounded-xl flex flex-col items-center justify-center gap-1 text-on-surface hover:bg-white/10 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[24px]">mic</span>
+<span class="font-label-md text-label-md">Audio</span>
+</button>
+</div>
+</div>
+<!-- Data Cards Grid -->
+<div class="grid grid-cols-2 gap-container-gap">
+<!-- Speedometer Card -->
+<div class="glass-panel p-4 rounded-xl flex flex-col justify-between aspect-square">
+<span class="font-label-md text-label-md text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">speed</span>
+                        Speed
+                    </span>
+<div class="flex items-baseline gap-1 mt-2">
+<span class="font-display-lg text-display-lg text-on-surface">65</span>
+<span class="font-title-lg text-title-lg text-on-surface-variant">mph</span>
+</div>
+</div>
+<!-- Mini Map Card -->
+<div class="glass-panel rounded-xl overflow-hidden aspect-square relative border border-white/10">
+<img alt="Navigation Map" class="w-full h-full object-cover opacity-80 mix-blend-luminosity" data-alt="A clean, minimalist digital map interface showing a simplified road network. The map uses a dark mode color palette with deep charcoal backgrounds and subtle blue or white lines for roads. A prominent, stylized blue arrow or marker indicates the current vehicle position. The style is modern, abstract, and highly legible, suitable for an automotive dashboard." data-location="San Francisco" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCa99_gNYrCRguQ8NqDIK-gy-roNXCVSZeDAHC-6KD--5IndwGdvfPI5zl7s2Nv_m0RN7tOVswNOE7l5mSpIY9Nsu0UoJ4JlM2bXWkYU2il0KN95qTFYfJ3_v6pnV_3qJiAyaYNFlOQjpxslBWCGmIWL4lgm_j-RxYugpYukf0NKV9VkTf40d_c2xTr7i47OXdgwXgS61dRwawTUrvL3tH2-FpiKVcLMj_wQBzjr_eYHTo_zrzOsXJhl6_Y433j7U2a8EgoPq3zVndr"/>
+<div class="absolute bottom-2 left-2 right-2 glass-panel p-2 rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-primary">navigation</span>
+<span class="font-label-md text-label-md text-on-surface truncate">US-101 N</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface/90 dark:bg-surface-dim/90 backdrop-blur-2xl border-t border-white/10 flat no shadows flex justify-around items-center h-20 px-gutter pb-safe-area-top pb-4 md:hidden">
+<!-- Active Tab: Record -->
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-6 py-1 active:scale-90 duration-150 group">
+<span class="material-symbols-outlined text-[24px] icon-fill">radio_button_checked</span>
+<span class="font-label-md text-label-md mt-1">Record</span>
+</button>
+<!-- Inactive Tab: Clips -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/5 transition-all active:scale-90 duration-150 px-4 py-1 rounded-xl">
+<span class="material-symbols-outlined text-[24px]">video_library</span>
+<span class="font-label-md text-label-md mt-1">Clips</span>
+</button>
+<!-- Inactive Tab: Sensors -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/5 transition-all active:scale-90 duration-150 px-4 py-1 rounded-xl">
+<span class="material-symbols-outlined text-[24px]">speed</span>
+<span class="font-label-md text-label-md mt-1">Sensors</span>
+</button>
+<!-- Inactive Tab: System -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/5 transition-all active:scale-90 duration-150 px-4 py-1 rounded-xl">
+<span class="material-symbols-outlined text-[24px]">settings_remote</span>
+<span class="font-label-md text-label-md mt-1">System</span>
+</button>
+</nav>
+<script>
+        // Simple script to toggle mic icon state for demonstration
+        document.addEventListener('DOMContentLoaded', () => {
+            const micBtn = document.querySelector('button:has(.material-symbols-outlined:contains("mic"))');
+            if(micBtn) {
+                micBtn.addEventListener('click', function() {
+                    const icon = this.querySelector('.material-symbols-outlined');
+                    if(icon.textContent === 'mic') {
+                        icon.textContent = 'mic_off';
+                        icon.classList.remove('text-on-surface');
+                        icon.classList.add('text-error');
+                        this.classList.add('bg-white/10');
+                    } else {
+                        icon.textContent = 'mic';
+                        icon.classList.add('text-on-surface');
+                        icon.classList.remove('text-error');
+                        this.classList.remove('bg-white/10');
+                    }
+                });
+            }
+        });
+        
+        // Polyfill for :contains selector used above since it's not standard JS
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(btn => {
+            const icon = btn.querySelector('.material-symbols-outlined');
+            if(icon && icon.textContent === 'mic') {
+                btn.addEventListener('click', function() {
+                    if(icon.textContent === 'mic') {
+                        icon.textContent = 'mic_off';
+                        icon.classList.remove('text-on-surface');
+                        icon.classList.add('text-error');
+                        this.classList.add('bg-white/10');
+                    } else {
+                        icon.textContent = 'mic';
+                        icon.classList.add('text-on-surface');
+                        icon.classList.remove('text-error');
+                        this.classList.remove('bg-white/10');
+                    }
+                });
+            }
+        });
+    </script>
+</body></html>

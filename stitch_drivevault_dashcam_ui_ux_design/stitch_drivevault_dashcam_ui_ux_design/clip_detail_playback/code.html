@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Clip Playback - DriveVault</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed": "#e5e2e1",
+                      "error": "#ffb4ab",
+                      "on-primary-container": "#5c0002",
+                      "tertiary-fixed": "#d8e2ff",
+                      "secondary-fixed-dim": "#c8c6c5",
+                      "on-tertiary-fixed-variant": "#004493",
+                      "tertiary-fixed-dim": "#adc6ff",
+                      "on-secondary-container": "#bab8b7",
+                      "on-surface": "#fcdbd6",
+                      "on-error-container": "#ffdad6",
+                      "on-tertiary-fixed": "#001a41",
+                      "secondary": "#c8c6c5",
+                      "on-background": "#fcdbd6",
+                      "surface-container-lowest": "#190a08",
+                      "on-primary-fixed-variant": "#930005",
+                      "surface-bright": "#493431",
+                      "secondary-container": "#4a4949",
+                      "outline-variant": "#5d3f3b",
+                      "on-error": "#690005",
+                      "primary-fixed": "#ffdad5",
+                      "error-container": "#93000a",
+                      "surface-container": "#2d1b18",
+                      "on-secondary": "#313030",
+                      "tertiary-container": "#4b8eff",
+                      "surface-variant": "#44302d",
+                      "surface-container-highest": "#44302d",
+                      "primary-fixed-dim": "#ffb4aa",
+                      "on-primary": "#690003",
+                      "on-secondary-fixed": "#1c1b1b",
+                      "tertiary": "#adc6ff",
+                      "on-secondary-fixed-variant": "#474646",
+                      "on-surface-variant": "#e7bdb7",
+                      "outline": "#ad8883",
+                      "on-primary-fixed": "#410001",
+                      "surface-dim": "#1f0f0d",
+                      "surface": "#1f0f0d",
+                      "inverse-on-surface": "#402b29",
+                      "primary-container": "#ff5545",
+                      "inverse-surface": "#fcdbd6",
+                      "background": "#1f0f0d",
+                      "inverse-primary": "#c0000a",
+                      "primary": "#ffb4aa",
+                      "surface-container-low": "#291715",
+                      "on-tertiary": "#002e69",
+                      "on-tertiary-container": "#00285c",
+                      "surface-container-high": "#392522",
+                      "surface-tint": "#ffb4aa"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "safe-area-top": "32px",
+                      "gutter": "16px",
+                      "touch-target-min": "48px",
+                      "container-gap": "12px",
+                      "margin-edge": "24px"
+              },
+              "fontFamily": {
+                      "display-lg": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-md-mobile": ["Inter"],
+                      "label-md": ["Inter"],
+                      "label-xl": ["Inter"],
+                      "title-lg": ["Inter"],
+                      "headline-md": ["Inter"]
+              },
+              "fontSize": {
+                      "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                      "body-lg": ["18px", { "lineHeight": "26px", "fontWeight": "400" }],
+                      "headline-md-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                      "label-md": ["14px", { "lineHeight": "18px", "fontWeight": "500" }],
+                      "label-xl": ["16px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                      "title-lg": ["22px", { "lineHeight": "28px", "fontWeight": "500" }],
+                      "headline-md": ["28px", { "lineHeight": "36px", "fontWeight": "600" }]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .tap-highlight-transparent { -webkit-tap-highlight-color: transparent; }
+        .glass-panel {
+            background-color: rgba(31, 15, 13, 0.6); /* surface with opacity */
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-lg antialiased pb-safe-area-top min-h-screen">
+<!-- Detail Context Header (Replaces Global Nav) -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-edge h-16 bg-surface/80 backdrop-blur-xl border-b border-white/10">
+<button class="text-primary w-12 h-12 flex items-center justify-start tap-highlight-transparent hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined text-[28px]">arrow_back</span>
+</button>
+<div class="flex flex-col items-center justify-center">
+<h1 class="font-label-xl text-label-xl text-primary truncate max-w-[200px]">EVNT_20231027_0815</h1>
+<span class="font-label-md text-label-md text-on-surface-variant">Oct 27, 2023 • 08:15 AM</span>
+</div>
+<button class="text-primary w-12 h-12 flex items-center justify-end tap-highlight-transparent hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined text-[28px]">more_vert</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="mt-16 flex flex-col w-full max-w-5xl mx-auto">
+<!-- Video Player Section -->
+<div class="relative w-full aspect-video bg-surface-container-lowest overflow-hidden group">
+<!-- Main Video Feed (Placeholder) -->
+<img class="w-full h-full object-cover transition-transform duration-500" data-alt="A wide-angle, high-definition dashcam view captured from the front windshield of a moving vehicle driving down a modern, multi-lane urban highway during early morning twilight. The lighting is low and moody, heavily influenced by a dark mode aesthetic, with deep shadows and high-glare streaks from passing headlights and streetlamps. The scene conveys a sense of high-speed motion and professional automotive reliability." id="mainVideoImage" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrmePF2BU-DL2gxQX8UB23mM6SFrFZ5h7HXDM55P8CNAzmFeiwpXPh3PCYyFpmaYqWvV5SlmgJ80kEFK4tTzFVPWZ0C47_KnchjGqJwAyz1PrLsAn_hQDYT4TjTyMuOlpbcwcEXUewR24RmxVvkwOTCAKo_5Hp1mnN41MJ5gywcadPf5hFe_cAdgamQGPK8ryLYlwCo4o91g_RQxQTCLCq0dv2ELSXd4HCtXN6F7q2igVyQfXIr2qUxln5D16zgkiffIiPINGpss9L"/>
+<!-- Telemetry Overlay (Toggled via JS) -->
+<div class="absolute top-4 left-4 flex flex-col gap-1 transition-opacity duration-300 opacity-0 pointer-events-none" id="telemetryOverlay">
+<div class="flex items-end gap-1 drop-shadow-lg">
+<span class="font-display-lg text-display-lg text-white leading-none">68</span>
+<span class="font-label-xl text-label-xl text-primary mb-1">mph</span>
+</div>
+<div class="glass-panel px-3 py-1 rounded-full mt-2 inline-flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-tertiary">satellite_alt</span>
+<span class="font-label-md text-label-md text-white tracking-widest">GPS FIXED</span>
+</div>
+</div>
+<!-- Warning Overlay (Simulating an Event) -->
+<div class="absolute top-4 left-1/2 -translate-x-1/2 bg-error/90 backdrop-blur-md px-4 py-2 rounded-full border border-error-container shadow-lg shadow-error/20 flex items-center gap-2">
+<span class="material-symbols-outlined text-on-error" style="font-variation-settings: 'FILL' 1;">warning</span>
+<span class="font-label-xl text-label-xl text-on-error">Harsh Braking Event</span>
+</div>
+<!-- Dual View PIP (Picture in Picture) -->
+<div class="absolute bottom-24 right-4 w-1/4 aspect-video rounded-lg border border-white/20 shadow-xl overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-200 z-10" id="pipContainer" onclick="swapCameras()">
+<img class="w-full h-full object-cover" data-alt="A rear-facing dashcam view showing the interior of a high-end vehicle and the road receding behind it through the rear window. The lighting matches a cool, dark cinematic tone with deep blacks and stark contrasts, suitable for a dark mode interface. The image is framed as a secondary, smaller picture-in-picture feed, capturing trailing vehicles on a modern asphalt road." id="pipVideoImage" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA14Na6hVoGcYOfB-L4gZLs8vo3mbRZw0nNlE3ukrro5j5w-mXmR8iZUXW6ZOVSPKK5ToHxp8up-_aDExlLHcKnoe5VX2QvYvK9eyYnZTxcMwMqKprORRwEiV0UiRtPo_1STAHeVXNDSmx8yGp0nnm0JGxba8USAjCUA_0n2zQiTWnHZGMSgXu-jWjK_3fqC7SnMjvXb7SjfmlyVA27QCulyMqU95F84hvqzvER-x9oOp01TnjnnwfK6uibmpfI91TLOdXC57cl-NPW"/>
+<div class="absolute bottom-1 left-1 bg-black/60 px-1.5 py-0.5 rounded text-[10px] text-white font-bold tracking-wider uppercase">Rear</div>
+</div>
+<!-- Playback Controls (Bottom Gradient) -->
+<div class="absolute bottom-0 w-full bg-gradient-to-t from-background via-background/80 to-transparent p-4 pt-12 flex flex-col gap-3 transition-opacity duration-300">
+<!-- Scrubber -->
+<div class="relative w-full h-2 bg-surface-variant rounded-full overflow-hidden cursor-pointer group-hover:h-3 transition-all">
+<div class="absolute top-0 left-0 h-full bg-primary w-[45%]"></div>
+<!-- Event Marker -->
+<div class="absolute top-0 left-[45%] h-full w-1 bg-error z-10"></div>
+</div>
+<!-- Controls Row -->
+<div class="flex justify-between items-center px-2">
+<span class="font-label-md text-label-md text-on-surface-variant w-16">01:12</span>
+<div class="flex gap-6 items-center">
+<button class="text-on-surface hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">replay_10</span>
+</button>
+<button class="bg-primary-container text-on-primary-container rounded-full p-3 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">pause</span>
+</button>
+<button class="text-on-surface hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">forward_10</span>
+</button>
+</div>
+<div class="w-16 flex justify-end">
+<button class="text-on-surface-variant hover:text-white transition-colors" id="toggleOverlayBtn" onclick="toggleTelemetry()">
+<span class="material-symbols-outlined text-[24px]">speed</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Metadata & Action Area -->
+<div class="p-gutter mt-4 flex flex-col gap-6 w-full">
+<!-- Metadata Bento Grid -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-container-gap">
+<!-- Location -->
+<div class="glass-panel p-4 rounded-xl flex flex-col gap-2">
+<span class="font-label-md text-label-md text-on-surface-variant flex items-center gap-1.5 uppercase tracking-wider">
+<span class="material-symbols-outlined text-[18px]">location_on</span> Coordinates
+                    </span>
+<span class="font-label-xl text-label-xl text-on-surface truncate">34.0522° N</span>
+<span class="font-label-xl text-label-xl text-on-surface truncate">118.2437° W</span>
+</div>
+<!-- Speed Stats -->
+<div class="glass-panel p-4 rounded-xl flex flex-col gap-2">
+<span class="font-label-md text-label-md text-on-surface-variant flex items-center gap-1.5 uppercase tracking-wider">
+<span class="material-symbols-outlined text-[18px]">moving</span> Dynamics
+                    </span>
+<div class="flex items-baseline gap-1">
+<span class="font-title-lg text-title-lg text-on-surface">68</span>
+<span class="font-label-md text-label-md text-on-surface-variant">mph Max</span>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="font-label-xl text-label-xl text-on-surface">54</span>
+<span class="font-label-md text-label-md text-on-surface-variant">mph Avg</span>
+</div>
+</div>
+<!-- Hardware Mode -->
+<div class="glass-panel p-4 rounded-xl flex flex-col gap-2">
+<span class="font-label-md text-label-md text-on-surface-variant flex items-center gap-1.5 uppercase tracking-wider">
+<span class="material-symbols-outlined text-[18px]">videocam</span> Hardware
+                    </span>
+<span class="font-label-xl text-label-xl text-on-surface truncate">Front + Rear</span>
+<div class="flex gap-2 mt-1">
+<span class="bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded text-[10px] font-bold">4K</span>
+<span class="bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded text-[10px] font-bold">HDR</span>
+</div>
+</div>
+<!-- File Info -->
+<div class="glass-panel p-4 rounded-xl flex flex-col gap-2">
+<span class="font-label-md text-label-md text-on-surface-variant flex items-center gap-1.5 uppercase tracking-wider">
+<span class="material-symbols-outlined text-[18px]">sd_card</span> Storage
+                    </span>
+<span class="font-title-lg text-title-lg text-on-surface">1.2 GB</span>
+<span class="font-label-md text-label-md text-on-surface-variant">3 min 20 sec</span>
+</div>
+</div>
+<!-- Bottom Action Sheet -->
+<div class="bg-surface-container-high rounded-2xl p-2 flex justify-between items-center shadow-lg mb-8">
+<button class="flex-1 flex flex-col items-center gap-1 p-3 text-on-surface hover:bg-white/5 rounded-xl transition-colors min-h-[touch-target-min]">
+<span class="material-symbols-outlined text-[24px]">share</span>
+<span class="font-label-md text-label-md">Share</span>
+</button>
+<div class="w-px h-10 bg-white/10 mx-1"></div>
+<button class="flex-1 flex flex-col items-center gap-1 p-3 text-on-surface hover:bg-white/5 rounded-xl transition-colors min-h-[touch-target-min]">
+<span class="material-symbols-outlined text-[24px]">download</span>
+<span class="font-label-md text-label-md">Export</span>
+</button>
+<div class="w-px h-10 bg-white/10 mx-1"></div>
+<button class="flex-1 flex flex-col items-center gap-1 p-3 text-primary hover:bg-white/5 rounded-xl transition-colors min-h-[touch-target-min]" id="lockBtn" onclick="toggleLock()">
+<span class="material-symbols-outlined text-[24px]" id="lockIcon" style="font-variation-settings: 'FILL' 1;">lock</span>
+<span class="font-label-md text-label-md" id="lockText">Locked</span>
+</button>
+<div class="w-px h-10 bg-white/10 mx-1"></div>
+<button class="flex-1 flex flex-col items-center gap-1 p-3 text-tertiary-container hover:bg-white/5 rounded-xl transition-colors min-h-[touch-target-min]">
+<span class="material-symbols-outlined text-[24px]">cloud_upload</span>
+<span class="font-label-md text-label-md">Immich</span>
+</button>
+</div>
+</div>
+</main>
+<script>
+        // Telemetry Overlay Toggle
+        let telemetryVisible = false;
+        function toggleTelemetry() {
+            const overlay = document.getElementById('telemetryOverlay');
+            const btn = document.getElementById('toggleOverlayBtn');
+            telemetryVisible = !telemetryVisible;
+            
+            if(telemetryVisible) {
+                overlay.classList.remove('opacity-0');
+                btn.classList.add('text-primary');
+                btn.classList.remove('text-on-surface-variant');
+            } else {
+                overlay.classList.add('opacity-0');
+                btn.classList.remove('text-primary');
+                btn.classList.add('text-on-surface-variant');
+            }
+        }
+
+        // Camera Swap Logic
+        function swapCameras() {
+            const mainImg = document.getElementById('mainVideoImage');
+            const pipImg = document.getElementById('pipVideoImage');
+            
+            // Swap src
+            const tempSrc = mainImg.src;
+            mainImg.src = pipImg.src;
+            pipImg.src = tempSrc;
+
+            // Swap alt tags
+            const tempAlt = mainImg.getAttribute('data-alt');
+            mainImg.setAttribute('data-alt', pipImg.getAttribute('data-alt'));
+            pipImg.setAttribute('data-alt', tempAlt);
+
+            // Optional: Add a brief flash/transition effect
+            mainImg.style.opacity = '0.5';
+            setTimeout(() => {
+                mainImg.style.opacity = '1';
+            }, 150);
+        }
+
+        // Lock Toggle Logic
+        let isLocked = true;
+        function toggleLock() {
+            const btn = document.getElementById('lockBtn');
+            const icon = document.getElementById('lockIcon');
+            const text = document.getElementById('lockText');
+            isLocked = !isLocked;
+
+            if(isLocked) {
+                btn.classList.add('text-primary');
+                btn.classList.remove('text-on-surface');
+                icon.innerText = 'lock';
+                icon.style.fontVariationSettings = "'FILL' 1";
+                text.innerText = 'Locked';
+            } else {
+                btn.classList.remove('text-primary');
+                btn.classList.add('text-on-surface');
+                icon.innerText = 'lock_open';
+                icon.style.fontVariationSettings = "'FILL' 0";
+                text.innerText = 'Unlock';
+            }
+        }
+    </script>
+</body></html>

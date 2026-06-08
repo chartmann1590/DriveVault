@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="safety_red">#FFB4AA</color>
+    <color name="safety_red_deep">#C0000A</color>
+    <color name="safety_red_bright">#FF5545</color>
+    <color name="electric_blue">#ADC6FF</color>
+    <color name="electric_blue_bright">#4B8EFF</color>
+    <color name="deep_charcoal">#1F0F0D</color>
+    <color name="amber_warning">#FFB74D</color>
+    <color name="surface_dark">#2D1B18</color>
+    <color name="on_surface">#FCDBD6</color>
+    <color name="on_surface_variant">#E7BDB7</color>
+    <color name="glass_overlay">#B31F0F0D</color>
+    <color name="outline_color">#AD8883</color>
+</resources>

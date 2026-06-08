@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>DriveVault Dashcam</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-primary": "#c0000a",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "on-primary-fixed-variant": "#930005",
+                        "tertiary": "#adc6ff",
+                        "surface-container-high": "#392522",
+                        "surface-dim": "#1f0f0d",
+                        "on-primary-fixed": "#410001",
+                        "error-container": "#93000a",
+                        "background": "#1f0f0d",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-secondary": "#313030",
+                        "on-primary": "#690003",
+                        "on-primary-container": "#5c0002",
+                        "surface-container": "#2d1b18",
+                        "surface-tint": "#ffb4aa",
+                        "surface-variant": "#44302d",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "surface": "#1f0f0d",
+                        "inverse-surface": "#fcdbd6",
+                        "tertiary-fixed": "#d8e2ff",
+                        "error": "#ffb4ab",
+                        "secondary-fixed": "#e5e2e1",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-highest": "#44302d",
+                        "primary-fixed": "#ffdad5",
+                        "primary": "#ffb4aa",
+                        "on-error": "#690005",
+                        "outline-variant": "#5d3f3b",
+                        "on-tertiary-fixed-variant": "#004493",
+                        "on-secondary-fixed-variant": "#474646",
+                        "inverse-on-surface": "#402b29",
+                        "on-surface": "#fcdbd6",
+                        "on-secondary-container": "#bab8b7",
+                        "on-tertiary": "#002e69",
+                        "tertiary-fixed-dim": "#adc6ff",
+                        "primary-container": "#ff5545",
+                        "on-tertiary-fixed": "#001a41",
+                        "tertiary-container": "#4b8eff",
+                        "surface-bright": "#493431",
+                        "outline": "#ad8883",
+                        "surface-container-low": "#291715",
+                        "secondary-container": "#4a4949",
+                        "surface-container-lowest": "#190a08",
+                        "on-tertiary-container": "#00285c",
+                        "secondary": "#c8c6c5",
+                        "on-background": "#fcdbd6",
+                        "on-surface-variant": "#e7bdb7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "safe-area-top": "32px",
+                        "gutter": "16px",
+                        "margin-edge": "24px",
+                        "touch-target-min": "48dp",
+                        "container-gap": "12px"
+                    },
+                    "fontFamily": {
+                        "title-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-xl": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md-mobile": ["Inter"]
+                    },
+                    "fontSize": {
+                        "title-lg": ["22px", { "lineHeight": "28px", "fontWeight": "500" }],
+                        "headline-md": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "26px", "fontWeight": "400" }],
+                        "label-xl": ["16px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "18px", "fontWeight": "500" }],
+                        "headline-md-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        body {
+            overscroll-behavior-y: none;
+        }
+        
+        .glass-panel {
+            background-color: rgba(31, 15, 13, 0.6);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background h-screen w-screen overflow-hidden select-none font-body-lg text-body-lg">
+<!-- Front Camera Full Screen Background -->
+<div class="absolute inset-0 z-0 bg-cover bg-center" data-alt="A high-definition dashcam view from a vehicle driving on a dark, illuminated city highway at night. The scene captures the high-contrast aesthetic of a modern, premium automotive interface. The lighting features bright streaks of red tail lights and cool white street lamps reflecting off the wet asphalt. The overall mood is sleek, professional, and utilitarian, perfectly suited for a reliable, dark-themed safety recording application designed for high-glare environments." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCxA4jfCWrf9UnKk1vdZSECj-C-zdw2DnRJQt0tjmGuuERQsLftn92y8KgfthPnNwQICgs_W_PmZNYWVlHEZ4dxvGq2VjumrpAItaXt_Q_wLm88ww4fzCrSAsNy_SD7ZWnYCUjxDO4I_AAWynDNPMgLHQiULn2TzHK6gjg_lZv12sRcqDAOk61D4nLNhFXVpj7sxbMhLmyRPDgDgakwgKyZ5zbTy3vyBdAVLcHe-8Hz6R5eYXLANjsGJ_bdr1oSb2e0eeBV2M8QcWuV');">
+</div>
+<!-- Top Overlay HUD -->
+<header class="absolute top-0 w-full z-20 flex justify-between items-start px-margin-edge pt-margin-edge bg-gradient-to-b from-black/80 via-black/40 to-transparent pb-16 pointer-events-none">
+<!-- Brand / System identity -->
+<div class="flex items-center gap-3 glass-panel px-4 py-2 rounded-full pointer-events-auto">
+<span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings: 'wght' 600;">videocam</span>
+<span class="font-headline-md text-headline-md text-primary tracking-tight">DriveVault</span>
+</div>
+<!-- Recording Status Pill -->
+<div class="flex items-center gap-3 glass-panel px-5 py-2.5 rounded-full pointer-events-auto shadow-lg">
+<div class="w-3.5 h-3.5 rounded-full bg-error animate-pulse shadow-[0_0_8px_rgba(255,180,171,0.8)]"></div>
+<span class="font-label-xl text-label-xl text-on-surface tracking-widest">REC 00:44</span>
+<div class="h-4 w-[1px] bg-white/20 mx-1"></div>
+<span class="font-label-md text-label-md text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">4k</span>
+                HDR
+            </span>
+</div>
+<!-- System Icons -->
+<div class="flex items-center gap-4 glass-panel px-4 py-2.5 rounded-full text-on-surface-variant pointer-events-auto">
+<span class="material-symbols-outlined text-[22px]">satellite_alt</span>
+<span class="material-symbols-outlined text-[22px]">battery_5_bar</span>
+<span class="material-symbols-outlined text-[22px]">sd_card</span>
+</div>
+</header>
+<!-- Picture-in-Picture Rear Camera -->
+<div class="absolute top-28 right-margin-edge w-[320px] aspect-video glass-panel rounded-xl overflow-hidden shadow-2xl z-20 group cursor-pointer active:scale-[0.98] transition-transform duration-200">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="A secondary picture-in-picture rear camera feed from a vehicle moving through a dimly lit urban environment at night. The view shows following vehicles with glowing headlights in a high-contrast, slightly muted color palette to reduce visual fatigue. The aesthetic aligns with a dark-mode, functional material design system, emphasizing clarity and security over distraction. The scene is crisp but deliberately secondary in visual hierarchy to a primary front-facing view." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBWmlLMk_QNcHI0UVuD5WM4daM9L6B1XZqfrkj9EC7H3SZCMaGxaV1AataYlL_J2PV1FzDJP7uIzOaTwD2P__JKX5tfVq-Z7k2uZWQWLO1leeYE791491GD1E18vMAbSK8kC9zdabPR9icNQRys1wyATgPEjAVH3Zy-0q7nHuAoysgUbkeyq_s49VWH_0YlSz5RoOw4SSVKd725GE_2sZpelolb9hDg9XzlTnW88ngdRpXL5q8CMDG7T0WjC-xmuIcSxo_Aog5kfdSW');">
+</div>
+<!-- PiP Overlay -->
+<div class="absolute bottom-2 left-2 glass-panel px-2.5 py-1 rounded-md flex items-center gap-1.5 border-none bg-surface/80">
+<span class="material-symbols-outlined text-[16px] text-tertiary" style="font-variation-settings: 'FILL' 1;">minor_crash</span>
+<span class="font-label-md text-label-md text-on-surface">Rear Cam</span>
+</div>
+<div class="absolute inset-0 border border-white/20 rounded-xl pointer-events-none group-hover:border-white/40 transition-colors"></div>
+</div>
+<!-- Bottom HUD Area -->
+<footer class="absolute bottom-0 w-full z-20 px-margin-edge pb-margin-edge pt-24 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex justify-between items-end pointer-events-none">
+<!-- Telemetry Data -->
+<div class="flex flex-col gap-1 pointer-events-auto">
+<div class="flex items-baseline gap-2">
+<span class="font-display-lg text-display-lg text-primary tabular-nums">43</span>
+<span class="font-title-lg text-title-lg text-on-surface-variant font-medium">MPH</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface glass-panel px-3 py-1.5 rounded-lg border-none bg-surface/50 w-fit">
+<span class="material-symbols-outlined text-[20px] text-tertiary">explore</span>
+<span class="font-label-xl text-label-xl">NE 047°</span>
+</div>
+</div>
+<!-- Mini Map -->
+<div class="w-[280px] h-[140px] glass-panel rounded-xl overflow-hidden relative shadow-lg pointer-events-auto border-white/20" data-location="Night Route" style="">
+<img class="w-full h-full object-cover opacity-60 mix-blend-luminosity brightness-50" data-alt="A stylized, dark-themed minimal GPS navigation map interface typical of a high-end modern vehicle dashboard. The map displays a simplified street grid in deep charcoal grays with a subtle, illuminated cyan or blue route line indicating the current path. The lighting is low-key, avoiding bright distractions, blending seamlessly into a utilitarian, glassmorphic UI environment designed for nighttime driving and professional situational awareness." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvlDxLg74j1N38LRUfQ8AB0Q4GqlPuUTauDMeCdodnJLzqat6r6kqv-4P9JA4wFeRWItSHF5jk3U77Z5C2u9dCQRzuUa7iIRPlyiHOfqNKqce3tnADCqNhFuKJgdSuLaApQuynfWg_IRtTNZ2tnQwG2uI-g8qtY7WaUIsc6T8KoH9Khb8S6W9BckFpIHQoAM6slhOUSOoYpBCAjseQ5xk1r1vM2Ykb3EBQseRDvclJ_sQ6ocZHj-vC21RoC6P6AAINv5ecg2dAcjCo"/>
+<!-- Map Overlays -->
+<div class="absolute inset-0 bg-surface/30 mix-blend-multiply"></div>
+<!-- Route Path Simulation -->
+<svg class="absolute inset-0 w-full h-full" fill="none" viewbox="0 0 280 140" xmlns="http://www.w3.org/2000/svg">
+<path class="drop-shadow-[0_0_4px_rgba(173,198,255,0.8)]" d="M40 160C40 160 60 100 140 90C220 80 260 20 260 20" stroke="#adc6ff" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"></path>
+<circle class="drop-shadow-[0_0_6px_rgba(173,198,255,1)]" cx="140" cy="90" fill="#adc6ff" r="6"></circle>
+<circle class="animate-ping" cx="140" cy="90" fill="#adc6ff" fill-opacity="0.2" r="16"></circle>
+</svg>
+<div class="absolute bottom-2 right-2 glass-panel px-2 py-0.5 rounded text-on-surface-variant font-label-md text-[10px] uppercase tracking-wider border-none bg-surface/80">
+                GPS Fixed
+            </div>
+</div>
+<!-- Primary Controls -->
+<div class="flex items-center gap-container-gap pointer-events-auto">
+<button class="w-[60px] h-[60px] rounded-full glass-panel flex items-center justify-center text-on-surface hover:bg-white/10 active:scale-90 transition-all duration-150 group">
+<span class="material-symbols-outlined text-[28px] group-hover:scale-110 transition-transform">photo_camera</span>
+</button>
+<button class="w-[60px] h-[60px] rounded-full glass-panel flex items-center justify-center text-on-surface hover:bg-white/10 active:scale-90 transition-all duration-150 group">
+<span class="material-symbols-outlined text-[28px] group-hover:scale-110 transition-transform text-error">stop_circle</span>
+</button>
+<button class="w-[60px] h-[60px] rounded-full glass-panel flex items-center justify-center text-on-surface hover:bg-white/10 active:scale-90 transition-all duration-150 group mr-2">
+<span class="material-symbols-outlined text-[28px] group-hover:rotate-45 transition-transform duration-300">settings</span>
+</button>
+<!-- Prominent Lock Clip Button -->
+<button class="h-[72px] px-8 rounded-full bg-error text-on-error flex items-center gap-3 hover:brightness-110 active:scale-95 transition-all duration-150 shadow-[0_8px_32px_rgba(255,180,171,0.3)] border border-white/20">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">lock</span>
+<span class="font-headline-md text-headline-md font-bold tracking-wide">Lock Clip</span>
+</button>
+</div>
+</footer>
+<script>
+        // Simple pulsing logic for REC indicator to add life if CSS animation isn't enough
+        const recDot = document.querySelector('.animate-pulse');
+        setInterval(() => {
+            recDot.style.opacity = recDot.style.opacity === '0.4' ? '1' : '0.4';
+        }, 1000);
+    </script>
+</body></html>

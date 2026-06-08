@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DriveVault Dashcam</string>
+    <string name="recording_notification_channel">Dashcam Recording</string>
+    <string name="recording_notification_title">Recording in progress</string>
+    <string name="recording_notification_text">DriveVault is actively recording</string>
+    <string name="notification_action_stop">Stop</string>
+    <string name="notification_action_lock">Lock Clip</string>
+    <string name="sync_notification_channel">Immich Sync</string>
+    <string name="sync_notification_title">Syncing to Immich</string>
+    <string name="sync_notification_text">Uploading clip…</string>
+    <string name="permission_camera_required">Camera permission is required for recording</string>
+    <string name="permission_microphone_required">Microphone permission is required for audio recording</string>
+    <string name="permission_location_required">Location permission is required for GPS overlay</string>
+    <string name="permission_notification_required">Notification permission is required for recording service</string>
+    <string name="storage_low_warning">Storage space is running low</string>
+    <string name="storage_critical_warning">Storage critically low - recording may stop</string>
+    <string name="dual_camera_unsupported">Dual camera recording is not supported on this device</string>
+    <string name="immich_connection_failed">Failed to connect to Immich server</string>
+    <string name="immich_invalid_key">Invalid Immich API key</string>
+    <string name="immich_upload_failed">Upload failed</string>
+    <string name="export_complete">Export complete</string>
+    <string name="share_clip">Share clip</string>
+    <string name="no_gps_signal">No GPS Signal</string>
+    <string name="gps_fixed">GPS Fixed</string>
+    <string name="speed_format_mph">%d MPH</string>
+    <string name="speed_format_kph">%d KPH</string>
+    <string name="speed_unavailable_mph">-- MPH</string>
+    <string name="speed_unavailable_kph">-- KPH</string>
+</resources>
