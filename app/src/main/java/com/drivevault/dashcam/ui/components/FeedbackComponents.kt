@@ -460,7 +460,7 @@ private fun IssueDetailDialog(
                         )
                     }
 
-                    Divider(color = OutlineVariant)
+                    HorizontalDivider(color = OutlineVariant)
 
                     if (state.comments.isEmpty() && !state.isLoadingIssue) {
                         Text(
@@ -481,7 +481,7 @@ private fun IssueDetailDialog(
                         }
                     }
 
-                    Divider(color = OutlineVariant)
+                    HorizontalDivider(color = OutlineVariant)
 
                     OutlinedTextField(
                         value = state.commentText,
