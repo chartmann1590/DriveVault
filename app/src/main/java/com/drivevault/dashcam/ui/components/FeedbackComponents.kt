@@ -352,9 +352,10 @@ private fun ReportProblemDialog(
                 }
 
                 if (state.isSubmitting) {
-                    LinearProgressIndicator(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = ElectricBlue
+                    CircularProgressIndicator(
+                        modifier = Modifier.fillMaxWidth().height(4.dp),
+                        color = ElectricBlue,
+                        strokeWidth = 2.dp
                     )
                 }
             }
