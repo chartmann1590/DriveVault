@@ -12,7 +12,8 @@ data class BugReport(
 
 data class CreateIssueRequest(
     val title: String,
-    val body: String
+    val body: String,
+    val labels: List<String> = listOf("bug")
 )
 
 data class GithubIssue(
