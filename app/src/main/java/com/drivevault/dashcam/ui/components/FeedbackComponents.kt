@@ -352,10 +352,10 @@ private fun ReportProblemDialog(
                 }
 
                 if (state.isSubmitting) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.fillMaxWidth().height(4.dp),
-                        color = ElectricBlue,
-                        strokeWidth = 2.dp
+                    Text(
+                        text = "Submitting...",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = ElectricBlue
                     )
                 }
             }
@@ -402,10 +402,10 @@ private fun IssueDetailDialog(
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (state.isLoadingIssue) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        color = ElectricBlue,
-                        strokeWidth = 2.dp
+                    Text(
+                        text = "Loading...",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = ElectricBlue
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                 }
@@ -528,11 +528,7 @@ private fun IssueDetailDialog(
                             shape = RoundedCornerShape(4.dp)
                         ) {
                             if (state.isPostingComment) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(16.dp),
-                                    color = DeepCharcoal,
-                                    strokeWidth = 2.dp
-                                )
+                                Text("...", style = MaterialTheme.typography.labelMedium, color = DeepCharcoal)
                             } else {
                                 Text("Reply", style = MaterialTheme.typography.labelMedium)
                             }
