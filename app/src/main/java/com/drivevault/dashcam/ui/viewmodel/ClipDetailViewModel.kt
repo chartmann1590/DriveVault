@@ -9,6 +9,7 @@ import com.drivevault.dashcam.domain.model.Clip
 import com.drivevault.dashcam.domain.repository.ClipRepository
 import com.drivevault.dashcam.`export`.ClipExportResult
 import com.drivevault.dashcam.`export`.ClipExporter
+import com.drivevault.dashcam.`export`.ClipTrimManager
 import com.drivevault.dashcam.`export`.ExportOptions
 import com.drivevault.dashcam.firebase.ClipShareManager
 import com.drivevault.dashcam.firebase.ClipShareState
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.File
 
 data class ClipDetailUiState(
     val clip: Clip? = null,
@@ -28,7 +30,12 @@ data class ClipDetailUiState(
     val exportResult: ClipExportResult? = null,
     val showExportSheet: Boolean = false,
     val shareState: ClipShareState = ClipShareState.Idle,
-    val clipSharingEnabled: Boolean = false
+    val clipSharingEnabled: Boolean = false,
+    // Trim sheet state
+    val showTrimSheet: Boolean = false,
+    val trimStartMs: Long = 0L,
+    val trimEndMs: Long = 0L,
+    val trimEstimatedBytes: Long = 0L
 )
 
 class ClipDetailViewModel(application: Application) : AndroidViewModel(application) {
@@ -61,10 +68,32 @@ class ClipDetailViewModel(application: Application) : AndroidViewModel(applicati
     fun loadClip(clipId: Long) {
         viewModelScope.launch {
             clipRepo.observeClipById(clipId).collect { clip ->
-                _uiState.update { it.copy(clip = clip) }
+                if (clip == null) {
+                    _uiState.update { it.copy(clip = null) }
+                    return@collect
+                }
+                val maxShareableMs = ClipTrimManager.maxShareableDurationMs(clip.fileSizeBytes, clip.durationMillis)
+                val clampedEnd = maxShareableMs.coerceAtMost(clip.durationMillis)
+                _uiState.update { state ->
+                    state.copy(
+                        clip = clip,
+                        trimStartMs = 0L,
+                        trimEndMs = clampedEnd,
+                        trimEstimatedBytes = ClipTrimManager.estimateSize(clip.fileSizeBytes, clip.durationMillis, clampedEnd)
+                    )
+                }
             }
         }
     }
+
+    fun updateTrimRange(startMs: Long, endMs: Long) {
+        val clip = _uiState.value.clip ?: return
+        val estimated = ClipTrimManager.estimateSize(clip.fileSizeBytes, clip.durationMillis, endMs - startMs)
+        _uiState.update { it.copy(trimStartMs = startMs, trimEndMs = endMs, trimEstimatedBytes = estimated) }
+    }
+
+    fun openTrimSheet() { _uiState.update { it.copy(showTrimSheet = true) } }
+    fun closeTrimSheet() { _uiState.update { it.copy(showTrimSheet = false) } }
 
     fun toggleLock() {
         val clip = _uiState.value.clip ?: return
@@ -142,9 +171,36 @@ class ClipDetailViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    /** Upload the full clip directly (only called when already under 50MB). */
     fun cloudShareClip() {
         val clip = _uiState.value.clip ?: return
         viewModelScope.launch { shareManager.shareClip(clip.fileUri, clip.fileSizeBytes) }
+    }
+
+    /** Trim [trimStartMs]..[trimEndMs] into a temp file, then upload. */
+    fun cloudShareTrimmed() {
+        val clip = _uiState.value.clip ?: return
+        val state = _uiState.value
+        _uiState.update { it.copy(showTrimSheet = false) }
+        viewModelScope.launch {
+            val needsTrim = state.trimStartMs > 0L || state.trimEndMs < clip.durationMillis
+            if (!needsTrim) {
+                shareManager.shareClip(clip.fileUri, clip.fileSizeBytes)
+                return@launch
+            }
+            val cacheDir = getApplication<Application>().cacheDir
+            _uiState.update { it.copy(shareState = ClipShareState.Uploading(0)) }
+            try {
+                val trimmed = ClipTrimManager.trim(clip.fileUri, cacheDir, state.trimStartMs, state.trimEndMs)
+                try {
+                    shareManager.shareClip(trimmed.absolutePath, trimmed.length())
+                } finally {
+                    trimmed.delete()
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(shareState = ClipShareState.Error("Trim failed: ${e.message}")) }
+            }
+        }
     }
 
     fun resetShareState() = shareManager.resetState()

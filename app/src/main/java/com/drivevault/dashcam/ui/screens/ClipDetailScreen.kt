@@ -23,6 +23,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import com.drivevault.dashcam.domain.model.Clip
+import com.drivevault.dashcam.export.ClipTrimManager
 import com.drivevault.dashcam.firebase.ClipShareState
 import com.drivevault.dashcam.ui.components.ExportBottomSheet
 import com.drivevault.dashcam.ui.components.SyncStatusBadge
@@ -31,6 +32,7 @@ import com.drivevault.dashcam.ui.viewmodel.ClipDetailViewModel
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -164,17 +166,54 @@ fun ClipDetailScreen(
                         }
                     }
 
-                    if (uiState.clipSharingEnabled) {
+                    if (uiState.clipSharingEnabled && clip != null) {
+                        val fileMb = clip.fileSizeBytes / (1024f * 1024f)
+                        val overLimit = ClipTrimManager.needsTrimForSharing(clip.fileSizeBytes)
                         Spacer(modifier = Modifier.height(8.dp))
                         FilledTonalButton(
-                            onClick = viewModel::cloudShareClip,
+                            onClick = {
+                                if (overLimit) viewModel.openTrimSheet()
+                                else viewModel.cloudShareClip()
+                            },
                             modifier = Modifier.fillMaxWidth(),
                             enabled = uiState.shareState is ClipShareState.Idle
                         ) {
-                            Icon(Icons.Filled.CloudUpload, null, modifier = Modifier.size(18.dp))
+                            Icon(
+                                if (overLimit) Icons.Filled.ContentCut else Icons.Filled.CloudUpload,
+                                null, modifier = Modifier.size(18.dp)
+                            )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Cloud Share (24h link)")
+                            Text(if (overLimit) "Trim & Share (24h link)" else "Cloud Share (24h link)")
                         }
+                        // File size hint + limit note
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "%.1f MB".format(fileMb),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = if (overLimit) SafetyRed else OnSurfaceVariant
+                            )
+                            Text(
+                                text = if (overLimit) "⚠ Over 50MB limit — trim required" else "Limit: 50MB",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = if (overLimit) SafetyRed else OnSurfaceVariant
+                            )
+                        }
+                    }
+
+                    // Trim & Share bottom sheet
+                    if (uiState.showTrimSheet && clip != null) {
+                        TrimShareSheet(
+                            clip = clip,
+                            trimStartMs = uiState.trimStartMs,
+                            trimEndMs = uiState.trimEndMs,
+                            estimatedBytes = uiState.trimEstimatedBytes,
+                            onDismiss = viewModel::closeTrimSheet,
+                            onTrimChange = viewModel::updateTrimRange,
+                            onUpload = viewModel::cloudShareTrimmed
+                        )
                     }
 
                     when (val state = uiState.shareState) {
@@ -388,4 +427,126 @@ fun DetailRow(label: String, value: String) {
         Text(text = label, style = MaterialTheme.typography.bodyMedium, color = OnSurfaceVariant)
         Text(text = value, style = MaterialTheme.typography.bodyMedium, color = OnSurface)
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TrimShareSheet(
+    clip: Clip,
+    trimStartMs: Long,
+    trimEndMs: Long,
+    estimatedBytes: Long,
+    onDismiss: () -> Unit,
+    onTrimChange: (Long, Long) -> Unit,
+    onUpload: () -> Unit
+) {
+    val durationMs = clip.durationMillis
+    val maxShareableMs = ClipTrimManager.maxShareableDurationMs(clip.fileSizeBytes, durationMs)
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        containerColor = SurfaceContainer
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)) {
+            Text(
+                "Trim before sharing",
+                style = MaterialTheme.typography.titleMedium,
+                color = OnSurface
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                "This clip is %.1fMB (limit 50MB). Select the portion to share.".format(
+                    clip.fileSizeBytes / (1024f * 1024f)
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = OnSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Start slider
+            val startFraction = (trimStartMs / durationMs.toFloat()).coerceIn(0f, 1f)
+            Text(
+                "Start: ${formatMs(trimStartMs)}",
+                style = MaterialTheme.typography.labelMedium,
+                color = OnSurfaceVariant
+            )
+            Slider(
+                value = startFraction,
+                onValueChange = { f ->
+                    val newStart = (f * durationMs).toLong()
+                    val newEnd = (newStart + maxShareableMs).coerceAtMost(durationMs)
+                    onTrimChange(newStart, newEnd)
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Duration slider (how many seconds of the clip to include)
+            val trimDuration = (trimEndMs - trimStartMs).coerceAtLeast(1000L)
+            val durationFraction = (trimDuration / maxShareableMs.toFloat()).coerceIn(0f, 1f)
+            Text(
+                "Duration: ${formatMs(trimDuration)} / max ${formatMs(maxShareableMs)}",
+                style = MaterialTheme.typography.labelMedium,
+                color = OnSurfaceVariant
+            )
+            Slider(
+                value = durationFraction,
+                onValueChange = { f ->
+                    val newDur = (f * maxShareableMs).toLong().coerceAtLeast(1000L)
+                    val newEnd = (trimStartMs + newDur).coerceAtMost(durationMs)
+                    onTrimChange(trimStartMs, newEnd)
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Estimate + range summary
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                color = DeepCharcoal,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        "${formatMs(trimStartMs)} → ${formatMs(trimEndMs)}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = OnSurfaceVariant
+                    )
+                    Text(
+                        "~%.1fMB".format(estimatedBytes / (1024f * 1024f)),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (estimatedBytes > 50L * 1024 * 1024) SafetyRed else ElectricBlue
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            val overLimit = estimatedBytes > 50L * 1024 * 1024
+            Button(
+                onClick = onUpload,
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !overLimit
+            ) {
+                Icon(Icons.Filled.CloudUpload, null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Upload trimmed clip (${formatMs(trimEndMs - trimStartMs)}, ~%.1fMB)".format(
+                    estimatedBytes / (1024f * 1024f)
+                ))
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+    }
+}
+
+private fun formatMs(ms: Long): String {
+    val s = ms / 1000
+    return if (s >= 60) "%d:%02d".format(s / 60, s % 60) else "${s}s"
 }
