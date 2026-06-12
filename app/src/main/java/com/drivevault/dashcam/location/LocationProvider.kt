@@ -43,6 +43,7 @@ class LocationProvider(private val fusedClient: FusedLocationProviderClient, pri
                         accuracy = loc.accuracy,
                         speedMps = if (loc.hasSpeed()) loc.speed else 0f,
                         bearing = if (loc.hasBearing()) loc.bearing else 0f,
+                        hasBearing = loc.hasBearing(),
                         timestampMillis = loc.time
                     )
                 )

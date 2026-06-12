@@ -7,6 +7,7 @@ data class LocationData(
     val accuracy: Float = 0f,
     val speedMps: Float = 0f,
     val bearing: Float = 0f,
+    val hasBearing: Boolean = false,
     val timestampMillis: Long = System.currentTimeMillis()
 )
 

@@ -1,9 +1,10 @@
-﻿package com.drivevault.dashcam
+package com.drivevault.dashcam
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -12,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.drivevault.dashcam.data.repository.SettingsRepository
 import com.drivevault.dashcam.permissions.PermissionManager
 import kotlinx.coroutines.launch
@@ -21,6 +23,12 @@ import com.drivevault.dashcam.ui.theme.DriveVaultTheme
 import com.drivevault.dashcam.ui.viewmodel.*
 
 class MainActivity : ComponentActivity() {
+
+    private val recordingViewModel: RecordingViewModel by viewModels()
+    private val clipLibraryViewModel: ClipLibraryViewModel by viewModels()
+    private val settingsViewModel: SettingsViewModel by viewModels()
+    private val feedbackViewModel: FeedbackViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -30,10 +38,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             DriveVaultTheme {
                 val navController = rememberNavController()
-                val recordingViewModel = remember { RecordingViewModel(application) }
-                val clipLibraryViewModel = remember { ClipLibraryViewModel(application) }
-                val settingsViewModel = remember { SettingsViewModel(application) }
-                val feedbackViewModel = remember { FeedbackViewModel(application) }
 
                 var startDestination by remember { mutableStateOf<String?>(null) }
                 val scope = rememberCoroutineScope()
@@ -100,7 +104,7 @@ class MainActivity : ComponentActivity() {
                             arguments = listOf(navArgument("clipId") { type = NavType.LongType })
                         ) { entry ->
                             val clipId = entry.arguments?.getLong("clipId") ?: return@composable
-                            val clipDetailViewModel = remember { ClipDetailViewModel(application) }
+                            val clipDetailViewModel: ClipDetailViewModel = viewModel()
                             ClipDetailScreen(
                                 clipId = clipId,
                                 viewModel = clipDetailViewModel,

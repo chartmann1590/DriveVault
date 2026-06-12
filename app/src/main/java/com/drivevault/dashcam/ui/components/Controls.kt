@@ -246,14 +246,15 @@ fun StorageUsageCard(
                 color = OnSurface
             )
             val fraction = if (maxMb > 0) (usedMb.toFloat() / maxMb.toFloat()).coerceIn(0f, 1f) else 0f
+            val progressColor = when {
+                fraction > 0.95f -> SafetyRed
+                fraction > 0.8f -> AmberWarning
+                else -> ElectricBlue
+            }
             LinearProgressIndicator(
-                progress = fraction,
+                progress = { fraction },
                 modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-                color = when {
-                    fraction > 0.95f -> SafetyRed
-                    fraction > 0.8f -> AmberWarning
-                    else -> ElectricBlue
-                },
+                color = progressColor,
                 trackColor = SurfaceContainerHighest
             )
             Text(

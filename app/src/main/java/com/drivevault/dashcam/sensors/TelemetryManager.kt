@@ -6,6 +6,9 @@ import com.drivevault.dashcam.location.LocationProvider
 import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -19,13 +22,20 @@ class TelemetryManager(
     private val _telemetryState = MutableStateFlow(TelemetryState())
     val telemetryState: StateFlow<TelemetryState> = _telemetryState.asStateFlow()
 
-    private val scope = CoroutineScope(Dispatchers.Default)
+    private var collectionScope: CoroutineScope? = null
+    @Volatile private var active = false
 
     fun start() {
+        if (collectionScope != null) return
+        active = true
+        val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+        collectionScope = scope
+
         scope.launch {
             locationProvider.observeLocation().collect { loc ->
+                if (!active) return@collect
                 _telemetryState.update { state ->
-                    val heading = if (loc != null && loc.bearing > 0f) {
+                    val heading = if (loc != null && loc.hasBearing) {
                         HeadingData(loc.bearing, HeadingSource.GPS_BEARING, loc.timestampMillis)
                     } else state.heading
                     state.copy(
@@ -39,9 +49,10 @@ class TelemetryManager(
         }
         scope.launch {
             headingProvider.observeHeading().collect { heading ->
+                if (!active) return@collect
                 _telemetryState.update { state ->
                     val currentSource = state.heading?.source
-                    if (currentSource == HeadingSource.GPS_BEARING && state.speedMps != null && state.speedMps!! > 2f) {
+                    if (currentSource == HeadingSource.GPS_BEARING && state.speedMps != null && state.speedMps > 2f) {
                         state
                     } else {
                         state.copy(heading = heading ?: state.heading)
@@ -52,6 +63,9 @@ class TelemetryManager(
     }
 
     fun stop() {
+        active = false
+        collectionScope?.cancel()
+        collectionScope = null
         _telemetryState.value = TelemetryState()
     }
 

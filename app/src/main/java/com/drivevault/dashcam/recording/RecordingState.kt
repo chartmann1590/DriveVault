@@ -1,5 +1,7 @@
 ﻿package com.drivevault.dashcam.recording
 
+import com.drivevault.dashcam.domain.model.TelemetryState
+
 data class RecordingState(
     val isRecording: Boolean = false,
     val currentClipStartTime: Long = 0L,
@@ -11,7 +13,8 @@ data class RecordingState(
     val miniMapEnabled: Boolean = false,
     val locked: Boolean = false,
     val storageRemaining: Long = 0L,
-    val error: String? = null
+    val error: String? = null,
+    val telemetryState: TelemetryState = TelemetryState()
 ) {
     val progressFraction: Float get() = if (clipDuration > 0) (currentClipElapsed.toFloat() / clipDuration.toFloat()).coerceIn(0f, 1f) else 0f
     val elapsedSeconds: Int get() = (currentClipElapsed / 1000).toInt()

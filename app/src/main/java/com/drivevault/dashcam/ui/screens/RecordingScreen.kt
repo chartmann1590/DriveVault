@@ -513,7 +513,7 @@ private fun MinimalRecordingProgress(
     modifier: Modifier = Modifier
 ) {
     LinearProgressIndicator(
-        progress = progress,
+        progress = { progress },
         modifier = modifier
             .fillMaxWidth()
             .navigationBarsPadding()
@@ -696,7 +696,7 @@ fun RecordingControls(
 
         if (uiState.recordingState.isRecording) {
             LinearProgressIndicator(
-                progress = uiState.recordingState.progressFraction,
+                progress = { uiState.recordingState.progressFraction },
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)

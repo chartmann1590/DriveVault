@@ -1,12 +1,10 @@
-﻿package com.drivevault.dashcam.ui.viewmodel
+package com.drivevault.dashcam.ui.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.drivevault.dashcam.app.DriveVaultApp
 import com.drivevault.dashcam.data.local.DriveVaultDatabase
 import com.drivevault.dashcam.domain.model.Clip
-import com.drivevault.dashcam.domain.model.toDomain
 import com.drivevault.dashcam.domain.repository.ClipRepository
 import com.drivevault.dashcam.immich.ImmichSyncWorker
 import com.drivevault.dashcam.storage.StorageManager

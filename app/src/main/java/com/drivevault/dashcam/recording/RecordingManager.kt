@@ -79,6 +79,12 @@ class RecordingManager(
             }
         }
 
+        launch {
+            telemetryManager.telemetryState.collect { teleState ->
+                _state.update { it.copy(telemetryState = teleState) }
+            }
+        }
+
         scope.launch {
             settings.audioEnabled.collectLatest { audio ->
                 _state.update { it.copy(audioEnabled = audio) }
@@ -412,6 +418,13 @@ class RecordingManager(
         telemetryManager.stop()
         scope.cancel()
         _state.value = RecordingState()
+    }
+
+    fun cancelRecording() {
+        isRecording = false
+        try { secondaryRecording?.stop() } catch (_: Exception) {}
+        try { currentRecording?.stop() } catch (_: Exception) {}
+        scope.cancel()
     }
 
     fun lockCurrentClip() {

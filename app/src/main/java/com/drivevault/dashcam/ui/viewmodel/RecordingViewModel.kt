@@ -5,7 +5,6 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.drivevault.dashcam.app.DriveVaultApp
 import com.drivevault.dashcam.data.repository.SettingsRepository
 import com.drivevault.dashcam.domain.model.TelemetryState
 import com.drivevault.dashcam.recording.RecordingService
@@ -56,22 +55,33 @@ class RecordingViewModel(application: Application) : AndroidViewModel(applicatio
                 settings.defaultCameraMode
             )
             @Suppress("UNCHECKED_CAST")
-            combine(flows) { flows ->
-                val recState = flows[0] as RecordingState
-                val teleState = flows[1] as TelemetryState
+            combine(flows) { values ->
+                val recState = values[0] as RecordingState
+                val vmTeleState = values[1] as TelemetryState
                 RecordingScreenUiState(
                     recordingState = recState,
-                    telemetryState = teleState,
-                    speedUnit = flows[2] as String,
-                    showSpeed = flows[3] as Boolean,
-                    showGps = flows[4] as Boolean,
-                    showHeading = flows[5] as Boolean,
-                    showTimestamp = flows[6] as Boolean,
-                    showMiniMap = flows[7] as Boolean,
-                    audioEnabled = flows[8] as Boolean,
-                    cameraMode = flows[9] as String
+                    // During recording, use the service's telemetry to avoid running two
+                    // concurrent GPS subscriptions. Fall back to the ViewModel's own manager
+                    // for the standby overlay when the service is not active.
+                    telemetryState = if (recState.isRecording) recState.telemetryState else vmTeleState,
+                    speedUnit = values[2] as String,
+                    showSpeed = values[3] as Boolean,
+                    showGps = values[4] as Boolean,
+                    showHeading = values[5] as Boolean,
+                    showTimestamp = values[6] as Boolean,
+                    showMiniMap = values[7] as Boolean,
+                    audioEnabled = values[8] as Boolean,
+                    cameraMode = values[9] as String
                 )
             }.collect { _uiState.value = it }
+        }
+        viewModelScope.launch {
+            RecordingService.recordingState
+                .map { it.isRecording }
+                .distinctUntilChanged()
+                .collect { isRecording ->
+                    if (isRecording) telemetryManager.stop() else telemetryManager.start()
+                }
         }
         telemetryManager.start()
     }

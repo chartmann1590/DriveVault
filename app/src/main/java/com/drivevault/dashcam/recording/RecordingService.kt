@@ -1,4 +1,4 @@
-﻿package com.drivevault.dashcam.recording
+package com.drivevault.dashcam.recording
 
 import android.app.*
 import android.content.Intent
@@ -34,11 +34,22 @@ class RecordingService : LifecycleService() {
 
     private val serviceScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private var recordingManager: RecordingManager? = null
+    private var stopInitiated = false
+    private var lastNotificationSeconds = -1
+
+    private lateinit var stopPendingIntent: PendingIntent
+    private lateinit var lockPendingIntent: PendingIntent
+    private lateinit var contentPendingIntent: PendingIntent
 
     override fun onCreate() {
         super.onCreate()
         isServiceRunning = true
         createNotificationChannel()
+        val stopIntent = Intent(this, NotificationActionReceiver::class.java).apply { action = ACTION_STOP }
+        val lockIntent = Intent(this, NotificationActionReceiver::class.java).apply { action = ACTION_LOCK }
+        stopPendingIntent = PendingIntent.getBroadcast(this, 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        lockPendingIntent = PendingIntent.getBroadcast(this, 1, lockIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        contentPendingIntent = PendingIntent.getActivity(this, 0, Intent(this, MainActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -83,6 +94,7 @@ class RecordingService : LifecycleService() {
     }
 
     private fun stopRecording() {
+        stopInitiated = true
         serviceScope.launch {
             recordingManager?.stopRecording()
             stopSelf()
@@ -95,8 +107,11 @@ class RecordingService : LifecycleService() {
 
     override fun onDestroy() {
         Log.d("RecordingService", "onDestroy")
-        serviceScope.launch {
-            recordingManager?.stopRecording()
+        if (!stopInitiated) {
+            // System killed the service without going through ACTION_STOP.
+            // Signal CameraX to stop without blocking the main thread (avoids ANR).
+            // The in-progress clip is not saved to DB on this path.
+            recordingManager?.cancelRecording()
         }
         serviceScope.cancel()
         isServiceRunning = false
@@ -118,31 +133,21 @@ class RecordingService : LifecycleService() {
     }
 
     private fun createNotification(text: String): Notification {
-        val stopIntent = Intent(this, NotificationActionReceiver::class.java).apply {
-            action = ACTION_STOP
-        }
-        val lockIntent = Intent(this, NotificationActionReceiver::class.java).apply {
-            action = ACTION_LOCK
-        }
-        val stopPending = PendingIntent.getBroadcast(this, 0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-        val lockPending = PendingIntent.getBroadcast(this, 1, lockIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-
-        val contentIntent = Intent(this, MainActivity::class.java)
-        val contentPending = PendingIntent.getActivity(this, 0, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(getString(R.string.recording_notification_title))
             .setContentText(text)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentIntent(contentPending)
-            .addAction(0, getString(R.string.notification_action_lock), lockPending)
-            .addAction(0, getString(R.string.notification_action_stop), stopPending)
+            .setContentIntent(contentPendingIntent)
+            .addAction(0, getString(R.string.notification_action_lock), lockPendingIntent)
+            .addAction(0, getString(R.string.notification_action_stop), stopPendingIntent)
             .setOngoing(true)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .build()
     }
 
     private fun updateNotification(state: RecordingState) {
+        if (state.elapsedSeconds == lastNotificationSeconds) return
+        lastNotificationSeconds = state.elapsedSeconds
         val text = "Clip: ${state.elapsedSeconds}s / 60s"
         val notification = createNotification(text)
         val manager = getSystemService(NotificationManager::class.java)
