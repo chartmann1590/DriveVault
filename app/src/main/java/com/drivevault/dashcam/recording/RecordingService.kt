@@ -10,12 +10,14 @@ import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.drivevault.dashcam.MainActivity
 import com.drivevault.dashcam.R
+import com.drivevault.dashcam.data.repository.SettingsRepository
 import com.drivevault.dashcam.firebase.DriveVaultFirebase
 import com.drivevault.dashcam.notifications.NotificationActionReceiver
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 
 class RecordingService : LifecycleService() {
 
@@ -27,6 +29,9 @@ class RecordingService : LifecycleService() {
 
         private val _recordingState = MutableStateFlow(RecordingState())
         val recordingState: StateFlow<RecordingState> = _recordingState.asStateFlow()
+
+        private val _detectedObjects = MutableStateFlow<List<DetectedObjectResult>>(emptyList())
+        val detectedObjects: StateFlow<List<DetectedObjectResult>> = _detectedObjects.asStateFlow()
 
         var isServiceRunning = false
             private set
@@ -81,10 +86,16 @@ class RecordingService : LifecycleService() {
             return START_NOT_STICKY
         }
 
-        recordingManager = RecordingManager(this, ProcessLifecycleOwner.get())
+        val manager = RecordingManager(this, ProcessLifecycleOwner.get())
+        recordingManager = manager
         serviceScope.launch {
+            val detectionEnabled = SettingsRepository(this@RecordingService).vehicleDetectionEnabled.first()
+            manager.setVehicleDetectionEnabled(detectionEnabled)
+            launch {
+                manager.detectedObjects.collect { objects -> _detectedObjects.value = objects }
+            }
             Log.d("RecordingService", "collecting recording state")
-            recordingManager?.startRecording()?.collect { state ->
+            manager.startRecording().collect { state ->
                 _recordingState.value = state
                 updateNotification(state)
             }
@@ -116,6 +127,7 @@ class RecordingService : LifecycleService() {
         serviceScope.cancel()
         isServiceRunning = false
         _recordingState.value = RecordingState()
+        _detectedObjects.value = emptyList()
         super.onDestroy()
     }
 

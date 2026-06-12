@@ -5,6 +5,7 @@ import com.drivevault.dashcam.data.local.DriveVaultDatabase
 import com.drivevault.dashcam.data.repository.SettingsRepository
 import com.drivevault.dashcam.firebase.DriveVaultFirebase
 import com.drivevault.dashcam.firebase.FirebaseUserSettings
+import com.drivevault.dashcam.firebase.ShareCleanupWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -22,6 +23,7 @@ class DriveVaultApp : Application() {
         instance = this
         DriveVaultFirebase.initialize(this)
         observeFirebaseSettings()
+        ShareCleanupWorker.schedule(this)
     }
 
     private fun observeFirebaseSettings() {
@@ -33,8 +35,6 @@ class DriveVaultApp : Application() {
                 settings.firebaseRemoteConfigEnabled,
                 settings.firebaseMessagingEnabled,
                 settings.firebaseFirestoreEnabled,
-                settings.firebaseStorageEnabled,
-                settings.firebaseAllowClipUpload,
                 settings.firebaseAllowLocationUpload
             )
             combine(firebaseFlows) { values ->
@@ -45,9 +45,7 @@ class DriveVaultApp : Application() {
                     remoteConfigEnabled = values[3],
                     messagingEnabled = values[4],
                     firestoreEnabled = values[5],
-                    storageEnabled = values[6],
-                    clipUploadAllowed = values[7],
-                    locationUploadAllowed = values[8]
+                    locationUploadAllowed = values[6]
                 )
             }.collect { firebaseSettings ->
                 DriveVaultFirebase.applySettings(firebaseSettings)

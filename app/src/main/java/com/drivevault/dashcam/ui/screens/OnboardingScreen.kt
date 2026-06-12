@@ -47,6 +47,11 @@ fun OnboardingScreen(
             description = "Optionally sync clips to your self-hosted Immich server. No data is sent anywhere unless you explicitly enable and configure it."
         ),
         OnboardingPage(
+            icon = Icons.Filled.Visibility,
+            title = "Smart Detection",
+            description = "DriveVault can detect vehicles and pedestrians in real time using on-device ML — no internet required. Enable it in Settings › AI Features. Only runs on the rear camera during recording."
+        ),
+        OnboardingPage(
             icon = Icons.Filled.PlayArrow,
             title = "Ready to Record",
             description = "You're all set! Tap the record button to start capturing your drives. Clips are saved as 60-second segments."

@@ -13,7 +13,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.FileProvider
@@ -21,6 +23,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import com.drivevault.dashcam.domain.model.Clip
+import com.drivevault.dashcam.firebase.ClipShareState
 import com.drivevault.dashcam.ui.components.ExportBottomSheet
 import com.drivevault.dashcam.ui.components.SyncStatusBadge
 import com.drivevault.dashcam.ui.theme.*
@@ -39,9 +42,11 @@ fun ClipDetailScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val clipboard = LocalClipboardManager.current
     val clip = uiState.clip
 
     LaunchedEffect(clipId) { viewModel.loadClip(clipId) }
+    LaunchedEffect(Unit) { viewModel.resetShareState() }
 
     Scaffold(
         topBar = {
@@ -153,10 +158,95 @@ fun ClipDetailScreen(
                             },
                             modifier = Modifier.weight(1f)
                         ) {
-Icon(Icons.Filled.SaveAlt, null, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Filled.SaveAlt, null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text("Gallery")
                         }
+                    }
+
+                    if (uiState.clipSharingEnabled) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        FilledTonalButton(
+                            onClick = viewModel::cloudShareClip,
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = uiState.shareState is ClipShareState.Idle
+                        ) {
+                            Icon(Icons.Filled.CloudUpload, null, modifier = Modifier.size(18.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Cloud Share (24h link)")
+                        }
+                    }
+
+                    when (val state = uiState.shareState) {
+                        is ClipShareState.Uploading -> {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                "Uploading… ${state.progressPercent}%",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = OnSurfaceVariant
+                            )
+                            LinearProgressIndicator(
+                                progress = { state.progressPercent / 100f },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                        is ClipShareState.Success -> {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = SurfaceContainer,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Column(modifier = Modifier.padding(12.dp)) {
+                                    Text(
+                                        "Link ready — expires in 24 hours",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = ElectricBlue
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        state.shareUrl,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = OnSurfaceVariant
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                        OutlinedButton(
+                                            onClick = { clipboard.setText(AnnotatedString(state.shareUrl)) },
+                                            modifier = Modifier.weight(1f)
+                                        ) {
+                                            Icon(Icons.Filled.ContentCopy, null, modifier = Modifier.size(16.dp))
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text("Copy")
+                                        }
+                                        OutlinedButton(
+                                            onClick = {
+                                                val intent = Intent(Intent.ACTION_SEND).apply {
+                                                    type = "text/plain"
+                                                    putExtra(Intent.EXTRA_TEXT, state.shareUrl)
+                                                }
+                                                context.startActivity(Intent.createChooser(intent, "Share link"))
+                                            },
+                                            modifier = Modifier.weight(1f)
+                                        ) {
+                                            Icon(Icons.Filled.Share, null, modifier = Modifier.size(16.dp))
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text("Share")
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        is ClipShareState.Error -> {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                "Upload failed: ${state.message}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = SafetyRed
+                            )
+                            TextButton(onClick = viewModel::cloudShareClip) { Text("Retry") }
+                        }
+                        else -> {}
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))

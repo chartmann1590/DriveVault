@@ -35,6 +35,18 @@
         android:theme="@style/Theme.DriveVault"
         tools:targetApi="34">
 
+        <!-- Disable Firebase auto-init; we initialize manually in DriveVaultApp with explicit options -->
+        <provider
+            android:name="com.google.firebase.provider.FirebaseInitProvider"
+            android:authorities="${applicationId}.firebaseinitprovider"
+            android:exported="false"
+            tools:node="remove" />
+
+        <!-- Disable Firebase collection at startup; enabled at runtime via user settings -->
+        <meta-data android:name="firebase_performance_collection_enabled" android:value="false" />
+        <meta-data android:name="firebase_crashlytics_collection_enabled" android:value="false" />
+        <meta-data android:name="firebase_analytics_collection_enabled" android:value="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

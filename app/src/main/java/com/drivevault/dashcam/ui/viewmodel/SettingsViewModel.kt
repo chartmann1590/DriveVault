@@ -50,9 +50,9 @@ data class SettingsUiState(
     val firebaseRemoteConfigEnabled: Boolean = false,
     val firebaseMessagingEnabled: Boolean = false,
     val firebaseFirestoreEnabled: Boolean = false,
-    val firebaseStorageEnabled: Boolean = false,
-    val firebaseAllowClipUpload: Boolean = false,
-    val firebaseAllowLocationUpload: Boolean = false
+    val firebaseAllowLocationUpload: Boolean = false,
+    val vehicleDetectionEnabled: Boolean = false,
+    val allowClipSharing: Boolean = false
 )
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
@@ -101,9 +101,9 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                 settings.firebaseRemoteConfigEnabled,
                 settings.firebaseMessagingEnabled,
                 settings.firebaseFirestoreEnabled,
-                settings.firebaseStorageEnabled,
-                settings.firebaseAllowClipUpload,
-                settings.firebaseAllowLocationUpload
+                settings.firebaseAllowLocationUpload,
+                settings.vehicleDetectionEnabled,
+                settings.allowClipSharing
             )
             @Suppress("UNCHECKED_CAST")
             combine(flows) { values ->
@@ -144,9 +144,9 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                         firebaseRemoteConfigEnabled = values[32] as Boolean,
                         firebaseMessagingEnabled = values[33] as Boolean,
                         firebaseFirestoreEnabled = values[34] as Boolean,
-                        firebaseStorageEnabled = values[35] as Boolean,
-                        firebaseAllowClipUpload = values[36] as Boolean,
-                        firebaseAllowLocationUpload = values[37] as Boolean
+                        firebaseAllowLocationUpload = values[35] as Boolean,
+                        vehicleDetectionEnabled = values[36] as Boolean,
+                        allowClipSharing = values[37] as Boolean
                     )
                 }
             }.collect()
@@ -220,32 +220,17 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     fun setFirebaseFirestoreEnabled(v: Boolean) {
         viewModelScope.launch {
             settings.setFirebaseFirestoreEnabled(v)
-            if (!v && !_uiState.value.firebaseStorageEnabled) {
-                settings.setFirebaseAllowLocationUpload(false)
-            }
-        }
-    }
-    fun setFirebaseStorageEnabled(v: Boolean) {
-        viewModelScope.launch {
-            settings.setFirebaseStorageEnabled(v)
-            if (!v) {
-                settings.setFirebaseAllowClipUpload(false)
-                if (!_uiState.value.firebaseFirestoreEnabled) {
-                    settings.setFirebaseAllowLocationUpload(false)
-                }
-            }
-        }
-    }
-    fun setFirebaseAllowClipUpload(v: Boolean) {
-        viewModelScope.launch {
-            settings.setFirebaseAllowClipUpload(v && _uiState.value.firebaseStorageEnabled)
+            if (!v) settings.setFirebaseAllowLocationUpload(false)
         }
     }
     fun setFirebaseAllowLocationUpload(v: Boolean) {
         viewModelScope.launch {
-            settings.setFirebaseAllowLocationUpload(v && (_uiState.value.firebaseFirestoreEnabled || _uiState.value.firebaseStorageEnabled))
+            settings.setFirebaseAllowLocationUpload(v && _uiState.value.firebaseFirestoreEnabled)
         }
     }
+
+    fun setVehicleDetectionEnabled(v: Boolean) { viewModelScope.launch { settings.setVehicleDetectionEnabled(v) } }
+    fun setAllowClipSharing(v: Boolean) { viewModelScope.launch { settings.setAllowClipSharing(v) } }
 
     fun testConnection() {
         viewModelScope.launch {

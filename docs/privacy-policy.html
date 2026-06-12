@@ -354,6 +354,20 @@
         </ul>
         <p>Immich's privacy practices are governed by your own server configuration. Learn more at <a href="https://immich.app" target="_blank" rel="noopener">immich.app</a>.</p>
 
+        <h3>Cloud Clip Sharing (Optional Feature)</h3>
+        <p>DriveVault includes an optional anonymous clip sharing feature. When you use it:</p>
+        <ul>
+            <li>This feature is <strong>off by default</strong> and requires two explicit settings to be enabled: Firebase Storage and Allow Anonymous Clip Sharing</li>
+            <li><strong>What is uploaded:</strong> the video file only &mdash; no GPS coordinates, speed, route data, or metadata are included in the uploaded file</li>
+            <li><strong>Anonymous authentication:</strong> Firebase Anonymous Authentication is used to authorize the upload. This creates a temporary, ephemeral credential with no email address, no name, and no linkage to your identity. The anonymous UID is not stored in any shared document</li>
+            <li><strong>Storage path:</strong> clips are stored at a randomly generated UUID path (e.g., <code>shared/&lt;uuid&gt;/clip.mp4</code>). The UUID is cryptographically random and unguessable &mdash; it is the primary access control mechanism</li>
+            <li><strong>Access:</strong> anyone who has the share link can view the clip. There is no password or login required for viewers</li>
+            <li><strong>Retention:</strong> shared clips are automatically deleted after 24 hours. A background process running in the app removes expired clips from Firebase Storage and deletes the associated Firestore record</li>
+            <li><strong>Viewer page:</strong> the share link points to a page hosted on GitHub Pages at <code>chartmann1590.github.io/DriveVault/view</code>. This page uses the Firebase JavaScript SDK to fetch the clip from Firebase Storage. No viewer data is logged or stored</li>
+            <li>You can disable this feature at any time in Settings &rarr; Firebase &rarr; Allow Anonymous Clip Sharing</li>
+        </ul>
+        <p>Clip sharing data is processed under Google's privacy policy: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a></p>
+
         <h3>OpenStreetMap</h3>
         <p>The mini map overlay uses OpenStreetMap tile servers to render map images. When the map is visible, your device may request map tiles from OSM servers. These requests contain approximate viewport coordinates but no personally identifiable information. See <a href="https://wiki.osmfoundation.org/wiki/Privacy_Policy" target="_blank" rel="noopener">OSM's privacy policy</a>.</p>
 
@@ -407,8 +421,8 @@
                 </tr>
                 <tr>
                     <td>Internet</td>
-                    <td>Optional Immich sync, map tiles</td>
-                    <td>Only if sync enabled</td>
+                    <td>Optional Immich sync, map tiles, anonymous clip sharing</td>
+                    <td>Only if sync or sharing enabled</td>
                 </tr>
             </tbody>
         </table>

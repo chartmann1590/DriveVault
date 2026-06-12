@@ -43,11 +43,14 @@ android {
         resValue("string", "google_storage_bucket", localProp("FIREBASE_STORAGE_BUCKET"))
         resValue("string", "firebase_database_url", "")
         buildConfigField("String", "FIREBASE_PROJECT_ID", "\"${localProp("FIREBASE_PROJECT_ID")}\"")
+        buildConfigField("String", "FIREBASE_PROJECT_NUMBER", "\"${localProp("FIREBASE_PROJECT_NUMBER")}\"")
 
         buildConfigField("String", "GITHUB_API_TOKEN", "\"${localProp("github.api.token")}\"")
         buildConfigField("String", "GITHUB_REPO_OWNER", "\"${localProp("github.repo.owner")}\"")
         buildConfigField("String", "GITHUB_REPO_NAME", "\"${localProp("github.repo.name")}\"")
         buildConfigField("String", "FEEDBACK_ASSETS_DIR", "\"feedback-assets\"")
+        buildConfigField("String", "SUPABASE_URL", "\"${localProp("SUPABASE_URL")}\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY", "\"${localProp("SUPABASE_ANON_KEY")}\"")
     }
 
     buildTypes {
@@ -156,15 +159,14 @@ dependencies {
 
     implementation("io.coil-kt:coil-compose:2.5.0")
 
+    implementation("com.google.mlkit:object-detection:17.0.2")
+
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-perf")
     implementation("com.google.firebase:firebase-config")
     implementation("com.google.firebase:firebase-messaging")
-    implementation("com.google.firebase:firebase-firestore")
-    implementation("com.google.firebase:firebase-storage")
-    implementation("com.google.firebase:firebase-auth")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")

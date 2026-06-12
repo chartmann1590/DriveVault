@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import android.util.Size
 import androidx.camera.core.*
 import androidx.camera.core.ConcurrentCamera.SingleCameraConfig
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.*
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.Executors
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -52,6 +54,11 @@ class RecordingManager(
     private var cameraProvider: ProcessCameraProvider? = null
     private var videoCapture: VideoCapture<Recorder>? = null
     private var secondaryVideoCapture: VideoCapture<Recorder>? = null
+    private var objectDetectionManager: ObjectDetectionManager? = null
+    private var analysisExecutor = Executors.newSingleThreadExecutor()
+    private val _detectedObjects = MutableStateFlow<List<DetectedObjectResult>>(emptyList())
+    val detectedObjects: StateFlow<List<DetectedObjectResult>> = _detectedObjects.asStateFlow()
+    private var vehicleDetectionEnabled: Boolean = false
     private var currentRecording: Recording? = null
     private var secondaryRecording: Recording? = null
     private var currentClipId: Long = 0L
@@ -67,6 +74,25 @@ class RecordingManager(
     private val _state = MutableStateFlow(RecordingState())
     fun initializeCamera(provider: ProcessCameraProvider) {
         cameraProvider = provider
+    }
+
+    fun setVehicleDetectionEnabled(enabled: Boolean) {
+        vehicleDetectionEnabled = enabled
+    }
+
+    private fun buildImageAnalysisUseCase(): ImageAnalysis {
+        val manager = ObjectDetectionManager().also { objectDetectionManager = it }
+        val analysis = ImageAnalysis.Builder()
+            .setTargetResolution(Size(640, 480))
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .build()
+        analysis.setAnalyzer(analysisExecutor) { imageProxy ->
+            manager.processImage(imageProxy)
+        }
+        scope.launch {
+            manager.detectedObjects.collect { objects -> _detectedObjects.value = objects }
+        }
+        return analysis
     }
 
     fun startRecording(): Flow<RecordingState> = callbackFlow {
@@ -251,7 +277,12 @@ class RecordingManager(
 
         withContext(Dispatchers.Main) {
             provider.unbindAll()
-            provider.bindToLifecycle(lifecycleOwner, selector, capture)
+            if (vehicleDetectionEnabled && _state.value.cameraMode == "BACK") {
+                val imageAnalysis = buildImageAnalysisUseCase()
+                provider.bindToLifecycle(lifecycleOwner, selector, capture, imageAnalysis)
+            } else {
+                provider.bindToLifecycle(lifecycleOwner, selector, capture)
+            }
         }
     }
 
@@ -416,6 +447,9 @@ class RecordingManager(
         isRecording = false
         finishCurrentClip()
         telemetryManager.stop()
+        objectDetectionManager?.close()
+        objectDetectionManager = null
+        _detectedObjects.value = emptyList()
         scope.cancel()
         _state.value = RecordingState()
     }

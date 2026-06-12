@@ -63,6 +63,22 @@ fun SettingsScreen(
             SettingsToggle("Stabilization", uiState.stabilization) { viewModel.setStabilization(it) }
             SettingsToggle("Mirror Front Camera", uiState.mirrorFrontCamera) { viewModel.setMirrorFrontCamera(it) }
 
+            SettingsSectionHeader("AI Features")
+            Text(
+                text = "On-device ML. No data leaves your device.",
+                style = MaterialTheme.typography.bodySmall,
+                color = OnSurfaceVariant
+            )
+            SettingsToggle("Vehicle & Pedestrian Detection", uiState.vehicleDetectionEnabled) { viewModel.setVehicleDetectionEnabled(it) }
+            if (uiState.vehicleDetectionEnabled) {
+                Text(
+                    text = "Draws bounding boxes around detected vehicles and pedestrians during recording. Only active in rear camera mode.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = OnSurfaceVariant,
+                    modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
+                )
+            }
+
             SettingsSectionHeader("Overlay")
             SettingsToggle("Show Speed", uiState.showSpeed) { viewModel.setShowSpeed(it) }
             SettingsDropdown("Speed Unit", uiState.speedUnit, listOf("MPH", "KPH")) { viewModel.setSpeedUnit(it) }
@@ -80,9 +96,17 @@ fun SettingsScreen(
             SettingsToggle("Confirm GPS Share", uiState.confirmGpsShare) { viewModel.setConfirmGpsShare(it) }
             SettingsToggle("Local Only Mode", uiState.localOnlyMode) { viewModel.setLocalOnlyMode(it) }
 
+            SettingsSectionHeader("Clip Sharing")
+            Text(
+                text = "Generate time-limited public links via Supabase. Clips upload anonymously and auto-delete after 24 hours. No account required.",
+                style = MaterialTheme.typography.bodySmall,
+                color = OnSurfaceVariant
+            )
+            SettingsToggle("Allow Anonymous Clip Sharing", uiState.allowClipSharing) { viewModel.setAllowClipSharing(it) }
+
             SettingsSectionHeader("Firebase")
             Text(
-                text = "Firebase is optional. Crash reports, analytics, messaging, cloud metadata, clip uploads, and GPS uploads stay off unless you enable them here.",
+                text = "Firebase is optional. Crash reports, analytics, messaging, and cloud metadata stay off unless you enable them here.",
                 style = MaterialTheme.typography.bodySmall,
                 color = OnSurfaceVariant
             )
@@ -92,16 +116,10 @@ fun SettingsScreen(
             SettingsToggle("Remote Config", uiState.firebaseRemoteConfigEnabled) { viewModel.setFirebaseRemoteConfigEnabled(it) }
             SettingsToggle("Cloud Messaging", uiState.firebaseMessagingEnabled) { viewModel.setFirebaseMessagingEnabled(it) }
             SettingsToggle("Cloud Metadata", uiState.firebaseFirestoreEnabled) { viewModel.setFirebaseFirestoreEnabled(it) }
-            SettingsToggle("Firebase Storage", uiState.firebaseStorageEnabled) { viewModel.setFirebaseStorageEnabled(it) }
-            SettingsToggle(
-                label = "Allow Clip Uploads",
-                checked = uiState.firebaseAllowClipUpload && uiState.firebaseStorageEnabled,
-                enabled = uiState.firebaseStorageEnabled
-            ) { viewModel.setFirebaseAllowClipUpload(it) }
             SettingsToggle(
                 label = "Allow GPS Uploads",
-                checked = uiState.firebaseAllowLocationUpload && (uiState.firebaseFirestoreEnabled || uiState.firebaseStorageEnabled),
-                enabled = uiState.firebaseFirestoreEnabled || uiState.firebaseStorageEnabled
+                checked = uiState.firebaseAllowLocationUpload && uiState.firebaseFirestoreEnabled,
+                enabled = uiState.firebaseFirestoreEnabled
             ) { viewModel.setFirebaseAllowLocationUpload(it) }
 
             SettingsSectionHeader("Immich Sync")

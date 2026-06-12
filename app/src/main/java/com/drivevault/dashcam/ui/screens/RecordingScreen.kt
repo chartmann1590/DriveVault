@@ -1,6 +1,7 @@
 package com.drivevault.dashcam.ui.screens
 
 import android.content.res.Configuration
+import android.graphics.Paint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -12,8 +13,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.camera.core.CameraSelector
@@ -22,10 +30,12 @@ import androidx.camera.core.Preview
 import androidx.camera.core.UseCaseGroup
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.Canvas
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.content.ContextCompat
 import com.drivevault.dashcam.permissions.PermissionManager
+import com.drivevault.dashcam.recording.DetectedObjectResult
 import com.drivevault.dashcam.ui.components.*
 import com.drivevault.dashcam.ui.theme.DeepCharcoal
 import com.drivevault.dashcam.ui.theme.SafetyRed
@@ -38,6 +48,7 @@ import com.drivevault.dashcam.ui.viewmodel.RecordingScreenUiState
 import com.drivevault.dashcam.ui.viewmodel.RecordingViewModel
 import kotlinx.coroutines.delay
 import kotlin.coroutines.resume
+import kotlin.math.max
 
 @Composable
 fun RecordingScreen(
@@ -124,6 +135,13 @@ fun RecordingScreen(
         }
 
         val shouldShowChrome = !uiState.recordingState.isRecording || chromeVisible
+
+        if (uiState.vehicleDetectionEnabled && uiState.detectedObjects.isNotEmpty()) {
+            DetectionOverlay(
+                detectedObjects = uiState.detectedObjects,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
 
         if (uiState.showOverlay && shouldShowChrome) {
             RecordingOverlay(
@@ -304,6 +322,92 @@ private fun ProcessCameraProvider.supportsFrontBackConcurrentCamera(): Boolean {
 
 private suspend fun withContextOnMain(block: () -> Unit) {
     kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) { block() }
+}
+
+@Composable
+private fun DetectionOverlay(
+    detectedObjects: List<DetectedObjectResult>,
+    modifier: Modifier = Modifier
+) {
+    BoxWithConstraints(modifier = modifier) {
+        val density = LocalDensity.current
+        val viewWidthPx = with(density) { maxWidth.toPx() }
+        val viewHeightPx = with(density) { maxHeight.toPx() }
+
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            detectedObjects.forEach { obj ->
+                // Swap dimensions for 90°/270° rotations (sensor is landscape, display may be portrait)
+                val (effectiveW, effectiveH) = when (obj.imageRotationDegrees) {
+                    90, 270 -> Pair(obj.imageHeight.toFloat(), obj.imageWidth.toFloat())
+                    else -> Pair(obj.imageWidth.toFloat(), obj.imageHeight.toFloat())
+                }
+                val scale = max(viewWidthPx / effectiveW, viewHeightPx / effectiveH)
+                val offsetX = (viewWidthPx - effectiveW * scale) / 2f
+                val offsetY = (viewHeightPx - effectiveH * scale) / 2f
+
+                // Rotate bounding box coordinates from image space to display space
+                val (bl, bt, br, bb) = when (obj.imageRotationDegrees) {
+                    90 -> listOf(
+                        obj.imageHeight - obj.boundingBox.bottom,
+                        obj.boundingBox.left,
+                        obj.imageHeight - obj.boundingBox.top,
+                        obj.boundingBox.right
+                    )
+                    270 -> listOf(
+                        obj.boundingBox.top,
+                        obj.imageWidth - obj.boundingBox.right,
+                        obj.boundingBox.bottom,
+                        obj.imageWidth - obj.boundingBox.left
+                    )
+                    180 -> listOf(
+                        obj.imageWidth - obj.boundingBox.right,
+                        obj.imageHeight - obj.boundingBox.bottom,
+                        obj.imageWidth - obj.boundingBox.left,
+                        obj.imageHeight - obj.boundingBox.top
+                    )
+                    else -> listOf(
+                        obj.boundingBox.left, obj.boundingBox.top,
+                        obj.boundingBox.right, obj.boundingBox.bottom
+                    )
+                }
+
+                val screenLeft = bl * scale + offsetX
+                val screenTop = bt * scale + offsetY
+                val screenRight = br * scale + offsetX
+                val screenBottom = bb * scale + offsetY
+
+                val boxColor = if (obj.label == "Vehicle") SafetyRed else ElectricBlue
+
+                drawRect(
+                    color = boxColor,
+                    topLeft = Offset(screenLeft, screenTop),
+                    size = Size(screenRight - screenLeft, screenBottom - screenTop),
+                    style = Stroke(width = 4f)
+                )
+
+                val labelText = "${obj.label} ${(obj.confidence * 100).toInt()}%"
+                val textPaint = Paint().apply {
+                    color = Color.White.toArgb()
+                    textSize = 32f
+                    isFakeBoldText = true
+                    setShadowLayer(4f, 0f, 0f, Color.Black.toArgb())
+                }
+                val bgPaint = Paint().apply {
+                    color = boxColor.copy(alpha = 0.7f).toArgb()
+                }
+                val textWidth = textPaint.measureText(labelText)
+                val textHeight = textPaint.textSize
+                drawContext.canvas.nativeCanvas.apply {
+                    drawRect(
+                        screenLeft, screenTop - textHeight - 4f,
+                        screenLeft + textWidth + 8f, screenTop,
+                        bgPaint
+                    )
+                    drawText(labelText, screenLeft + 4f, screenTop - 6f, textPaint)
+                }
+            }
+        }
+    }
 }
 
 @Composable

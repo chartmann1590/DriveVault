@@ -4,14 +4,21 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.drivevault.dashcam.data.local.DriveVaultDatabase
+import com.drivevault.dashcam.data.repository.SettingsRepository
 import com.drivevault.dashcam.domain.model.Clip
 import com.drivevault.dashcam.domain.repository.ClipRepository
 import com.drivevault.dashcam.`export`.ClipExportResult
 import com.drivevault.dashcam.`export`.ClipExporter
 import com.drivevault.dashcam.`export`.ExportOptions
+import com.drivevault.dashcam.firebase.ClipShareManager
+import com.drivevault.dashcam.firebase.ClipShareState
 import com.drivevault.dashcam.immich.ImmichSyncWorker
 import com.drivevault.dashcam.storage.StorageManager
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class ClipDetailUiState(
@@ -19,7 +26,9 @@ data class ClipDetailUiState(
     val isPlaying: Boolean = false,
     val showOverlay: Boolean = false,
     val exportResult: ClipExportResult? = null,
-    val showExportSheet: Boolean = false
+    val showExportSheet: Boolean = false,
+    val shareState: ClipShareState = ClipShareState.Idle,
+    val clipSharingEnabled: Boolean = false
 )
 
 class ClipDetailViewModel(application: Application) : AndroidViewModel(application) {
@@ -32,9 +41,22 @@ class ClipDetailViewModel(application: Application) : AndroidViewModel(applicati
     )
     private val exporter = ClipExporter(application)
     private val storageManager = StorageManager(application)
+    private val shareManager = ClipShareManager(application)
+    private val settings = SettingsRepository(application)
 
     private val _uiState = MutableStateFlow(ClipDetailUiState())
     val uiState: StateFlow<ClipDetailUiState> = _uiState.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            settings.allowClipSharing.collect { enabled ->
+                _uiState.update { it.copy(clipSharingEnabled = enabled) }
+            }
+        }
+        viewModelScope.launch {
+            shareManager.shareState.collect { state -> _uiState.update { it.copy(shareState = state) } }
+        }
+    }
 
     fun loadClip(clipId: Long) {
         viewModelScope.launch {
@@ -119,4 +141,11 @@ class ClipDetailViewModel(application: Application) : AndroidViewModel(applicati
             exporter.createShareIntent(clip.id, result)
         }
     }
+
+    fun cloudShareClip() {
+        val clip = _uiState.value.clip ?: return
+        viewModelScope.launch { shareManager.shareClip(clip.fileUri, clip.fileSizeBytes) }
+    }
+
+    fun resetShareState() = shareManager.resetState()
 }

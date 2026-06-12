@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import com.drivevault.dashcam.BuildConfig
 import com.google.firebase.FirebaseApp
+import com.google.firebase.FirebaseOptions
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.messaging.FirebaseMessaging
@@ -18,8 +19,6 @@ data class FirebaseUserSettings(
     val remoteConfigEnabled: Boolean = false,
     val messagingEnabled: Boolean = false,
     val firestoreEnabled: Boolean = false,
-    val storageEnabled: Boolean = false,
-    val clipUploadAllowed: Boolean = false,
     val locationUploadAllowed: Boolean = false
 )
 
@@ -32,7 +31,13 @@ object DriveVaultFirebase {
         runCatching {
             appContext = context.applicationContext
             if (FirebaseApp.getApps(context).isEmpty()) {
-                FirebaseApp.initializeApp(context)
+                val options = FirebaseOptions.Builder()
+                    .setApplicationId(BuildConfig.FIREBASE_APP_ID)
+                    .setApiKey(BuildConfig.FIREBASE_API_KEY)
+                    .setProjectId(BuildConfig.FIREBASE_PROJECT_ID)
+                    .setGcmSenderId(BuildConfig.FIREBASE_PROJECT_NUMBER)
+                    .build()
+                FirebaseApp.initializeApp(context, options)
             }
 
             FirebaseCrashlytics.getInstance().apply {
@@ -76,8 +81,7 @@ object DriveVaultFirebase {
 
     fun applySettings(settings: FirebaseUserSettings) {
         currentSettings = settings.copy(
-            clipUploadAllowed = settings.storageEnabled && settings.clipUploadAllowed,
-            locationUploadAllowed = (settings.firestoreEnabled || settings.storageEnabled) && settings.locationUploadAllowed
+            locationUploadAllowed = settings.firestoreEnabled && settings.locationUploadAllowed
         )
         val context = appContext ?: return
 
@@ -89,12 +93,10 @@ object DriveVaultFirebase {
                 setCustomKey("firebase_remote_config_enabled", currentSettings.remoteConfigEnabled)
                 setCustomKey("firebase_messaging_enabled", currentSettings.messagingEnabled)
                 setCustomKey("firebase_firestore_enabled", currentSettings.firestoreEnabled)
-                setCustomKey("firebase_storage_enabled", currentSettings.storageEnabled)
-                setCustomKey("firebase_clip_upload_allowed", currentSettings.clipUploadAllowed)
                 setCustomKey("firebase_location_upload_allowed", currentSettings.locationUploadAllowed)
                 setCustomKey(
                     KEY_PRIVACY_MODE,
-                    if (currentSettings.clipUploadAllowed || currentSettings.locationUploadAllowed) "user_enabled_cloud_features" else "local_only"
+                    if (currentSettings.locationUploadAllowed) "user_enabled_cloud_features" else "local_only"
                 )
             }
 

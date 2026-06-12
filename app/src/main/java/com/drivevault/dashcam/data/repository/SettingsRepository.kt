@@ -72,9 +72,9 @@ class SettingsRepository(private val context: Context) {
         val FIREBASE_REMOTE_CONFIG_ENABLED = booleanPreferencesKey("firebase_remote_config_enabled")
         val FIREBASE_MESSAGING_ENABLED = booleanPreferencesKey("firebase_messaging_enabled")
         val FIREBASE_FIRESTORE_ENABLED = booleanPreferencesKey("firebase_firestore_enabled")
-        val FIREBASE_STORAGE_ENABLED = booleanPreferencesKey("firebase_storage_enabled")
-        val FIREBASE_ALLOW_CLIP_UPLOAD = booleanPreferencesKey("firebase_allow_clip_upload")
         val FIREBASE_ALLOW_LOCATION_UPLOAD = booleanPreferencesKey("firebase_allow_location_upload")
+        val VEHICLE_DETECTION_ENABLED = booleanPreferencesKey("vehicle_detection_enabled")
+        val ALLOW_CLIP_SHARING = booleanPreferencesKey("allow_clip_sharing")
     }
 
     val onboardingComplete: Flow<Boolean> = context.dataStore.data.catch { if (it is IOException) emit(emptyPreferences()) else throw it }.map { it[Keys.ONBOARDING_COMPLETE] ?: false }
@@ -126,9 +126,9 @@ class SettingsRepository(private val context: Context) {
     val firebaseRemoteConfigEnabled: Flow<Boolean> = context.dataStore.data.map { it[Keys.FIREBASE_REMOTE_CONFIG_ENABLED] ?: false }
     val firebaseMessagingEnabled: Flow<Boolean> = context.dataStore.data.map { it[Keys.FIREBASE_MESSAGING_ENABLED] ?: false }
     val firebaseFirestoreEnabled: Flow<Boolean> = context.dataStore.data.map { it[Keys.FIREBASE_FIRESTORE_ENABLED] ?: false }
-    val firebaseStorageEnabled: Flow<Boolean> = context.dataStore.data.map { it[Keys.FIREBASE_STORAGE_ENABLED] ?: false }
-    val firebaseAllowClipUpload: Flow<Boolean> = context.dataStore.data.map { it[Keys.FIREBASE_ALLOW_CLIP_UPLOAD] ?: false }
     val firebaseAllowLocationUpload: Flow<Boolean> = context.dataStore.data.map { it[Keys.FIREBASE_ALLOW_LOCATION_UPLOAD] ?: false }
+    val vehicleDetectionEnabled: Flow<Boolean> = context.dataStore.data.map { it[Keys.VEHICLE_DETECTION_ENABLED] ?: false }
+    val allowClipSharing: Flow<Boolean> = context.dataStore.data.map { it[Keys.ALLOW_CLIP_SHARING] ?: false }
 
     var immichServerUrl: String
         get() = encryptedPrefs.getString("immich_server_url", "") ?: ""
@@ -185,7 +185,7 @@ class SettingsRepository(private val context: Context) {
     suspend fun setFirebaseRemoteConfigEnabled(enabled: Boolean) = setSetting(Keys.FIREBASE_REMOTE_CONFIG_ENABLED, enabled)
     suspend fun setFirebaseMessagingEnabled(enabled: Boolean) = setSetting(Keys.FIREBASE_MESSAGING_ENABLED, enabled)
     suspend fun setFirebaseFirestoreEnabled(enabled: Boolean) = setSetting(Keys.FIREBASE_FIRESTORE_ENABLED, enabled)
-    suspend fun setFirebaseStorageEnabled(enabled: Boolean) = setSetting(Keys.FIREBASE_STORAGE_ENABLED, enabled)
-    suspend fun setFirebaseAllowClipUpload(enabled: Boolean) = setSetting(Keys.FIREBASE_ALLOW_CLIP_UPLOAD, enabled)
     suspend fun setFirebaseAllowLocationUpload(enabled: Boolean) = setSetting(Keys.FIREBASE_ALLOW_LOCATION_UPLOAD, enabled)
+    suspend fun setVehicleDetectionEnabled(enabled: Boolean) = setSetting(Keys.VEHICLE_DETECTION_ENABLED, enabled)
+    suspend fun setAllowClipSharing(enabled: Boolean) = setSetting(Keys.ALLOW_CLIP_SHARING, enabled)
 }

@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.drivevault.dashcam.data.repository.SettingsRepository
 import com.drivevault.dashcam.domain.model.TelemetryState
+import com.drivevault.dashcam.recording.DetectedObjectResult
 import com.drivevault.dashcam.recording.RecordingService
 import com.drivevault.dashcam.recording.RecordingState
 import com.drivevault.dashcam.sensors.TelemetryManager
@@ -26,7 +27,9 @@ data class RecordingScreenUiState(
     val showOverlay: Boolean = true,
     val audioEnabled: Boolean = true,
     val cameraMode: String = "BACK",
-    val isDualSupported: Boolean = false
+    val isDualSupported: Boolean = false,
+    val vehicleDetectionEnabled: Boolean = false,
+    val detectedObjects: List<DetectedObjectResult> = emptyList()
 )
 
 class RecordingViewModel(application: Application) : AndroidViewModel(application) {
@@ -52,7 +55,9 @@ class RecordingViewModel(application: Application) : AndroidViewModel(applicatio
                 settings.showTimestamp,
                 settings.showMiniMap,
                 settings.audioEnabled,
-                settings.defaultCameraMode
+                settings.defaultCameraMode,
+                settings.vehicleDetectionEnabled,
+                RecordingService.detectedObjects
             )
             @Suppress("UNCHECKED_CAST")
             combine(flows) { values ->
@@ -71,7 +76,9 @@ class RecordingViewModel(application: Application) : AndroidViewModel(applicatio
                     showTimestamp = values[6] as Boolean,
                     showMiniMap = values[7] as Boolean,
                     audioEnabled = values[8] as Boolean,
-                    cameraMode = values[9] as String
+                    cameraMode = values[9] as String,
+                    vehicleDetectionEnabled = values[10] as Boolean,
+                    detectedObjects = values[11] as List<DetectedObjectResult>
                 )
             }.collect { _uiState.value = it }
         }
