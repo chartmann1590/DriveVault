@@ -1,5 +1,7 @@
 {
   "projects": {
     "default": "drivevault-dashcam-2026"
-  }
+  },
+  "targets": {},
+  "etags": {}
 }

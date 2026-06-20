@@ -26,6 +26,7 @@ build/
 
 google-services.json
 firebase-debug.log
+app/google-services.json
 
 *.keystore
 *.jks

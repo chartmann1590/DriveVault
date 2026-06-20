@@ -1,4 +1,4 @@
-﻿# DriveVault Dashcam
+# DriveVault Dashcam
 
 <div align="center">
 
@@ -47,6 +47,17 @@ Most dashcam apps send your data to the cloud. DriveVault keeps everything on yo
 - Encrypted API key storage
 - Configurable sync rules (Wi-Fi only, charging only, etc.)
 
+### Anonymous Clip Sharing (Optional)
+- Share clips via time-limited links (24-hour expiry)
+- Trim to 50MB limit for sharing
+- No account required to view shared clips
+- All sharing is opt-in and off by default
+
+### AI Detection (Optional)
+- Real-time vehicle and person detection via MLKit
+- Bounding box overlay on camera preview
+- Off by default; no cloud inference used
+
 ## Screenshots
 
 | Recording | Clip Library | Clip Detail |
@@ -85,20 +96,22 @@ Most dashcam apps send your data to the cloud. DriveVault keeps everything on yo
 ``bash
 git clone https://github.com/chartmann1590/DriveVault.git
 cd DriveVault
+cp local.properties.example local.properties
+# Edit local.properties with your Firebase, Supabase, and GitHub values.
+python scripts/generate_google_services_json.py
 ./gradlew assembleDebug
 ``
 
 #### Firebase Configuration
-Firebase values are read from `local.properties` (never committed to the repo). Copy the template and fill in your values:
-``properties
-FIREBASE_PROJECT_ID=your-project-id
-FIREBASE_PROJECT_NUMBER=your-project-number
-FIREBASE_STORAGE_BUCKET=your-project-id.firebasestorage.app
-FIREBASE_DEBUG_APP_ID=your-debug-app-id
-FIREBASE_DEBUG_API_KEY=your-debug-api-key
-FIREBASE_RELEASE_APP_ID=your-release-app-id
-FIREBASE_RELEASE_API_KEY=your-release-api-key
+Firebase values are read from `local.properties` (never committed to the repo). Copy `local.properties.example` to `local.properties` and fill in your values.
+
+Before building release (or any variant with the Google Services plugin), generate `app/google-services.json`:
+
+``bash
+python scripts/generate_google_services_json.py
 ``
+
+See `SECURITY.md` for guidance on handling secrets.
 
 ## Permissions Explained
 
@@ -107,6 +120,7 @@ FIREBASE_RELEASE_API_KEY=your-release-api-key
 | Camera | Record video of your drives |
 | Microphone | Capture audio with video clips |
 | Location | GPS coordinates, speed, and map overlay |
+| Background Location | Keep GPS recording when the app is in the background |
 | Notifications | Keep recording status visible |
 | Storage | Save clips and exports |
 | Foreground Service | Continue recording in background |
@@ -124,7 +138,9 @@ Your data stays on your device. Here is what DriveVault does NOT do:
 
 The only network features are:
 - Optional Immich sync to YOUR OWN server
+- Optional anonymous clip sharing via Supabase (off by default, 24-hour expiry)
 - Firebase crash reporting and analytics (app health only, no clip content)
+- Optional MLKit object detection (on-device, no network for inference)
 
 ## Tech Stack
 
@@ -135,7 +151,9 @@ Built with modern Android development tools:
 - **Room** for local database
 - **OSMDroid** for maps
 - **Media3/ExoPlayer** for video playback
+- **MLKit** for on-device object detection
 - **Firebase** for crash reporting and analytics
+- **Supabase** for optional anonymous clip sharing
 
 ## License
 

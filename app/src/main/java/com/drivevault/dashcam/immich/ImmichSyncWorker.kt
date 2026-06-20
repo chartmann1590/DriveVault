@@ -1,9 +1,11 @@
-﻿package com.drivevault.dashcam.immich
+package com.drivevault.dashcam.immich
 
 import android.content.Context
 import androidx.work.*
 import com.drivevault.dashcam.data.local.DriveVaultDatabase
 import com.drivevault.dashcam.data.repository.SettingsRepository
+import com.drivevault.dashcam.export.ClipExporter
+import com.drivevault.dashcam.export.ExportOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -40,6 +42,22 @@ class ImmichSyncWorker(
                 is ImmichResult.Success -> {
                     val assetId = result.data.id
                     clipDao.updateImmichStatus(clip.id, "UPLOADED", assetId)
+
+                    if (settings.immichUploadMetadata.first()) {
+                        val exporter = ClipExporter(applicationContext)
+                        val exportResult = exporter.exportClip(
+                            clip.id,
+                            ExportOptions(
+                                includeVideo = false,
+                                includeMetadata = true,
+                                includeGpx = false,
+                                redactLocation = false
+                            )
+                        )
+                        exportResult.metadataFile?.let { jsonFile ->
+                            client.uploadMetadataSidecar(jsonFile, assetId)
+                        }
+                    }
 
                     if (settings.immichAutoAlbum.first()) {
                         val albumName = settings.immichAlbumName.first()

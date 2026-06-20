@@ -4,6 +4,8 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import kotlinx.coroutines.delay
+import android.Manifest
+import android.os.Build
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -32,18 +34,32 @@ fun PermissionsScreen(
     var missingPermissions by remember {
         mutableStateOf(PermissionManager.getMissingRequestablePermissions(context))
     }
+    var backgroundLocationRequested by remember { mutableStateOf(false) }
 
     val launcher = androidx.activity.compose.rememberLauncherForActivityResult(
         contract = androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions()
     ) { _ ->
         missingPermissions = PermissionManager.getMissingRequestablePermissions(context)
+        if (PermissionManager.areAllRequiredGranted(context) &&
+            PermissionManager.isBackgroundLocationGranted(context)
+        ) {
+            onAllGranted()
+        }
+    }
+
+    val backgroundLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+        contract = androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+    ) { _ ->
+        backgroundLocationRequested = true
         if (PermissionManager.areAllRequiredGranted(context)) {
             onAllGranted()
         }
     }
 
     LaunchedEffect(Unit) {
-        if (PermissionManager.areAllRequiredGranted(context)) {
+        if (PermissionManager.areAllRequiredGranted(context) &&
+            PermissionManager.isBackgroundLocationGranted(context)
+        ) {
             onAllGranted()
         } else if (!requestStarted) {
             requestStarted = true
@@ -56,7 +72,9 @@ fun PermissionsScreen(
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 missingPermissions = PermissionManager.getMissingRequestablePermissions(context)
-                if (PermissionManager.areAllRequiredGranted(context)) {
+                if (PermissionManager.areAllRequiredGranted(context) &&
+                    PermissionManager.isBackgroundLocationGranted(context)
+                ) {
                     onAllGranted()
                 }
             }
@@ -98,21 +116,39 @@ fun PermissionsScreen(
             )
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val bgGranted = PermissionManager.isBackgroundLocationGranted(context)
+            PermissionCard(
+                permissionName = Manifest.permission.ACCESS_BACKGROUND_LOCATION.substringAfterLast("."),
+                description = PermissionManager.getPermissionDescription(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                isGranted = bgGranted,
+                onRequest = {
+                    backgroundLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                }
+            )
+        }
+
         Spacer(modifier = Modifier.height(8.dp))
 
         Button(
             onClick = {
                 val missing = PermissionManager.getMissingRequestablePermissions(context)
-                if (missing.isEmpty()) {
+                if (missing.isEmpty() && PermissionManager.isBackgroundLocationGranted(context)) {
                     onAllGranted()
-                } else {
+                } else if (missing.isNotEmpty()) {
                     launcher.launch(missing.toTypedArray())
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    backgroundLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
                 }
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = SafetyRed)
         ) {
-            Text(if (PermissionManager.areAllRequiredGranted(context)) "Continue" else "Grant Permissions")
+            Text(
+                if (PermissionManager.areAllRequiredGranted(context) &&
+                    PermissionManager.isBackgroundLocationGranted(context)
+                ) "Continue" else "Grant Permissions"
+            )
         }
 
         OutlinedButton(

@@ -21,21 +21,17 @@ create policy "anon_insert" on shared_clips
 create policy "anon_delete_expired" on shared_clips
   for delete to anon using (expires_at < now());
 
--- Storage bucket (run via dashboard or Storage API)
--- Bucket name: shared-clips, public: true
--- Policies on storage.objects:
---   SELECT: allow for anon (public reads)
---   INSERT: allow for anon
---   DELETE: allow for anon (cleanup worker)
-insert into storage.buckets (id, name, public)
-values ('shared-clips', 'shared-clips', true)
-on conflict (id) do nothing;
-
-create policy "public_read_objects" on storage.objects
-  for select to anon using (bucket_id = 'shared-clips');
-
-create policy "anon_insert_objects" on storage.objects
-  for insert to anon with check (bucket_id = 'shared-clips');
-
-create policy "anon_delete_objects" on storage.objects
-  for delete to anon using (bucket_id = 'shared-clips');
+-- Storage bucket and object policies (run via Supabase dashboard SQL editor)
+-- The storage.buckets table is managed by Supabase; create the bucket via the dashboard
+-- or with `supabase storage bucket create shared-clips --public`.
+--
+-- After creating the bucket, run these policies in the SQL editor:
+--
+-- create policy "public_read_objects" on storage.objects
+--   for select to anon using (bucket_id = 'shared-clips');
+--
+-- create policy "anon_insert_objects" on storage.objects
+--   for insert to anon with check (bucket_id = 'shared-clips');
+--
+-- create policy "anon_delete_objects" on storage.objects
+--   for delete to anon using (bucket_id = 'shared-clips');

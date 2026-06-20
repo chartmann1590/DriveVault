@@ -6,6 +6,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("com.google.firebase.crashlytics")
     id("com.google.firebase.firebase-perf")
+    id("com.google.gms.google-services")
 }
 
 val localProperties = Properties().apply {
@@ -38,10 +39,6 @@ android {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
 
-        resValue("string", "firebase_project_id", localProp("FIREBASE_PROJECT_ID"))
-        resValue("string", "gcm_defaultSenderId", localProp("FIREBASE_PROJECT_NUMBER"))
-        resValue("string", "google_storage_bucket", localProp("FIREBASE_STORAGE_BUCKET"))
-        resValue("string", "firebase_database_url", "")
         buildConfigField("String", "FIREBASE_PROJECT_ID", "\"${localProp("FIREBASE_PROJECT_ID")}\"")
         buildConfigField("String", "FIREBASE_PROJECT_NUMBER", "\"${localProp("FIREBASE_PROJECT_NUMBER")}\"")
 
@@ -51,15 +48,17 @@ android {
         buildConfigField("String", "FEEDBACK_ASSETS_DIR", "\"feedback-assets\"")
         buildConfigField("String", "SUPABASE_URL", "\"${localProp("SUPABASE_URL")}\"")
         buildConfigField("String", "SUPABASE_ANON_KEY", "\"${localProp("SUPABASE_ANON_KEY")}\"")
+        buildConfigField(
+            "String",
+            "SHARE_VIEWER_URL",
+            "\"${localProp("SHARE_VIEWER_URL", "https://chartmann1590.github.io/DriveVault")}\""
+        )
     }
 
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            resValue("string", "google_app_id", localProp("FIREBASE_RELEASE_APP_ID"))
-            resValue("string", "google_api_key", localProp("FIREBASE_RELEASE_API_KEY"))
-            resValue("string", "google_crash_reporting_api_key", localProp("FIREBASE_RELEASE_API_KEY"))
             buildConfigField("String", "FIREBASE_APP_ID", "\"${localProp("FIREBASE_RELEASE_APP_ID")}\"")
             buildConfigField("String", "FIREBASE_API_KEY", "\"${localProp("FIREBASE_RELEASE_API_KEY")}\"")
             proguardFiles(
@@ -70,9 +69,6 @@ android {
         debug {
             isMinifyEnabled = false
             applicationIdSuffix = ".debug"
-            resValue("string", "google_app_id", localProp("FIREBASE_DEBUG_APP_ID"))
-            resValue("string", "google_api_key", localProp("FIREBASE_DEBUG_API_KEY"))
-            resValue("string", "google_crash_reporting_api_key", localProp("FIREBASE_DEBUG_API_KEY"))
             buildConfigField("String", "FIREBASE_APP_ID", "\"${localProp("FIREBASE_DEBUG_APP_ID")}\"")
             buildConfigField("String", "FIREBASE_API_KEY", "\"${localProp("FIREBASE_DEBUG_API_KEY")}\"")
         }
@@ -178,3 +174,65 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
 }
+
+// Generate google-services.json from local.properties so the Google Services Gradle
+// plugin can resolve the Firebase project without committing the file to Git.
+// Both debug and release clients are included; the plugin selects the matching
+// package name at build time.
+val applicationIdValue: String = android.defaultConfig.applicationId!!
+
+tasks.register("generateGoogleServicesJson") {
+    val outputFile = layout.projectDirectory.file("google-services.json").asFile
+    outputs.file(outputFile)
+
+    doLast {
+        val projectId = localProp("FIREBASE_PROJECT_ID")
+        val projectNumber = localProp("FIREBASE_PROJECT_NUMBER")
+        val storageBucket = localProp("FIREBASE_STORAGE_BUCKET")
+        val debugAppId = localProp("FIREBASE_DEBUG_APP_ID")
+        val debugApiKey = localProp("FIREBASE_DEBUG_API_KEY")
+        val releaseAppId = localProp("FIREBASE_RELEASE_APP_ID")
+        val releaseApiKey = localProp("FIREBASE_RELEASE_API_KEY")
+
+        outputFile.writeText(
+            """
+            {
+              "project_info": {
+                "project_number": "$projectNumber",
+                "firebase_url": "",
+                "project_id": "$projectId",
+                "storage_bucket": "$storageBucket"
+              },
+              "client": [
+                {
+                  "client_info": {
+                    "mobilesdk_app_id": "$debugAppId",
+                    "android_client_info": {
+                      "package_name": "${applicationIdValue}.debug"
+                    }
+                  },
+                  "api_key": [
+                    { "current_key": "$debugApiKey" }
+                  ]
+                },
+                {
+                  "client_info": {
+                    "mobilesdk_app_id": "$releaseAppId",
+                    "android_client_info": {
+                      "package_name": "$applicationIdValue"
+                    }
+                  },
+                  "api_key": [
+                    { "current_key": "$releaseApiKey" }
+                  ]
+                }
+              ]
+            }
+            """.trimIndent()
+        )
+    }
+}
+
+// NOTE: google-services.json must exist before Gradle configures the project.
+// Run `./gradlew generateGoogleServicesJson` whenever local.properties changes,
+// or generate it in CI before invoking Gradle (see .github/workflows/build.yml).

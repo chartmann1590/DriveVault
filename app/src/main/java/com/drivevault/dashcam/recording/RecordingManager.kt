@@ -1,4 +1,4 @@
-﻿package com.drivevault.dashcam.recording
+package com.drivevault.dashcam.recording
 
 import android.content.ContentValues
 import android.content.Context
@@ -268,6 +268,10 @@ class RecordingManager(
         }
     }
 
+    private fun releaseCamera() {
+        cameraProvider?.unbindAll()
+    }
+
     private suspend fun bindSingleVideoCaptureUseCase(capture: VideoCapture<Recorder>) {
         val provider = cameraProvider ?: awaitCameraProvider().also { cameraProvider = it }
         val selector = when (_state.value.cameraMode) {
@@ -376,7 +380,7 @@ class RecordingManager(
         return withTimeoutOrNull(5_000L) { await() } ?: false
     }
 
-    private suspend fun saveClipToDatabase() {
+    private suspend fun saveClipToDatabase(interrupted: Boolean = false) {
         val file = currentFile ?: return
         val endTime = System.currentTimeMillis()
         val loc = locationSamples
@@ -407,7 +411,8 @@ class RecordingManager(
             audioEnabled = _state.value.audioEnabled,
             overlayEnabled = _state.value.overlayEnabled,
             miniMapEnabled = _state.value.miniMapEnabled,
-            locked = _state.value.locked
+            locked = _state.value.locked,
+            interrupted = interrupted
         )
 
         currentClipId = clipDao.insert(entity)
@@ -446,6 +451,7 @@ class RecordingManager(
     suspend fun stopRecording() {
         isRecording = false
         finishCurrentClip()
+        releaseCamera()
         telemetryManager.stop()
         objectDetectionManager?.close()
         objectDetectionManager = null
@@ -458,7 +464,25 @@ class RecordingManager(
         isRecording = false
         try { secondaryRecording?.stop() } catch (_: Exception) {}
         try { currentRecording?.stop() } catch (_: Exception) {}
+        // Fire-and-forget best-effort save on unexpected service death.
+        // Uses a dedicated non-cancellable scope so it survives scope.cancel() below.
+        val fileToSave = currentFile
+        val deferred = primaryFinalize
+        if (fileToSave != null) {
+            CoroutineScope(Dispatchers.IO + Job()).launch {
+                try {
+                    val ok = withTimeoutOrNull(5_000L) { deferred?.await() } ?: false
+                    if (ok || (fileToSave.exists() && fileToSave.length() > 0)) {
+                        saveClipToDatabase(interrupted = true)
+                    }
+                } catch (_: Exception) {}
+            }
+        }
+        releaseCamera()
         scope.cancel()
+        objectDetectionManager?.close()
+        objectDetectionManager = null
+        _detectedObjects.value = emptyList()
     }
 
     fun lockCurrentClip() {

@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
@@ -46,6 +47,7 @@ fun ClipDetailScreen(
     val context = LocalContext.current
     val clipboard = LocalClipboardManager.current
     val clip = uiState.clip
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(clipId) { viewModel.loadClip(clipId) }
     LaunchedEffect(Unit) { viewModel.resetShareState() }
@@ -142,10 +144,11 @@ fun ClipDetailScreen(
                     ) {
                         FilledTonalButton(
                             onClick = {
-                                val shareIntent = viewModel.getShareIntent()
-                                if (shareIntent != null) {
-                                    viewModel.shareClip()
-                                    context.startActivity(Intent.createChooser(shareIntent, "Share clip"))
+                                scope.launch {
+                                    val shareIntent = viewModel.shareClipAndGetIntent()
+                                    if (shareIntent != null) {
+                                        context.startActivity(Intent.createChooser(shareIntent, "Share clip"))
+                                    }
                                 }
                             },
                             modifier = Modifier.weight(1f)
@@ -371,10 +374,11 @@ Icon(Icons.Filled.CloudUpload, null, modifier = Modifier.size(18.dp))
                 onExportMetadata = viewModel::exportMetadata,
                 onExportGpx = viewModel::exportGpx,
                 onShare = {
-                    viewModel.shareClip()
-                    val intent = viewModel.getShareIntent()
-                    if (intent != null) {
-                        context.startActivity(Intent.createChooser(intent, "Share clip"))
+                    scope.launch {
+                        val intent = viewModel.shareClipAndGetIntent()
+                        if (intent != null) {
+                            context.startActivity(Intent.createChooser(intent, "Share clip"))
+                        }
                     }
                 },
                 onSaveToGallery = viewModel::saveToGallery,

@@ -1,0 +1,29 @@
+# Copy this file to local.properties and fill in your own values.
+# local.properties is ignored by Git and should never be committed.
+
+sdk.dir=/path/to/android/sdk
+
+# GitHub feedback reporter
+github.api.token=ghp_xxxxxxxxxxxx
+github.repo.owner=your-github-username
+github.repo.name=your-repo-name
+
+# Firebase project configuration
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_PROJECT_NUMBER=your-project-number
+FIREBASE_STORAGE_BUCKET=your-project-id.firebasestorage.app
+
+# Firebase Android app configuration (debug build)
+FIREBASE_DEBUG_APP_ID=1:123456789012:android:abcdef1234567890
+FIREBASE_DEBUG_API_KEY=your-debug-api-key
+
+# Firebase Android app configuration (release build)
+FIREBASE_RELEASE_APP_ID=1:123456789012:android:abcdef1234567890
+FIREBASE_RELEASE_API_KEY=your-release-api-key
+
+# Supabase anonymous clip sharing
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-anon-key
+
+# Optional: custom GitHub Pages viewer URL for shared clips
+# SHARE_VIEWER_URL=https://your-username.github.io/DriveVault

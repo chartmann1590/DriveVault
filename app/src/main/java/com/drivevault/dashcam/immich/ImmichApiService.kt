@@ -1,4 +1,4 @@
-﻿package com.drivevault.dashcam.immich
+package com.drivevault.dashcam.immich
 
 import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
@@ -75,4 +75,11 @@ interface ImmichApiService {
         @Path("id") albumId: String,
         @Body request: ImmichAddAssetsRequest
     ): Response<ImmichAddAssetsResponse>
+
+    @PUT("api/assets/{id}")
+    suspend fun updateAsset(
+        @Header("x-api-key") apiKey: String,
+        @Path("id") assetId: String,
+        @Body metadata: Map<String, @JvmSuppressWildcards Any?>
+    ): Response<ImmichAssetResponse>
 }

@@ -1,37 +1,61 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DriveVault Dashcam - Privacy-First Android Dashcam</title>
-    <meta name="description" content="DriveVault is a privacy-first dashcam app for Android. Record drives with GPS overlays, dual-camera support, and full control over your data.">
+    <title>DriveVault Dashcam — Privacy-First Dashcam for Android</title>
+    <meta name="description" content="DriveVault is a privacy-first dashcam app for Android. Record drives with GPS overlays, dual-camera support, and full control over your data. Open source.">
+    <meta name="keywords" content="dashcam, android dashcam, privacy dashcam, open source dashcam, GPS overlay, dual camera dashcam, Immich dashcam, AI dashcam">
+    <meta name="author" content="DriveVault">
+    <meta property="og:title" content="DriveVault Dashcam — Privacy-First Dashcam for Android">
+    <meta property="og:description" content="Record drives with GPS overlays, dual-camera support, and full control over your data. Your drives. Your data.">
+    <meta property="og:image" content="https://chartmann1590.github.io/DriveVault/images/screenshots/share_preview.png">
+    <meta property="og:url" content="https://chartmann1590.github.io/DriveVault/">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
     <style>
         :root {
             --bg-primary: #0a0a0f;
             --bg-secondary: #12121a;
             --bg-card: #1a1a2e;
+            --bg-card-hover: #1f1f36;
             --text-primary: #f0f0f5;
             --text-secondary: #a0a0b5;
+            --text-muted: #6b6b80;
             --accent: #6c5ce7;
             --accent-light: #a29bfe;
             --accent-glow: rgba(108, 92, 231, 0.3);
+            --accent-glow-strong: rgba(108, 92, 231, 0.5);
             --gradient-1: linear-gradient(135deg, #6c5ce7, #a29bfe);
             --gradient-2: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+            --gradient-hero: linear-gradient(180deg, #0a0a0f 0%, #12121a 50%, #0a0a0f 100%);
             --border: rgba(255, 255, 255, 0.06);
+            --border-light: rgba(255, 255, 255, 0.1);
+            --green: #00b894;
+            --green-bg: rgba(0, 184, 148, 0.1);
+            --blue: #0984e3;
+            --blue-bg: rgba(9, 132, 227, 0.1);
+            --red: #e53935;
+            --red-bg: rgba(229, 57, 53, 0.1);
+            --amber: #fdcb6e;
+            --amber-bg: rgba(253, 203, 110, 0.1);
+            --purple: #6c5ce7;
+            --purple-bg: rgba(108, 92, 231, 0.1);
+            --radius: 16px;
+            --radius-sm: 10px;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             line-height: 1.6;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
         .container {
@@ -40,7 +64,13 @@
             padding: 0 24px;
         }
 
-        /* Nav */
+        .container-narrow {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ─── Navigation ─────────────────────── */
         nav {
             position: fixed;
             top: 0;
@@ -48,7 +78,9 @@
             z-index: 100;
             background: rgba(10, 10, 15, 0.85);
             backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
+            transition: background 0.3s;
         }
 
         nav .container {
@@ -66,74 +98,188 @@
             font-weight: 700;
             text-decoration: none;
             color: var(--text-primary);
+            white-space: nowrap;
         }
 
-        .logo svg {
-            width: 32px;
-            height: 32px;
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: var(--gradient-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
+
+        .logo-icon svg { width: 20px; height: 20px; }
 
         .nav-links {
             display: flex;
-            gap: 32px;
+            gap: 28px;
             list-style: none;
+            align-items: center;
         }
 
         .nav-links a {
             color: var(--text-secondary);
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
+            font-weight: 500;
             transition: color 0.2s;
+            white-space: nowrap;
         }
 
-        .nav-links a:hover {
+        .nav-links a:hover { color: var(--text-primary); }
+
+        .nav-cta {
+            padding: 8px 18px;
+            border-radius: 8px;
+            background: var(--gradient-1);
+            color: white !important;
+            font-weight: 600 !important;
+            font-size: 0.85rem !important;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
             color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 8px;
         }
 
-        /* Hero */
+        /* ─── Hero ──────────────────────────── */
         .hero {
             padding: 160px 0 100px;
             text-align: center;
             position: relative;
-            background: var(--gradient-2);
+            background: var(--gradient-hero);
+            overflow: hidden;
         }
 
         .hero::before {
             content: '';
             position: absolute;
-            top: 0;
+            top: -200px;
             left: 50%;
             transform: translateX(-50%);
-            width: 800px;
-            height: 600px;
+            width: 1000px;
+            height: 800px;
             background: radial-gradient(ellipse, var(--accent-glow) 0%, transparent 70%);
             pointer-events: none;
         }
 
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .hero-content { position: relative; z-index: 1; }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            font-size: 0.85rem;
+            color: var(--accent-light);
+            margin-bottom: 28px;
+            position: relative;
+        }
+
+        .hero-badge .pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
         .hero h1 {
-            font-size: 4rem;
+            font-size: 4.5rem;
             font-weight: 800;
-            letter-spacing: -0.02em;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
             margin-bottom: 20px;
             position: relative;
         }
 
-        .hero h1 span {
+        .hero h1 .gradient-text {
             background: var(--gradient-1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .hero p {
+        .hero-subtitle {
             font-size: 1.25rem;
             color: var(--text-secondary);
-            max-width: 600px;
+            max-width: 580px;
             margin: 0 auto 40px;
             position: relative;
+            line-height: 1.7;
         }
 
-        .badges {
+        .hero-badges {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+            margin-bottom: 48px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .badge .dot.green { background: var(--green); }
+        .badge .dot.blue { background: var(--blue); }
+        .badge .dot.purple { background: var(--purple); }
+        .badge .dot.amber { background: var(--amber); }
+
+        .hero-actions {
             display: flex;
             gap: 16px;
             justify-content: center;
@@ -141,196 +287,442 @@
             position: relative;
         }
 
-        .badge {
+        .btn {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 999px;
-            font-size: 0.85rem;
+            gap: 10px;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn:hover { transform: translateY(-2px); }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            box-shadow: 0 4px 24px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 32px var(--accent-glow-strong);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-light);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            background: rgba(108, 92, 231, 0.05);
+        }
+
+        .btn-google-play {
+            background: #1a1a2e;
             color: var(--text-secondary);
+            border: 1px solid var(--border);
+            cursor: default;
+            opacity: 0.7;
         }
 
-        .badge .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
+        .btn-google-play:hover {
+            transform: none;
+            box-shadow: none;
         }
 
-        .badge .dot.green { background: #00b894; }
-        .badge .dot.blue { background: #0984e3; }
-        .badge .dot.purple { background: #6c5ce7; }
+        .btn svg { flex-shrink: 0; }
 
-        /* Section */
+        .play-store-soon {
+            font-size: 0.75rem;
+            color: var(--amber);
+            margin-top: 4px;
+            display: block;
+            text-align: center;
+        }
+
+        /* ─── Sections ──────────────────────── */
         section {
             padding: 100px 0;
+            position: relative;
         }
 
-        section h2 {
+        section.alt {
+            background: var(--bg-secondary);
+        }
+
+        .section-label {
+            display: inline-block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent-light);
+            margin-bottom: 12px;
+        }
+
+        .section-title {
             font-size: 2.5rem;
             font-weight: 700;
             text-align: center;
             margin-bottom: 16px;
+            letter-spacing: -0.02em;
         }
 
-        section .subtitle {
+        .section-subtitle {
             text-align: center;
             color: var(--text-secondary);
             font-size: 1.1rem;
             margin-bottom: 64px;
-            max-width: 500px;
+            max-width: 520px;
             margin-left: auto;
             margin-right: auto;
+            line-height: 1.6;
         }
 
-        /* Features Grid */
+        /* ─── Features Grid ─────────────────── */
         .features-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
+            gap: 20px;
         }
 
         .feature-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 32px;
-            transition: transform 0.2s, border-color 0.2s;
+            border-radius: var(--radius);
+            padding: 28px;
+            transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
         }
 
         .feature-card:hover {
             transform: translateY(-4px);
             border-color: rgba(108, 92, 231, 0.3);
+            box-shadow: 0 8px 32px rgba(108, 92, 231, 0.08);
         }
 
         .feature-icon {
             width: 48px;
             height: 48px;
-            background: var(--gradient-1);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
+            flex-shrink: 0;
         }
 
+        .feature-icon.purple { background: var(--purple-bg); color: var(--accent-light); }
+        .feature-icon.green { background: var(--green-bg); color: var(--green); }
+        .feature-icon.blue { background: var(--blue-bg); color: #74b9ff; }
+        .feature-icon.amber { background: var(--amber-bg); color: var(--amber); }
+        .feature-icon.red { background: var(--red-bg); color: #ef9a9a; }
+
         .feature-card h3 {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             margin-bottom: 8px;
+            font-weight: 600;
         }
 
         .feature-card p {
             color: var(--text-secondary);
             font-size: 0.9rem;
+            line-height: 1.6;
         }
 
-        /* Privacy Section */
-        .privacy {
-            background: var(--bg-secondary);
+        .feature-tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            margin-top: 12px;
         }
 
+        .feature-tag.optional {
+            background: var(--amber-bg);
+            color: var(--amber);
+        }
+
+        .feature-tag.on-device {
+            background: var(--green-bg);
+            color: var(--green);
+        }
+
+        /* ─── Screenshots ──────────────────── */
+        .screenshots-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .screenshots-scroll {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 16px 0 24px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) var(--bg-secondary);
+        }
+
+        .screenshots-scroll::-webkit-scrollbar { height: 6px; }
+        .screenshots-scroll::-webkit-scrollbar-track { background: var(--bg-secondary); border-radius: 3px; }
+        .screenshots-scroll::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+        .screenshot-card {
+            min-width: 260px;
+            max-width: 280px;
+            scroll-snap-align: start;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+
+        .screenshot-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(108, 92, 231, 0.3);
+        }
+
+        .screenshot-card img {
+            width: 100%;
+            aspect-ratio: 9/19;
+            object-fit: cover;
+            display: block;
+        }
+
+        .screenshot-card .caption {
+            padding: 14px 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-top: 1px solid var(--border);
+        }
+
+        /* ─── Privacy ──────────────────────── */
         .privacy-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
-            max-width: 800px;
+            gap: 20px;
+            max-width: 860px;
             margin: 0 auto;
         }
 
         .privacy-item {
             display: flex;
             align-items: flex-start;
-            gap: 16px;
+            gap: 18px;
             padding: 24px;
             background: var(--bg-card);
-            border-radius: 12px;
+            border-radius: var(--radius-sm);
             border: 1px solid var(--border);
+            transition: border-color 0.2s;
+        }
+
+        .privacy-item:hover {
+            border-color: rgba(0, 184, 148, 0.25);
         }
 
         .privacy-icon {
-            width: 40px;
-            height: 40px;
-            min-width: 40px;
-            background: rgba(0, 184, 148, 0.1);
-            border-radius: 10px;
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            background: var(--green-bg);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #00b894;
-            font-size: 1.2rem;
+            font-size: 1.25rem;
         }
 
         .privacy-item h4 {
             margin-bottom: 4px;
-            font-size: 0.95rem;
+            font-size: 1rem;
         }
 
         .privacy-item p {
             color: var(--text-secondary);
             font-size: 0.85rem;
+            line-height: 1.6;
         }
 
-        /* Screenshots */
-        .screenshots-scroll {
-            display: flex;
-            gap: 24px;
-            overflow-x: auto;
-            padding: 20px 0;
-            scroll-snap-type: x mandatory;
+        /* ─── Tech Stack ───────────────────── */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            max-width: 900px;
+            margin: 0 auto;
         }
 
-        .screenshots-scroll::-webkit-scrollbar {
-            height: 6px;
-        }
-
-        .screenshots-scroll::-webkit-scrollbar-track {
-            background: var(--bg-secondary);
-            border-radius: 3px;
-        }
-
-        .screenshots-scroll::-webkit-scrollbar-thumb {
-            background: var(--accent);
-            border-radius: 3px;
-        }
-
-        .screenshot-card {
-            min-width: 280px;
-            scroll-snap-align: start;
+        .tech-item {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            overflow: hidden;
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            text-align: center;
+            transition: border-color 0.2s;
         }
 
-        .screenshot-card img {
-            width: 100%;
-            height: 500px;
-            object-fit: cover;
+        .tech-item:hover { border-color: var(--accent); }
+
+        .tech-item .tech-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
         }
 
-        .screenshot-card .caption {
-            padding: 16px 20px;
-            font-size: 0.9rem;
+        .tech-item .tech-name {
+            font-size: 0.85rem;
             font-weight: 600;
         }
 
-        /* CTA */
+        .tech-item .tech-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* ─── FAQ ──────────────────────────── */
+        .faq-list {
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .faq-item:hover { border-color: rgba(108, 92, 231, 0.2); }
+
+        .faq-question {
+            width: 100%;
+            padding: 20px 24px;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            font-family: inherit;
+        }
+
+        .faq-question .faq-arrow {
+            font-size: 0.7rem;
+            color: var(--accent-light);
+            transition: transform 0.3s;
+            flex-shrink: 0;
+        }
+
+        .faq-item.open .faq-arrow {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.7;
+            padding: 0 24px;
+        }
+
+        .faq-item.open .faq-answer {
+            max-height: 400px;
+            padding: 0 24px 20px;
+        }
+
+        /* ─── Promo Video ──────────────────── */
+        .video-placeholder {
+            max-width: 800px;
+            margin: 0 auto;
+            aspect-ratio: 16/9;
+            background: var(--bg-card);
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            color: var(--text-muted);
+            transition: border-color 0.2s;
+        }
+
+        .video-placeholder:hover {
+            border-color: var(--accent);
+        }
+
+        .video-icon {
+            font-size: 3rem;
+            opacity: 0.4;
+        }
+
+        .video-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .video-sub {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* ─── CTA ──────────────────────────── */
         .cta {
             text-align: center;
-            padding: 100px 0;
+            padding: 120px 0;
+            position: relative;
         }
+
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 400px;
+            background: radial-gradient(ellipse, var(--accent-glow) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .cta-content { position: relative; }
 
         .cta h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
             margin-bottom: 16px;
+            letter-spacing: -0.02em;
         }
 
-        .cta p {
+        .cta-p {
             color: var(--text-secondary);
             margin-bottom: 40px;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .cta-buttons {
@@ -338,227 +730,648 @@
             gap: 16px;
             justify-content: center;
             flex-wrap: wrap;
-        }
-
-        .btn {
-            display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 14px 32px;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: transform 0.2s;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
+        .cta-note {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 24px;
         }
 
-        .btn-primary {
-            background: var(--gradient-1);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: var(--bg-card);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-        }
-
-        /* Footer */
+        /* ─── Footer ───────────────────────── */
         footer {
-            padding: 40px 0;
+            padding: 48px 0;
             border-top: 1px solid var(--border);
             text-align: center;
             color: var(--text-secondary);
             font-size: 0.85rem;
         }
 
+        footer .footer-links {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
         footer a {
             color: var(--accent-light);
             text-decoration: none;
+            transition: color 0.2s;
         }
 
-        /* Responsive */
+        footer a:hover { color: var(--text-primary); }
+
+        footer .footer-copy { color: var(--text-muted); margin-top: 12px; }
+
+        /* ─── App Icon Showcase ────────────── */
+        .icon-showcase {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .app-icon-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 28px;
+            background: var(--gradient-1);
+            box-shadow: 0 8px 32px var(--accent-glow-strong);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .app-icon-large svg {
+            width: 64px;
+            height: 64px;
+        }
+
+        .icon-meta {
+            text-align: left;
+        }
+
+        .icon-meta .app-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .icon-meta .app-version {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        .icon-meta .app-platform {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* ─── Responsive ───────────────────── */
+        @media (max-width: 1024px) {
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .tech-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
+            .hero h1 { font-size: 2.6rem; }
+            .hero { padding: 120px 0 80px; }
+            .section-title { font-size: 2rem; }
+            .features-grid { grid-template-columns: 1fr; }
+            .privacy-grid { grid-template-columns: 1fr; }
+            .tech-grid { grid-template-columns: repeat(2, 1fr); }
+            .nav-links { display: none; }
+            .mobile-menu-btn { display: block; }
+            .nav-links.open {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                top: 64px;
+                left: 0;
+                right: 0;
+                background: var(--bg-primary);
+                border-bottom: 1px solid var(--border);
+                padding: 16px 24px;
+                gap: 16px;
             }
+            .icon-showcase { flex-direction: column; text-align: center; }
+            .icon-meta { text-align: center; }
+            section { padding: 60px 0; }
+            .cta { padding: 80px 0; }
+        }
 
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .privacy-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .nav-links {
-                display: none;
-            }
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 2rem; }
+            .badge { font-size: 0.78rem; padding: 8px 14px; }
+            .screenshot-card { min-width: 200px; max-width: 220px; }
         }
     </style>
+    <script>
+        function toggleFAQ(element) {
+            const item = element.closest('.faq-item');
+            item.classList.toggle('open');
+        }
+
+        function toggleMobileMenu() {
+            const links = document.querySelector('.nav-links');
+            links.classList.toggle('open');
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('nav')) {
+                document.querySelector('.nav-links').classList.remove('open');
+            }
+        });
+    </script>
 </head>
 <body>
 
+<!-- ═══════════════ NAVIGATION ═══════════════ -->
 <nav>
     <div class="container">
         <a href="#" class="logo">
-            <svg viewBox="0 0 32 32" fill="none">
-                <rect width="32" height="32" rx="8" fill="url(#g1)"/>
-                <path d="M8 16l4-4 4 4-4 4-4-4z" fill="white" opacity="0.9"/>
-                <path d="M16 16l4-4 4 4-4 4-4-4z" fill="white" opacity="0.6"/>
-                <defs><linearGradient id="g1" x1="0" y1="0" x2="32" y2="32"><stop stop-color="#6c5ce7"/><stop offset="1" stop-color="#a29bfe"/></linearGradient></defs>
-            </svg>
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M4 15l4-5 4 5-4 5-4-5z" fill="white" opacity="0.9"/>
+                    <path d="M12 15l4-5 4 5-4 5-4-5z" fill="white" opacity="0.5"/>
+                    <rect x="2" y="14" width="20" height="2" rx="1" fill="white" opacity="0.3"/>
+                </svg>
+            </div>
             DriveVault
         </a>
         <ul class="nav-links">
             <li><a href="#features">Features</a></li>
-            <li><a href="#privacy">Privacy</a></li>
             <li><a href="#screenshots">Screenshots</a></li>
-            <li><a href="privacy-policy.html">Privacy</a></li>
-            <li><a href="https://github.com/chartmann1590/DriveVault" target="_blank">GitHub</a></li>
+            <li><a href="#privacy">Privacy</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="privacy-policy.html">Policy</a></li>
+            <li><a href="https://github.com/chartmann1590/DriveVault/releases" target="_blank" class="nav-cta">Download</a></li>
         </ul>
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">&#9776;</button>
     </div>
 </nav>
 
+<!-- ═══════════════ HERO ═══════════════ -->
 <section class="hero">
     <div class="container">
-        <h1>Your drives.<br><span>Your data.</span></h1>
-        <p>DriveVault is a privacy-first dashcam app for Android. Record with GPS overlays, dual-camera support, and total control over your footage.</p>
-        <div class="badges">
-            <span class="badge"><span class="dot green"></span> Open Source</span>
-            <span class="badge"><span class="dot blue"></span> Android 8.0+</span>
-            <span class="badge"><span class="dot purple"></span> No Cloud Required</span>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="pulse"></span> Open Source &amp; Privacy-First
+            </div>
+            <h1>Your drives.<br><span class="gradient-text">Your data.</span></h1>
+            <p class="hero-subtitle">DriveVault is a privacy-first dashcam app for Android. Record with GPS overlays, dual-camera support, AI detection, and total control over your footage — nothing leaves your device unless you say so.</p>
+            <div class="hero-badges">
+                <span class="badge"><span class="dot green"></span> Open Source</span>
+                <span class="badge"><span class="dot blue"></span> Android 8.0+</span>
+                <span class="badge"><span class="dot purple"></span> No Cloud Required</span>
+                <span class="badge"><span class="dot amber"></span> On-Device AI</span>
+            </div>
+            <div class="hero-actions">
+                <a href="https://github.com/chartmann1590/DriveVault/releases" class="btn btn-primary" target="_blank">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2L12 16M12 16L8 12M12 16L16 12M4 20H20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Download APK
+                </a>
+                <a href="https://github.com/chartmann1590/DriveVault" class="btn btn-outline" target="_blank">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    View on GitHub
+                </a>
+                <span class="btn btn-outline btn-google-play" title="Coming soon to Google Play">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zM17.5 9L14.23 12l3.27 3 .071.036c.58.27 1.164.007 1.429-.498.274-.528.267-1.117-.004-1.647L17.5 9zM2.14 1.1l12.08 10.55L3.46 22.718c-.45.33-1.09.12-1.38-.38-.25-.4-.29-.888-.11-1.36.06-.1.11-.16.17-.22z"/></svg>
+                    Google Play
+                </span>
+            </div>
+            <span class="play-store-soon">Coming soon to Google Play Store</span>
         </div>
     </div>
 </section>
 
+<!-- ═══════════════ FEATURES ═══════════════ -->
 <section id="features">
     <div class="container">
-        <h2>Everything you need</h2>
-        <p class="subtitle">A full-featured dashcam that respects your privacy</p>
+        <div class="section-label">Features</div>
+        <h2 class="section-title">Everything you need in a dashcam</h2>
+        <p class="section-subtitle">From advanced recording to AI-powered detection, DriveVault has every feature you'd expect — and then some.</p>
+
         <div class="features-grid">
             <div class="feature-card">
-                <div class="feature-icon">&#127909;</div>
+                <div class="feature-icon purple">&#127909;</div>
                 <h3>Loop Recording</h3>
-                <p>Records in 60-second segments and auto-deletes the oldest unlocked clips when storage fills up. Never run out of space.</p>
+                <p>Records in 60-second segments and auto-deletes the oldest unlocked clips when storage fills up. Set your storage quota and DriveVault handles the rest.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">&#128225;</div>
+                <div class="feature-icon purple">&#128225;</div>
                 <h3>Dual Camera</h3>
-                <p>Simultaneously record from front and rear cameras on supported devices. Capture both perspectives of your drive.</p>
+                <p>Simultaneously record from front and rear cameras using CameraX. Capture both the road ahead and your cabin in one synchronized view.</p>
+                <span class="feature-tag optional">Rear + Front</span>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">&#128205;</div>
-                <h3>GPS Overlay</h3>
-                <p>Real-time speed, coordinates, and compass heading overlaid on the camera preview with an OSM mini map.</p>
+                <div class="feature-icon blue">&#128205;</div>
+                <h3>GPS &amp; Telemetry Overlay</h3>
+                <p>Real-time speed (MPH/KPH), coordinates, compass heading, and timestamp overlaid on camera preview with an OSM mini map. No API keys needed.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">&#128274;</div>
+                <div class="feature-icon green">&#128274;</div>
                 <h3>Clip Locking</h3>
-                <p>Lock important clips to protect them from auto-deletion. Your critical footage is always safe.</p>
+                <p>Lock important clips with one tap to protect them from auto-deletion. Critical footage is always safe, even when storage fills up.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">&#128230;</div>
-                <h3>Export & Share</h3>
-                <p>Export raw video, metadata JSON, or GPX route files. Share via Android share sheet or save to gallery.</p>
+                <div class="feature-icon blue">&#128269;</div>
+                <h3>Clip Library &amp; Search</h3>
+                <p>Browse all your clips in a 2-column grid. Filter by date, lock status, sync status, or camera mode. Select multiple clips for batch operations.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">&#9729;&#65039;</div>
+                <div class="feature-icon purple">&#128230;</div>
+                <h3>Export &amp; Share</h3>
+                <p>Export raw video, metadata JSON, or GPX route files. Share via Android share sheet with automatic 50MB trimming. Redact location data for privacy.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon green">&#9729;</div>
                 <h3>Immich Sync</h3>
-                <p>Optional sync to your own self-hosted Immich server. Your clips, your infrastructure, your rules.</p>
+                <p>Optional sync to your self-hosted Immich server. Encrypted API key storage, configurable sync rules (Wi-Fi only, charging only), and auto-album creation.</p>
+                <span class="feature-tag optional">Opt-in</span>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon amber">&#128279;</div>
+                <h3>Anonymous Clip Sharing</h3>
+                <p>Share clips via time-limited links (24-hour expiry) with Supabase. No GPS data included, no account required to view. Fully opt-in and off by default.</p>
+                <span class="feature-tag optional">Opt-in</span>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon red">&#129302;</div>
+                <h3>On-Device AI Detection</h3>
+                <p>Real-time vehicle and person detection via MLKit. Bounding box overlay on camera preview. Runs entirely on-device — no cloud inference.</p>
+                <span class="feature-tag on-device">On-Device</span>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon purple">&#9881;</div>
+                <h3>46 Configurable Settings</h3>
+                <p>Fine-tune everything: video quality (720p/1080p/4K), FPS (30/60), bitrate, audio toggle, stabilization, mirror front camera, and storage management.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon green">&#128737;</div>
+                <h3>Background Recording</h3>
+                <p>Keeps recording via a foreground service even when the screen is off or the app is minimized. Minimal recording bar stays visible for quick access.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon blue">&#128295;</div>
+                <h3>In-App Bug Reporting</h3>
+                <p>Report issues directly from the app via GitHub Issues API. Automatically attaches diagnostic information and screenshots for faster fixes.</p>
             </div>
         </div>
     </div>
 </section>
 
-<section id="privacy" class="privacy">
+<!-- ═══════════════ SCREENSHOTS ═══════════════ -->
+<section id="screenshots" class="alt">
     <div class="container">
-        <h2>Privacy by default</h2>
-        <p class="subtitle">Your data never leaves your device unless you say so</p>
+        <div class="section-label">Gallery</div>
+        <h2 class="section-title">See it in action</h2>
+        <p class="section-subtitle">A clean, modern interface designed for driving conditions. Glassmorphism design with auto-hiding chrome.</p>
+
+        <div class="screenshots-wrapper">
+            <div class="screenshots-scroll">
+                <div class="screenshot-card">
+                    <img src="images/screenshots/design_recording.png" alt="Recording with GPS overlay" loading="lazy">
+                    <div class="caption">Recording with GPS Overlay</div>
+                </div>
+                <div class="screenshot-card">
+                    <img src="images/screenshots/design_dual_camera.png" alt="Dual Camera mode" loading="lazy">
+                    <div class="caption">Dual Camera + Mini Map</div>
+                </div>
+                <div class="screenshot-card">
+                    <img src="images/screenshots/design_clip_library.png" alt="Clip Library" loading="lazy">
+                    <div class="caption">Clip Library</div>
+                </div>
+                <div class="screenshot-card">
+                    <img src="images/screenshots/design_clip_detail.png" alt="Clip Detail" loading="lazy">
+                    <div class="caption">Clip Playback &amp; Metadata</div>
+                </div>
+                <div class="screenshot-card">
+                    <img src="images/screenshots/design_settings.png" alt="Settings" loading="lazy">
+                    <div class="caption">Settings</div>
+                </div>
+                <div class="screenshot-card">
+                    <img src="images/screenshots/design_export.png" alt="Export Options" loading="lazy">
+                    <div class="caption">Export &amp; Share</div>
+                </div>
+                <div class="screenshot-card">
+                    <img src="images/screenshots/design_onboarding.png" alt="Onboarding" loading="lazy">
+                    <div class="caption">Onboarding</div>
+                </div>
+                <div class="screenshot-card">
+                    <img src="images/screenshots/screen_home.png" alt="Home Screen" loading="lazy">
+                    <div class="caption">Home Screen</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ APP ICON ═══════════════ -->
+<section>
+    <div class="container">
+        <div class="section-label">Branding</div>
+        <h2 class="section-title">App Icon</h2>
+        <p class="section-subtitle">A distinctive icon that reflects the app's purpose — your trusted driving companion.</p>
+        <div class="icon-showcase">
+            <div class="app-icon-large">
+                <svg viewBox="0 0 64 64" fill="none">
+                    <path d="M10 40l12-14 12 14-12 14-12-14z" fill="white" opacity="0.95"/>
+                    <path d="M30 40l12-14 12 14-12 14-12-14z" fill="white" opacity="0.55"/>
+                    <rect x="6" y="36" width="52" height="4" rx="2" fill="white" opacity="0.3"/>
+                    <circle cx="20" cy="48" r="5" fill="white" opacity="0.4"/>
+                    <circle cx="44" cy="48" r="5" fill="white" opacity="0.4"/>
+                </svg>
+            </div>
+            <div class="icon-meta">
+                <div class="app-name">DriveVault Dashcam</div>
+                <div class="app-version">Version 1.0.0</div>
+                <div class="app-platform">Android &bull; Min SDK 26 (8.0 Oreo)</div>
+                <div class="app-platform" style="margin-top:4px;">Package: com.drivevault.dashcam</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ PRIVACY ═══════════════ -->
+<section id="privacy" class="alt">
+    <div class="container">
+        <div class="section-label">Privacy</div>
+        <h2 class="section-title">Privacy by default</h2>
+        <p class="section-subtitle">Your data never leaves your device unless you explicitly choose to share it.</p>
+
         <div class="privacy-grid">
             <div class="privacy-item">
                 <div class="privacy-icon">&#128274;</div>
                 <div>
-                    <h4>No cloud uploads</h4>
-                    <p>Videos, GPS, and metadata stay on your device. No automatic uploads ever.</p>
+                    <h4>No Cloud Uploads</h4>
+                    <p>Videos, GPS data, and metadata stay on your device. No automatic uploads ever.</p>
                 </div>
             </div>
             <div class="privacy-item">
                 <div class="privacy-icon">&#128100;</div>
                 <div>
-                    <h4>No account required</h4>
-                    <p>Install, grant permissions, and start recording. No sign-up or login.</p>
+                    <h4>No Account Required</h4>
+                    <p>Install, grant permissions, and start recording. No sign-up or login needed.</p>
                 </div>
             </div>
             <div class="privacy-item">
-                <div class="privacy-icon">&#128065;&#8205;&#65039;</div>
+                <div class="privacy-icon">&#128065;</div>
                 <div>
-                    <h4>No ads or tracking</h4>
+                    <h4>No Ads or Tracking</h4>
                     <p>Zero ads, zero analytics tracking of your personal data or location history.</p>
                 </div>
             </div>
             <div class="privacy-item">
                 <div class="privacy-icon">&#128272;</div>
                 <div>
-                    <h4>Encrypted storage</h4>
-                    <p>API keys and sensitive settings are stored using Android encrypted preferences.</p>
+                    <h4>Encrypted Storage</h4>
+                    <p>API keys and sensitive settings are stored using Android EncryptedSharedPreferences and Keystore.</p>
+                </div>
+            </div>
+            <div class="privacy-item">
+                <div class="privacy-icon">&#128273;</div>
+                <div>
+                    <h4>Local-Only Mode</h4>
+                    <p>Enable Local-Only Mode to disable all network features with one toggle. Complete airgap.</p>
+                </div>
+            </div>
+            <div class="privacy-item">
+                <div class="privacy-icon">&#128220;</div>
+                <div>
+                    <h4>Full Privacy Policy</h4>
+                    <p>Read our comprehensive <a href="privacy-policy.html" style="color:var(--accent-light);">privacy policy</a> covering every data point and permission.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<section id="screenshots">
+<!-- ═══════════════ TECH STACK ═══════════════ -->
+<section id="tech">
     <div class="container">
-        <h2>See it in action</h2>
-        <p class="subtitle">Clean, modern interface designed for driving</p>
-        <div class="screenshots-scroll">
-            <div class="screenshot-card">
-                <img src="stitch_drivevault_dashcam_ui_ux_design/stitch_drivevault_dashcam_ui_ux_design/dashcam_recording_portrait_1/screen.png" alt="Recording Screen">
-                <div class="caption">Recording with GPS overlay</div>
+        <div class="section-label">Technology</div>
+        <h2 class="section-title">Built with modern tools</h2>
+        <p class="section-subtitle">A native Android app powered by the latest Jetpack libraries and open source technologies.</p>
+
+        <div class="tech-grid">
+            <div class="tech-item">
+                <div class="tech-icon">&#129531;</div>
+                <div class="tech-name">Kotlin</div>
+                <div class="tech-desc">Modern language</div>
             </div>
-            <div class="screenshot-card">
-                <img src="stitch_drivevault_dashcam_ui_ux_design/stitch_drivevault_dashcam_ui_ux_design/clip_library/screen.png" alt="Clip Library">
-                <div class="caption">Clip Library</div>
+            <div class="tech-item">
+                <div class="tech-icon">&#127912;</div>
+                <div class="tech-name">Jetpack Compose</div>
+                <div class="tech-desc">Declarative UI</div>
             </div>
-            <div class="screenshot-card">
-                <img src="stitch_drivevault_dashcam_ui_ux_design/stitch_drivevault_dashcam_ui_ux_design/clip_detail_playback/screen.png" alt="Clip Detail">
-                <div class="caption">Clip Detail & Playback</div>
+            <div class="tech-item">
+                <div class="tech-icon">&#128247;</div>
+                <div class="tech-name">CameraX</div>
+                <div class="tech-desc">Camera API</div>
             </div>
-            <div class="screenshot-card">
-                <img src="stitch_drivevault_dashcam_ui_ux_design/stitch_drivevault_dashcam_ui_ux_design/settings_recording_sync/screen.png" alt="Settings">
-                <div class="caption">Settings</div>
+            <div class="tech-item">
+                <div class="tech-icon">&#128506;</div>
+                <div class="tech-name">OSMDroid</div>
+                <div class="tech-desc">OpenStreetMap</div>
             </div>
-            <div class="screenshot-card">
-                <img src="stitch_drivevault_dashcam_ui_ux_design/stitch_drivevault_dashcam_ui_ux_design/export_overlay_customization/screen.png" alt="Export">
-                <div class="caption">Export Options</div>
+            <div class="tech-item">
+                <div class="tech-icon">&#128250;</div>
+                <div class="tech-name">ExoPlayer</div>
+                <div class="tech-desc">Video playback</div>
             </div>
-            <div class="screenshot-card">
-                <img src="stitch_drivevault_dashcam_ui_ux_design/stitch_drivevault_dashcam_ui_ux_design/onboarding_welcome_safety/screen.png" alt="Onboarding">
-                <div class="caption">Onboarding</div>
+            <div class="tech-item">
+                <div class="tech-icon">&#129302;</div>
+                <div class="tech-name">MLKit</div>
+                <div class="tech-desc">On-device AI</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon">&#128451;</div>
+                <div class="tech-name">Room + DataStore</div>
+                <div class="tech-desc">Local storage</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon">&#9776;</div>
+                <div class="tech-name">Material 3</div>
+                <div class="tech-desc">Design system</div>
             </div>
         </div>
     </div>
 </section>
 
-<section class="cta">
+<!-- ═══════════════ PROMO VIDEO ═══════════════ -->
+<section id="video" class="alt">
     <div class="container">
-        <h2>Ready to drive with confidence?</h2>
-        <p>Open source, privacy-first, and built for Android.</p>
-        <div class="cta-buttons">
-            <a href="https://github.com/chartmann1590/DriveVault" class="btn btn-primary" target="_blank">View on GitHub</a>
-            <a href="https://github.com/chartmann1590/DriveVault/releases" class="btn btn-secondary" target="_blank">Download APK</a>
+        <div class="section-label">Demo</div>
+        <h2 class="section-title">See DriveVault in action</h2>
+        <p class="section-subtitle">A quick demo of the recording, clip management, and settings — coming soon.</p>
+
+        <div class="video-placeholder">
+            <div class="video-icon">&#9654;</div>
+            <div class="video-text">Promo Video Coming Soon</div>
+            <div class="video-sub">A full walkthrough of DriveVault's features is in the works</div>
         </div>
     </div>
 </section>
 
+<!-- ═══════════════ FAQ ═══════════════ -->
+<section id="faq">
+    <div class="container">
+        <div class="section-label">Help</div>
+        <h2 class="section-title">Frequently Asked Questions</h2>
+        <p class="section-subtitle">Everything you need to know about DriveVault.</p>
+
+        <div class="faq-list">
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    What is DriveVault?
+                    <span class="faq-arrow">&#9660;</span>
+                </button>
+                <div class="faq-answer">
+                    DriveVault is a <strong>privacy-first dashcam app for Android</strong> that turns your phone into a professional-grade dashcam. It records video with GPS overlays, supports dual cameras, has on-device AI detection, and keeps all your data local by default. It's fully open source with no ads, no tracking, and no account required.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Is DriveVault free and open source?
+                    <span class="faq-arrow">&#9660;</span>
+                </button>
+                <div class="faq-answer">
+                    <strong>Yes!</strong> DriveVault is completely free and open source. The full source code is available on <a href="https://github.com/chartmann1590/DriveVault" target="_blank" style="color:var(--accent-light);">GitHub</a>. There are no premium tiers, no subscriptions, and no hidden costs. You can even build it from source if you prefer.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Does DriveVault work in the background?
+                    <span class="faq-arrow">&#9660;</span>
+                </button>
+                <div class="faq-answer">
+                    <strong>Yes.</strong> DriveVault uses an Android foreground service to continue recording even when you turn off the screen or switch to another app. A minimal recording bar stays visible so you know it's active. You can tap it to quickly return to the app.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    How much storage does it use?
+                    <span class="faq-arrow">&#9660;</span>
+                </button>
+                <div class="faq-answer">
+                    You're in full control. You can set a <strong>storage quota</strong> in Settings, and DriveVault will auto-delete the oldest unlocked clips to stay within your limit. A 60-second 1080p clip at balanced bitrate uses approximately 60-80 MB. You can also choose lower quality (720p) or higher quality (4K) depending on your needs.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Does it work without an internet connection?
+                    <span class="faq-arrow">&#9660;</span>
+                </button>
+                <div class="faq-answer">
+                    <strong>Absolutely.</strong> Core recording, GPS overlay, and clip management work entirely offline. The mini map caches tiles for offline use. Only optional features like Immich sync and anonymous clip sharing require a network. You can even enable <strong>Local-Only Mode</strong> to disable all network features with one toggle.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    What is Immich sync?
+                    <span class="faq-arrow">&#9660;</span>
+                </button>
+                <div class="faq-answer">
+                    <a href="https://immich.app" target="_blank" style="color:var(--accent-light);">Immich</a> is a self-hosted photo and video backup solution. DriveVault can optionally sync your dashcam clips to <strong>your own</strong> Immich server. Your API key is encrypted on-device, and clips go directly from your phone to your server — they never pass through DriveVault's systems.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    How does anonymous clip sharing work?
+                    <span class="faq-arrow">&#9660;</span>
+                </button>
+                <div class="faq-answer">
+                    This <strong>opt-in feature</strong> lets you share clips via time-limited links that expire after 24 hours. Only the video file is uploaded (no GPS data), and it's stored anonymously with a random UUID. Anyone with the link can view it, but after 24 hours it's permanently deleted. You must explicitly enable this in Settings.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Is my location data private?
+                    <span class="faq-arrow">&#9660;</span>
+                </button>
+                <div class="faq-answer">
+                    <strong>Yes.</strong> GPS coordinates, speed, and route data are stored locally on your device and are <strong>never</strong> uploaded automatically. When sharing or exporting clips, you can choose to blur or exclude location data entirely. Anonymous clip sharing strips GPS data by default.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    What permissions does DriveVault need?
+                    <span class="faq-arrow">&#9660;</span>
+                </button>
+                <div class="faq-answer">
+                    DriveVault requests <strong>Camera</strong> (record video), <strong>Microphone</strong> (optional audio recording), <strong>Location</strong> (GPS overlay), <strong>Notifications</strong> (recording status), <strong>Storage</strong> (save clips/exports), <strong>Foreground Service</strong> (background recording), and <strong>Internet</strong> (optional features). Every permission is explained in detail on our <a href="privacy-policy.html" style="color:var(--accent-light);">privacy policy</a> page.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    When will DriveVault be on the Google Play Store?
+                    <span class="faq-arrow">&#9660;</span>
+                </button>
+                <div class="faq-answer">
+                    We're actively preparing the Play Store listing. In the meantime, you can <strong>download the APK directly from <a href="https://github.com/chartmann1590/DriveVault/releases" target="_blank" style="color:var(--accent-light);">GitHub Releases</a></strong>. The app will be available on Google Play soon — stay tuned!
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    How do I report a bug or suggest a feature?
+                    <span class="faq-arrow">&#9660;</span>
+                </button>
+                <div class="faq-answer">
+                    You have two options: use the <strong>in-app bug reporter</strong> (Settings &rarr; Support &amp; Feedback) which automatically attaches diagnostic info, or <strong>open an issue on <a href="https://github.com/chartmann1590/DriveVault/issues" target="_blank" style="color:var(--accent-light);">GitHub Issues</a></strong>. Feature suggestions are welcome too!
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFAQ(this)">
+                    Can I build DriveVault from source?
+                    <span class="faq-arrow">&#9660;</span>
+                </button>
+                <div class="faq-answer">
+                    <strong>Yes!</strong> Clone the <a href="https://github.com/chartmann1590/DriveVault" target="_blank" style="color:var(--accent-light);">repository</a>, copy <code>local.properties.example</code> to <code>local.properties</code>, fill in your Firebase/Supabase values, and run <code>./gradlew assembleDebug</code>. Full instructions are in the README.
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ CTA ═══════════════ -->
+<section class="cta" id="download">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Ready to drive with confidence?</h2>
+            <p class="cta-p">Open source. Privacy-first. Built for Android. Download now or build from source.</p>
+            <div class="cta-buttons">
+                <a href="https://github.com/chartmann1590/DriveVault/releases" class="btn btn-primary" target="_blank">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2L12 16M12 16L8 12M12 16L16 12M4 20H20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Download Latest APK
+                </a>
+                <a href="https://github.com/chartmann1590/DriveVault" class="btn btn-outline" target="_blank">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    View on GitHub
+                </a>
+                <span class="btn btn-outline btn-google-play" title="Coming soon to Google Play">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zM17.5 9L14.23 12l3.27 3 .071.036c.58.27 1.164.007 1.429-.498.274-.528.267-1.117-.004-1.647L17.5 9zM2.14 1.1l12.08 10.55L3.46 22.718c-.45.33-1.09.12-1.38-.38-.25-.4-.29-.888-.11-1.36.06-.1.11-.16.17-.22z"/></svg>
+                    Google Play
+                </span>
+            </div>
+            <p class="cta-note">Google Play Store listing coming soon. For now, get the APK from GitHub Releases.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
 <footer>
     <div class="container">
-        <p>&copy; 2026 DriveVault. <a href="privacy-policy.html">Privacy Policy</a> &middot; <a href="https://github.com/chartmann1590/DriveVault">GitHub</a></p>
+        <div class="footer-links">
+            <a href="#features">Features</a>
+            <a href="#screenshots">Screenshots</a>
+            <a href="#faq">FAQ</a>
+            <a href="privacy-policy.html">Privacy Policy</a>
+            <a href="https://github.com/chartmann1590/DriveVault" target="_blank">GitHub</a>
+            <a href="https://github.com/chartmann1590/DriveVault/releases" target="_blank">Releases</a>
+            <a href="https://github.com/chartmann1590/DriveVault/issues" target="_blank">Report Issue</a>
+        </div>
+        <p class="footer-copy">&copy; 2026 DriveVault. Open source and privacy-first. Built with care for drivers who value their data.</p>
     </div>
 </footer>
 

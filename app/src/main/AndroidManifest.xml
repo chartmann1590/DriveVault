@@ -62,7 +62,7 @@
         <service
             android:name=".recording.RecordingService"
             android:exported="false"
-            android:foregroundServiceType="camera"
+            android:foregroundServiceType="camera|microphone|location"
             android:stopWithTask="false"/>
 
         <receiver

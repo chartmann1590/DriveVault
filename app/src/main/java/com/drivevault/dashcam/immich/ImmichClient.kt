@@ -109,7 +109,25 @@ class ImmichClient(private val context: Context) {
     }
 
     suspend fun uploadMetadataSidecar(jsonFile: File, assetId: String): ImmichResult<Boolean> {
-        return ImmichResult.Success(true)
+        return try {
+            val api = getApi() ?: return ImmichResult.Error("Server URL not configured")
+            val apiKey = settings.immichApiKey
+            if (!jsonFile.exists()) return ImmichResult.Error("Metadata file not found")
+
+            val jsonContent = jsonFile.readText()
+            @Suppress("UNCHECKED_CAST")
+            val metadata = Gson().fromJson(jsonContent, Map::class.java) as Map<String, Any?>
+
+            val response = api.updateAsset(apiKey, assetId, metadata)
+            when {
+                response.isSuccessful -> ImmichResult.Success(true)
+                response.code() == 401 -> ImmichResult.AuthError("Invalid API key")
+                response.code() == 404 -> ImmichResult.Error("Asset not found on server; it may have been deleted")
+                else -> ImmichResult.Error("Metadata upload failed: ${response.code()}", response.code())
+            }
+        } catch (e: Exception) {
+            ImmichResult.Error("Metadata upload failed: ${e.message}")
+        }
     }
 
     suspend fun findOrCreateAlbum(albumName: String): ImmichResult<String> {

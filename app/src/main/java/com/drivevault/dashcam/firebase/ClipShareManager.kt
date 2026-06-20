@@ -61,7 +61,7 @@ class ClipShareManager(@Suppress("unused") private val context: Context) {
             uploadFileTus(file, "shared-clips", storagePath)
             insertMetadata(shareId, storagePath, fileSizeBytes)
             _shareState.value = ClipShareState.Success(
-                shareUrl = "https://chartmann1590.github.io/DriveVault/view?id=$shareId",
+                shareUrl = "${BuildConfig.SHARE_VIEWER_URL}/view?id=$shareId",
                 shareId = shareId
             )
         } catch (e: Exception) {

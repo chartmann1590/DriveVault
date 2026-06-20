@@ -1,6 +1,7 @@
 package com.drivevault.dashcam.ui.viewmodel
 
 import android.app.Application
+import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.drivevault.dashcam.data.local.DriveVaultDatabase
@@ -152,6 +153,18 @@ class ClipDetailViewModel(application: Application) : AndroidViewModel(applicati
             val result = exporter.exportClip(clip.id, ExportOptions())
             _uiState.update { it.copy(exportResult = result, showExportSheet = false) }
         }
+    }
+
+    /**
+     * Exports the clip and returns the share intent in one shot.
+     * Use this from the UI to avoid calling [shareClip] and [getShareIntent]
+     * separately, which caused the export to run twice.
+     */
+    suspend fun shareClipAndGetIntent(): Intent? {
+        val clip = _uiState.value.clip ?: return null
+        val result = exporter.exportClip(clip.id, ExportOptions())
+        _uiState.update { it.copy(exportResult = result, showExportSheet = false) }
+        return exporter.createShareIntent(clip.id, result)
     }
 
     fun uploadToImmich() {
