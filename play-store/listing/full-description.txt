@@ -1,0 +1,46 @@
+DriveVault Dashcam turns your Android phone into a privacy-first dashcam. No accounts, no cloud uploads, no tracking — your data stays on your device unless you choose to share.
+
+RECORDING
+- Continuous loop recording in 60-second segments
+- Rear, front, and dual-camera modes (concurrent CameraX)
+- Background recording via foreground service with notification controls (stop, lock clip)
+- Auto-deletes oldest unlocked clips when storage is full
+
+GPS & TELEMETRY
+- Real-time speed, heading, and coordinates overlay
+- Compass direction display
+- OSM-based mini map — no API keys needed
+- Full telemetry recording per clip (location samples, heading, snapshots)
+
+CLIP MANAGEMENT
+- Browse, search, and filter your clip library (by camera mode, time range, lock status)
+- Lock important clips to prevent auto-deletion
+- Clip detail view with ExoPlayer video playback and full metadata
+
+EXPORT & SHARING
+- Export raw video, metadata JSON, or GPX route files
+- Location redaction for privacy-preserving exports
+- Share via Android share sheet with trimmed 50MB limit
+
+IMMICH INTEGRATION (Optional)
+- Sync clips to your self-hosted Immich server
+- Encrypted API key storage
+- Configurable sync rules (Wi-Fi only, charging only)
+
+ANONYMOUS CLIP SHARING (Optional)
+- Share clips via time-limited links (24-hour expiry)
+- No account required to view shared clips
+- All sharing is opt-in and off by default
+
+AI DETECTION (Optional)
+- Real-time vehicle and person detection via MLKit
+- Bounding box overlay on camera preview
+- On-device only — no cloud inference
+
+PRIVACY
+- No cloud uploads by default
+- No accounts or sign-up required
+- No ads, no data selling
+- Encrypted storage for sensitive settings
+
+Perfect for daily commuters, rideshare drivers, and road trip enthusiasts who value their privacy.
