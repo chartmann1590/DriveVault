@@ -30,6 +30,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -55,6 +56,7 @@ class RecordingManager(
     private var videoCapture: VideoCapture<Recorder>? = null
     private var secondaryVideoCapture: VideoCapture<Recorder>? = null
     private var objectDetectionManager: ObjectDetectionManager? = null
+    private var detectionCollectionJob: Job? = null
     private var analysisExecutor = Executors.newSingleThreadExecutor()
     private val _detectedObjects = MutableStateFlow<List<DetectedObjectResult>>(emptyList())
     val detectedObjects: StateFlow<List<DetectedObjectResult>> = _detectedObjects.asStateFlow()
@@ -66,6 +68,7 @@ class RecordingManager(
     private var secondaryFile: File? = null
     private var primaryFinalize: CompletableDeferred<Boolean>? = null
     private var secondaryFinalize: CompletableDeferred<Boolean>? = null
+    private val clipFinalized = AtomicBoolean(false)
     private var isRecording = false
     private var clipStartTime = 0L
     private val locationSamples = mutableListOf<LocationSampleEntity>()
@@ -76,11 +79,21 @@ class RecordingManager(
         cameraProvider = provider
     }
 
+    @Volatile private var primarySurfaceProvider: Preview.SurfaceProvider? = null
+    @Volatile private var secondarySurfaceProvider: Preview.SurfaceProvider? = null
+
     fun setVehicleDetectionEnabled(enabled: Boolean) {
         vehicleDetectionEnabled = enabled
     }
 
+    fun setSurfaceProviders(primary: Preview.SurfaceProvider?, secondary: Preview.SurfaceProvider? = null) {
+        primarySurfaceProvider = primary
+        secondarySurfaceProvider = secondary
+    }
+
     private fun buildImageAnalysisUseCase(): ImageAnalysis {
+        objectDetectionManager?.close()
+        detectionCollectionJob?.cancel()
         val manager = ObjectDetectionManager().also { objectDetectionManager = it }
         val analysis = ImageAnalysis.Builder()
             .setTargetResolution(Size(640, 480))
@@ -89,7 +102,7 @@ class RecordingManager(
         analysis.setAnalyzer(analysisExecutor) { imageProxy ->
             manager.processImage(imageProxy)
         }
-        scope.launch {
+        detectionCollectionJob = scope.launch {
             manager.detectedObjects.collect { objects -> _detectedObjects.value = objects }
         }
         return analysis
@@ -158,6 +171,7 @@ class RecordingManager(
 
     private suspend fun startNewClip() {
         Log.d("RecordingManager", "startNewClip mode=${_state.value.cameraMode}")
+        clipFinalized.set(false)
         locationSamples.clear()
         headingSamples.clear()
 
@@ -281,11 +295,22 @@ class RecordingManager(
 
         withContext(Dispatchers.Main) {
             provider.unbindAll()
+            val preview = primarySurfaceProvider?.let { sp ->
+                Preview.Builder().build().also { it.setSurfaceProvider(sp) }
+            }
             if (vehicleDetectionEnabled && _state.value.cameraMode == "BACK") {
                 val imageAnalysis = buildImageAnalysisUseCase()
-                provider.bindToLifecycle(lifecycleOwner, selector, capture, imageAnalysis)
+                if (preview != null) {
+                    provider.bindToLifecycle(lifecycleOwner, selector, capture, imageAnalysis, preview)
+                } else {
+                    provider.bindToLifecycle(lifecycleOwner, selector, capture, imageAnalysis)
+                }
             } else {
-                provider.bindToLifecycle(lifecycleOwner, selector, capture)
+                if (preview != null) {
+                    provider.bindToLifecycle(lifecycleOwner, selector, capture, preview)
+                } else {
+                    provider.bindToLifecycle(lifecycleOwner, selector, capture)
+                }
             }
         }
     }
@@ -318,16 +343,26 @@ class RecordingManager(
         }
         withContext(Dispatchers.Main) {
             provider.unbindAll()
+            val primaryPreview = primarySurfaceProvider?.let { sp ->
+                Preview.Builder().build().also { it.setSurfaceProvider(sp) }
+            }
+            val secondaryPreview = secondarySurfaceProvider?.let { sp ->
+                Preview.Builder().build().also { it.setSurfaceProvider(sp) }
+            }
             provider.bindToLifecycle(
                 listOf(
                     SingleCameraConfig(
                         CameraSelector.DEFAULT_BACK_CAMERA,
-                        UseCaseGroup.Builder().addUseCase(primaryCapture).build(),
+                        UseCaseGroup.Builder().addUseCase(primaryCapture).apply {
+                            if (primaryPreview != null) addUseCase(primaryPreview)
+                        }.build(),
                         lifecycleOwner
                     ),
                     SingleCameraConfig(
                         CameraSelector.DEFAULT_FRONT_CAMERA,
-                        UseCaseGroup.Builder().addUseCase(secondaryCapture).build(),
+                        UseCaseGroup.Builder().addUseCase(secondaryCapture).apply {
+                            if (secondaryPreview != null) addUseCase(secondaryPreview)
+                        }.build(),
                         lifecycleOwner
                     )
                 )
@@ -356,6 +391,10 @@ class RecordingManager(
 
     private suspend fun finishCurrentClip() {
         Log.d("RecordingManager", "finishCurrentClip")
+        if (!clipFinalized.compareAndSet(false, true)) {
+            Log.d("RecordingManager", "finishCurrentClip already handled, skipping")
+            return
+        }
         try { secondaryRecording?.stop() } catch (_: Exception) {}
         try { currentRecording?.stop() } catch (_: Exception) {}
         val primaryOk = primaryFinalize?.awaitOrFalse() ?: false
@@ -451,10 +490,13 @@ class RecordingManager(
     suspend fun stopRecording() {
         isRecording = false
         finishCurrentClip()
-        releaseCamera()
+        withContext(Dispatchers.Main) { releaseCamera() }
         telemetryManager.stop()
+        detectionCollectionJob?.cancel()
+        detectionCollectionJob = null
         objectDetectionManager?.close()
         objectDetectionManager = null
+        analysisExecutor.shutdown()
         _detectedObjects.value = emptyList()
         scope.cancel()
         _state.value = RecordingState()
@@ -480,8 +522,11 @@ class RecordingManager(
         }
         releaseCamera()
         scope.cancel()
+        detectionCollectionJob?.cancel()
+        detectionCollectionJob = null
         objectDetectionManager?.close()
         objectDetectionManager = null
+        analysisExecutor.shutdown()
         _detectedObjects.value = emptyList()
     }
 

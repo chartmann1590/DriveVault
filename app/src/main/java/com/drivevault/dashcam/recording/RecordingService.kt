@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.util.Log
+import androidx.camera.core.Preview
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.ProcessLifecycleOwner
@@ -35,6 +36,9 @@ class RecordingService : LifecycleService() {
 
         var isServiceRunning = false
             private set
+
+        @Volatile var primarySurfaceProvider: Preview.SurfaceProvider? = null
+        @Volatile var secondarySurfaceProvider: Preview.SurfaceProvider? = null
     }
 
     private val serviceScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
@@ -91,6 +95,7 @@ class RecordingService : LifecycleService() {
         serviceScope.launch {
             val detectionEnabled = SettingsRepository(this@RecordingService).vehicleDetectionEnabled.first()
             manager.setVehicleDetectionEnabled(detectionEnabled)
+            manager.setSurfaceProviders(primarySurfaceProvider, secondarySurfaceProvider)
             launch {
                 manager.detectedObjects.collect { objects -> _detectedObjects.value = objects }
             }
@@ -126,6 +131,8 @@ class RecordingService : LifecycleService() {
         }
         serviceScope.cancel()
         isServiceRunning = false
+        primarySurfaceProvider = null
+        secondarySurfaceProvider = null
         _recordingState.value = RecordingState()
         _detectedObjects.value = emptyList()
         super.onDestroy()

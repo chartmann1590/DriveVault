@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.content.ContextCompat
 import com.drivevault.dashcam.permissions.PermissionManager
 import com.drivevault.dashcam.recording.DetectedObjectResult
+import com.drivevault.dashcam.recording.RecordingService
 import com.drivevault.dashcam.ui.components.*
 import com.drivevault.dashcam.ui.theme.DeepCharcoal
 import com.drivevault.dashcam.ui.theme.SafetyRed
@@ -143,11 +144,12 @@ fun RecordingScreen(
             )
         }
 
-        if (uiState.showOverlay && shouldShowChrome) {
+        if (uiState.showOverlay) {
             RecordingOverlay(
                 uiState = uiState,
                 isLandscape = isLandscape,
                 cameraMessage = uiState.recordingState.error ?: cameraMessage,
+                controlsVisible = shouldShowChrome,
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -225,6 +227,21 @@ fun CameraPreview(
                         PreviewView(ctx).also { secondaryPreviewView = it }
                     }
                 )
+            }
+        }
+
+        // Keep the service's surface providers in sync with the live PreviewViews so that
+        // RecordingManager can bind Preview alongside VideoCapture during recording.
+        LaunchedEffect(primaryPreviewView) {
+            RecordingService.primarySurfaceProvider = primaryPreviewView?.surfaceProvider
+        }
+        LaunchedEffect(secondaryPreviewView) {
+            RecordingService.secondarySurfaceProvider = secondaryPreviewView?.surfaceProvider
+        }
+        DisposableEffect(Unit) {
+            onDispose {
+                RecordingService.primarySurfaceProvider = null
+                RecordingService.secondarySurfaceProvider = null
             }
         }
 
@@ -463,6 +480,7 @@ fun RecordingOverlay(
     uiState: RecordingScreenUiState,
     isLandscape: Boolean,
     cameraMessage: String?,
+    controlsVisible: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
@@ -577,7 +595,7 @@ fun RecordingOverlay(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .navigationBarsPadding()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 210.dp)
+                    .padding(start = 16.dp, end = 16.dp, bottom = if (controlsVisible) 210.dp else 24.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Bottom
