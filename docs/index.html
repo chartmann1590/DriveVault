@@ -653,39 +653,27 @@
         }
 
         /* ─── Promo Video ──────────────────── */
-        .video-placeholder {
+        .video-wrapper {
             max-width: 800px;
             margin: 0 auto;
-            aspect-ratio: 16/9;
-            background: var(--bg-card);
-            border: 2px dashed var(--border);
             border-radius: var(--radius);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-            color: var(--text-muted);
-            transition: border-color 0.2s;
+            overflow: hidden;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+            transition: box-shadow 0.3s;
         }
 
-        .video-placeholder:hover {
-            border-color: var(--accent);
+        .video-wrapper:hover {
+            box-shadow: 0 12px 48px rgba(108, 92, 231, 0.15);
+            border-color: rgba(108, 92, 231, 0.3);
         }
 
-        .video-icon {
-            font-size: 3rem;
-            opacity: 0.4;
-        }
-
-        .video-text {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .video-sub {
-            font-size: 0.85rem;
-            color: var(--text-muted);
+        .video-wrapper video {
+            width: 100%;
+            display: block;
+            aspect-ratio: 16/9;
+            background: #000;
         }
 
         /* ─── CTA ──────────────────────────── */
@@ -1191,12 +1179,13 @@
     <div class="container">
         <div class="section-label">Demo</div>
         <h2 class="section-title">See DriveVault in action</h2>
-        <p class="section-subtitle">A quick demo of the recording, clip management, and settings — coming soon.</p>
+        <p class="section-subtitle">A quick look at DriveVault's key features — recording, GPS overlay, dual camera, clip management, and privacy.</p>
 
-        <div class="video-placeholder">
-            <div class="video-icon">&#9654;</div>
-            <div class="video-text">Promo Video Coming Soon</div>
-            <div class="video-sub">A full walkthrough of DriveVault's features is in the works</div>
+        <div class="video-wrapper">
+            <video controls poster="images/screenshots/design_recording.png" preload="metadata">
+                <source src="images/promo_video.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
         </div>
     </div>
 </section>
