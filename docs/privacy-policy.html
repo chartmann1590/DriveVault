@@ -253,7 +253,7 @@
 <section class="header">
     <div class="container">
         <h1>Privacy Policy</h1>
-        <p>Last updated: June 8, 2026</p>
+        <p>Last updated: June 22, 2026</p>
     </div>
 </section>
 
@@ -278,8 +278,17 @@
 
         <div class="highlight-box green">
             <h4>All of this data stays on your device</h4>
-            <p>None of the above data is transmitted anywhere unless you take an explicit action such as sharing a clip or configuring Immich sync.</p>
+            <p>None of the above data is transmitted anywhere unless you take an explicit action such as sharing a clip, configuring Immich sync, or submitting a bug report.</p>
         </div>
+
+        <h3>Data created during bug reporting (optional, user-initiated)</h3>
+        <p>If you choose to submit a bug report or feature request via the in-app support center (Settings &rarr; Support &amp; Feedback), the following data is transmitted to the developer's GitHub repository tracker:</p>
+        <ul>
+            <li><strong>Report details</strong> &mdash; A title and description written by you describing the issue or request</li>
+            <li><strong>Contact details</strong> &mdash; An optional name and email address so the developer can follow up with you</li>
+            <li><strong>Attachment</strong> &mdash; An optional image or screenshot from your device selected by you</li>
+            <li><strong>Device diagnostics</strong> &mdash; Basic system diagnostics (app version, Android OS version, device model, manufacturer, system locale, time zone, free/total storage, and free/total memory) to help identify and fix the issue. This is included by default but can be unchecked prior to submission</li>
+        </ul>
 
         <h3>Data collected automatically (app health)</h3>
         <p>DriveVault uses Firebase to monitor app health and stability. This data is anonymized and cannot be linked to you personally:</p>
@@ -359,16 +368,26 @@
         <h3>Cloud Clip Sharing (Optional Feature)</h3>
         <p>DriveVault includes an optional anonymous clip sharing feature. When you use it:</p>
         <ul>
-            <li>This feature is <strong>off by default</strong> and requires two explicit settings to be enabled: Firebase Storage and Allow Anonymous Clip Sharing</li>
-            <li><strong>What is uploaded:</strong> the video file only &mdash; no GPS coordinates, speed, route data, or metadata are included in the uploaded file</li>
-            <li><strong>Anonymous authentication:</strong> Firebase Anonymous Authentication is used to authorize the upload. This creates a temporary, ephemeral credential with no email address, no name, and no linkage to your identity. The anonymous UID is not stored in any shared document</li>
-            <li><strong>Storage path:</strong> clips are stored at a randomly generated UUID path (e.g., <code>shared/&lt;uuid&gt;/clip.mp4</code>). The UUID is cryptographically random and unguessable &mdash; it is the primary access control mechanism</li>
-            <li><strong>Access:</strong> anyone who has the share link can view the clip. There is no password or login required for viewers</li>
-            <li><strong>Retention:</strong> shared clips are automatically deleted after 24 hours. A background process running in the app removes expired clips from Firebase Storage and deletes the associated Firestore record</li>
-            <li><strong>Viewer page:</strong> the share link points to a page hosted on GitHub Pages at <code>chartmann1590.github.io/DriveVault/view</code>. This page uses the Firebase JavaScript SDK to fetch the clip from Firebase Storage. No viewer data is logged or stored</li>
-            <li>You can disable this feature at any time in Settings &rarr; Firebase &rarr; Allow Anonymous Clip Sharing</li>
+            <li>This feature is <strong>off by default</strong> and requires the "Allow Anonymous Clip Sharing" setting to be enabled in Settings &rarr; Clip Sharing.</li>
+            <li><strong>What is uploaded:</strong> the video file only &mdash; no GPS coordinates, speed, route data, or metadata are included in the uploaded file.</li>
+            <li><strong>Anonymous authentication:</strong> Uploads are authorized via an anonymous API client token (Supabase Anon Key) with Row-Level Security (RLS) policies enforced. No account creation, email address, name, or linkage to your personal identity is required.</li>
+            <li><strong>Storage path:</strong> clips are stored at a randomly generated UUID path (e.g., <code>shared-clips/&lt;uuid&gt;/clip.mp4</code>) in Supabase Storage. The UUID is cryptographically random and unguessable &mdash; it acts as the primary access control mechanism.</li>
+            <li><strong>Access:</strong> anyone who has the share link can view the clip. There is no password or login required for viewers.</li>
+            <li><strong>Retention:</strong> shared clips are automatically deleted after 24 hours. A background worker (<code>ShareCleanupWorker</code>) running in the app queries expired clips, deletes the files from Supabase Storage, and deletes the corresponding record from the database.</li>
+            <li><strong>Viewer page:</strong> the share link points to a page hosted on GitHub Pages at <code>chartmann1590.github.io/DriveVault/view</code>. This page uses the Supabase JavaScript client to query the clip's metadata and render the direct video link from Supabase Storage. No viewer data is logged or stored.</li>
+            <li>You can disable this feature at any time in Settings &rarr; Clip Sharing &rarr; Allow Anonymous Clip Sharing.</li>
         </ul>
-        <p>Clip sharing data is processed under Google's privacy policy: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a></p>
+        <p>Clip sharing data is processed under Supabase's privacy policy: <a href="https://supabase.com/privacy" target="_blank" rel="noopener">supabase.com/privacy</a></p>
+
+        <h3>GitHub Issues API (Optional Bug Reporting)</h3>
+        <p>If you choose to submit a bug report or reply to comments in the support center (Settings &rarr; Support &amp; Feedback):</p>
+        <ul>
+            <li><strong>What is sent:</strong> Your report details (Title, Description), optional contact details (Name, Email), and optional screenshot file, plus device diagnostic details (if not opted-out).</li>
+            <li><strong>Public tracker:</strong> Submitted reports are opened directly as issues in the public GitHub issue tracker of the DriveVault repository. Do not include sensitive private data in your reports, as they will be publicly visible.</li>
+            <li><strong>File storage:</strong> Optional screenshots are uploaded directly to the repository assets directory using GitHub's contents API and will also be publicly viewable.</li>
+            <li><strong>Communication:</strong> The app queries the GitHub API to display comments from developers and allows you to submit replies directly from the app.</li>
+        </ul>
+        <p>GitHub data processing is governed by GitHub's privacy statement: <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement</a></p>
 
         <h3>OpenStreetMap</h3>
         <p>The mini map overlay uses OpenStreetMap tile servers to render map images. When the map is visible, your device may request map tiles from OSM servers. These requests contain approximate viewport coordinates but no personally identifiable information. See <a href="https://wiki.osmfoundation.org/wiki/Privacy_Policy" target="_blank" rel="noopener">OSM's privacy policy</a>.</p>
@@ -465,10 +484,11 @@
         <h2>8. Your Rights</h2>
         <p>Because DriveVault stores data locally on your device, you have full control:</p>
         <ul>
-            <li><strong>Access</strong> &mdash; All your data is visible within the app's clip library</li>
-            <li><strong>Delete</strong> &mdash; Delete individual clips, or clear all app data via Android Settings</li>
-            <li><strong>Export</strong> &mdash; Export any clip's video, metadata, or GPS data at any time</li>
-            <li><strong>Opt out</strong> &mdash; Disable Firebase Analytics in your device settings, or disable Immich sync in app settings</li>
+            <li><strong>Access</strong> &mdash; All your data is visible within the app's clip library.</li>
+            <li><strong>Delete</strong> &mdash; Delete individual clips, or clear all app data via Android Settings.</li>
+            <li><strong>Export</strong> &mdash; Export any clip's video, metadata, or GPS data at any time.</li>
+            <li><strong>Opt out</strong> &mdash; Disable Firebase Analytics, or disable Immich sync and Anonymous Clip Sharing in Settings. For bug reports, you can opt out of diagnostics prior to submission.</li>
+            <li><strong>Bug Report Removal</strong> &mdash; Since submitted bug reports and comments are stored publicly on GitHub, you can request their removal or editing at any time by contacting the developer or commenting directly on the issue on GitHub.</li>
         </ul>
 
         <h2>9. International Users</h2>

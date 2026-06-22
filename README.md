@@ -58,6 +58,12 @@ Most dashcam apps send your data to the cloud. DriveVault keeps everything on yo
 - Bounding box overlay on camera preview
 - Off by default; no cloud inference used
 
+### In-App Bug Reporting (Optional)
+- Submit bug reports and feature requests directly from Settings
+- Option to attach screenshots (uploaded to GitHub assets)
+- Automatically compiles basic device diagnostics (OS version, device model, free memory/storage, app version) to speed up troubleshooting
+- Direct in-app communication thread (post and read comments on your submitted issues)
+
 ## Screenshots
 
 | Recording | Clip Library | Clip Detail |
@@ -141,6 +147,7 @@ The only network features are:
 - Optional anonymous clip sharing via Supabase (off by default, 24-hour expiry)
 - Firebase crash reporting and analytics (app health only, no clip content)
 - Optional MLKit object detection (on-device, no network for inference)
+- Optional In-App Bug Reporting (transmits bug reports, optional screenshot attachments, and opt-out device diagnostics to the project's GitHub issues tracker)
 
 ## Tech Stack
 
@@ -154,12 +161,7 @@ Built with modern Android development tools:
 - **MLKit** for on-device object detection
 - **Firebase** for crash reporting and analytics
 - **Supabase** for optional anonymous clip sharing
-
-## License
-
-This project is provided as-is for personal use.
-
----
+- **GitHub REST API** for optional in-app support and bug reporting
 
 <div align="center">
 
