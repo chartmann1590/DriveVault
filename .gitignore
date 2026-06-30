@@ -1,4 +1,4 @@
-﻿*.iml
+*.iml
 .gradle
 /local.properties
 /.idea
@@ -39,3 +39,12 @@ Desktop.ini
 docs/view.html
 tmp_promo/
 nul
+
+# Design assets
+stitch_drivevault_dashcam_ui_ux_design/
+
+# In-app feedback assets
+feedback-assets/
+
+# Supabase local CLI cache
+supabase/.temp/
