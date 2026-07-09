@@ -48,13 +48,13 @@ jobs:
       run: python scripts/generate_google_services_json.py
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
+      uses: github/codeql-action/init@v4
       with:
         languages: ${{ matrix.language }}
 
     - name: Autobuild (Python)
       if: matrix.language == 'python'
-      uses: github/codeql-action/autobuild@v3
+      uses: github/codeql-action/autobuild@v4
 
     - name: Build (Java/Kotlin)
       if: matrix.language == 'java-kotlin'
@@ -63,6 +63,6 @@ jobs:
         ./gradlew assembleDebug
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
+      uses: github/codeql-action/analyze@v4
       with:
         category: "/language:${{matrix.language}}"
