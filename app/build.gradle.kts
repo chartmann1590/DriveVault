@@ -77,6 +77,7 @@ android {
     lint {
         abortOnError = false
         checkReleaseBuilds = false
+        sarifReport = true
     }
 
     compileOptions {
