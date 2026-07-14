@@ -24,12 +24,20 @@ android {
     namespace = "com.drivevault.dashcam"
     compileSdk = 36
 
+    val ciVersionCode: Int = System.getenv("ANDROID_VERSION_CODE")?.toIntOrNull()
+        ?: System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull()
+        ?: 1
+
+    val ciVersionName: String = System.getenv("ANDROID_VERSION_NAME")
+        ?: System.getenv("GITHUB_RUN_NUMBER")?.let { "1.0.0.$it" }
+        ?: "1.0.0"
+
     defaultConfig {
         applicationId = "com.drivevault.dashcam"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = ciVersionCode
+        versionName = ciVersionName
         multiDexEnabled = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
