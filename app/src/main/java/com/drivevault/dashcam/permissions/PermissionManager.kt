@@ -1,6 +1,7 @@
 ﻿package com.drivevault.dashcam.permissions
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
@@ -11,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 
+@SuppressLint("InlinedApi")
 object PermissionManager {
 
     val REQUIRED_PERMISSIONS: List<String> = buildList {

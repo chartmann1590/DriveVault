@@ -1,5 +1,6 @@
 package com.drivevault.dashcam.recording
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.media.MediaScannerConnection
@@ -91,6 +92,7 @@ class RecordingManager(
         secondarySurfaceProvider = secondary
     }
 
+    @androidx.camera.core.ExperimentalGetImage
     private fun buildImageAnalysisUseCase(): ImageAnalysis {
         objectDetectionManager?.close()
         detectionCollectionJob?.cancel()
@@ -108,6 +110,7 @@ class RecordingManager(
         return analysis
     }
 
+    @androidx.camera.core.ExperimentalGetImage
     fun startRecording(): Flow<RecordingState> = callbackFlow {
         isRecording = true
         telemetryManager.start()
@@ -169,6 +172,8 @@ class RecordingManager(
         }
     }
 
+    @SuppressLint("MissingPermission")
+    @androidx.camera.core.ExperimentalGetImage
     private suspend fun startNewClip() {
         Log.d("RecordingManager", "startNewClip mode=${_state.value.cameraMode}")
         clipFinalized.set(false)
@@ -286,6 +291,7 @@ class RecordingManager(
         cameraProvider?.unbindAll()
     }
 
+    @androidx.camera.core.ExperimentalGetImage
     private suspend fun bindSingleVideoCaptureUseCase(capture: VideoCapture<Recorder>) {
         val provider = cameraProvider ?: awaitCameraProvider().also { cameraProvider = it }
         val selector = when (_state.value.cameraMode) {

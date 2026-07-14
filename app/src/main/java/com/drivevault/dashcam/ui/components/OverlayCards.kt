@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.drivevault.dashcam.domain.model.TelemetryState
 import com.drivevault.dashcam.domain.util.UnitConverter
 import com.drivevault.dashcam.ui.theme.*
+import java.util.Locale
 
 @Composable
 fun SpeedOverlayCard(
@@ -69,7 +70,7 @@ fun GpsOverlayCard(
             if (showCoordinates && loc != null) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = String.format("%.5f, %.5f", loc.latitude, loc.longitude),
+                    text = String.format(Locale.US, "%.5f, %.5f", loc.latitude, loc.longitude),
                     style = MaterialTheme.typography.bodySmall,
                     color = OnSurfaceVariant,
                     maxLines = 1
@@ -103,7 +104,7 @@ fun HeadingOverlayCard(
                     color = OnSurface
                 )
                 Text(
-                    text = String.format("%03.0f°", heading),
+                    text = String.format(Locale.US, "%03.0f°", heading),
                     style = MaterialTheme.typography.titleMedium,
                     color = OnSurfaceVariant
                 )

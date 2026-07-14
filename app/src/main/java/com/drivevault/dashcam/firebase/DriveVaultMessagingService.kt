@@ -2,7 +2,6 @@ package com.drivevault.dashcam.firebase
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
@@ -38,14 +37,12 @@ class DriveVaultMessagingService : FirebaseMessagingService() {
 
     private fun postNotification(title: String, body: String) {
         val manager = getSystemService<NotificationManager>() ?: return
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                "DriveVault Updates",
-                NotificationManager.IMPORTANCE_DEFAULT
-            ).apply { description = "Push notifications from the DriveVault project" }
-            manager.createNotificationChannel(channel)
-        }
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            "DriveVault Updates",
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply { description = "Push notifications from the DriveVault project" }
+        manager.createNotificationChannel(channel)
 
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_dialog_info)

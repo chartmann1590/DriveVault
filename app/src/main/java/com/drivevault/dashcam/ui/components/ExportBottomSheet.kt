@@ -22,8 +22,8 @@ fun ExportBottomSheet(
     onShare: () -> Unit,
     onSaveToGallery: () -> Unit,
     onUploadToImmich: () -> Unit,
-    immichEnabled: Boolean = false,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    immichEnabled: Boolean = false
 ) {
     Column(
         modifier = modifier

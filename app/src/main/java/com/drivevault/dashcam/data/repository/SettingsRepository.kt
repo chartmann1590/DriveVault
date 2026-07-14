@@ -2,6 +2,7 @@
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import androidx.datastore.core.DataStore
@@ -132,11 +133,11 @@ class SettingsRepository(private val context: Context) {
 
     var immichServerUrl: String
         get() = encryptedPrefs.getString("immich_server_url", "") ?: ""
-        set(value) = encryptedPrefs.edit().putString("immich_server_url", value).apply()
+        set(value) = encryptedPrefs.edit { putString("immich_server_url", value) }
 
     var immichApiKey: String
         get() = encryptedPrefs.getString("immich_api_key", "") ?: ""
-        set(value) = encryptedPrefs.edit().putString("immich_api_key", value).apply()
+        set(value) = encryptedPrefs.edit { putString("immich_api_key", value) }
 
     private suspend fun <T> setSetting(key: Preferences.Key<T>, value: T) {
         context.dataStore.edit { it[key] = value }

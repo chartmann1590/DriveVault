@@ -73,12 +73,7 @@ class StorageManager(private val context: Context) {
     }
 
     suspend fun getDeviceAvailableStorage(): Long = withContext(Dispatchers.IO) {
-        val stat = android.os.StatFs(context.filesDir.absolutePath)
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            stat.availableBytes
-        } else {
-            stat.availableBlocks.toLong() * stat.blockSize.toLong()
-        }
+        android.os.StatFs(context.filesDir.absolutePath).availableBytes
     }
 
     suspend fun deleteClipWithFiles(clipId: Long) = withContext(Dispatchers.IO) {

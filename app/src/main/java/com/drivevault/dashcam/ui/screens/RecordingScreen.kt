@@ -480,8 +480,8 @@ fun RecordingOverlay(
     uiState: RecordingScreenUiState,
     isLandscape: Boolean,
     cameraMessage: String?,
-    controlsVisible: Boolean = true,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    controlsVisible: Boolean = true
 ) {
     Box(modifier = modifier) {
         if (isLandscape) {
