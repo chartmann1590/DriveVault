@@ -123,8 +123,10 @@ jobs:
               if (signalLines) {
                 body += `### Signals\n${signalLines}\n\n`;
               }
-              body += `[\uD83D\uDD25 View in Firebase Console](${url})\n\n`;
-              body += `<!-- crashlytics-events:${ci.eventCount} -->\n`;
+               body += `[\uD83D\uDD25 View in Firebase Console](${url})\n\n`;
+               const today = new Date().toISOString().slice(0, 10);
+               body += `<!-- crashlytics-events:${ci.eventCount} -->\n`;
+               body += `<!-- crashlytics-last-seen:${today} -->\n`;
               return body;
             }
 
@@ -185,10 +187,19 @@ jobs:
                   await github.rest.issues.createComment({
                     owner, repo, issue_number: existing.number, body: commentBody
                   });
-                  const updatedBody = (existing.body || '').replace(
-                    /<!-- crashlytics-events:\d+ -->/,
-                    `<!-- crashlytics-events:${ci.eventCount} -->`
-                  );
+                   const today = new Date().toISOString().slice(0, 10);
+                   let updatedBody = (existing.body || '').replace(
+                     /<!-- crashlytics-events:\d+ -->/,
+                     `<!-- crashlytics-events:${ci.eventCount} -->`
+                   );
+                   if (/<!-- crashlytics-last-seen:/.test(updatedBody)) {
+                     updatedBody = updatedBody.replace(
+                       /<!-- crashlytics-last-seen:\d{4}-\d{2}-\d{2} -->/,
+                       `<!-- crashlytics-last-seen:${today} -->`
+                     );
+                   } else {
+                     updatedBody += `<!-- crashlytics-last-seen:${today} -->`;
+                   }
                   await github.rest.issues.update({
                     owner, repo, issue_number: existing.number, body: updatedBody
                   });
