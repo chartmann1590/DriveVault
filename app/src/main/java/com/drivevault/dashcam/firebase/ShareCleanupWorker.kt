@@ -49,14 +49,16 @@ class ShareCleanupWorker(context: Context, params: WorkerParameters) : Coroutine
                 val id = record.getString("id")
                 val storagePath = record.getString("storage_path")
 
-                // Delete storage file — Supabase batch-delete uses POST /object/delete/{bucket}
+                // Delete storage file using the service role key so we bypass the
+                // public-only storage RLS policies. The anon key intentionally
+                // cannot delete storage objects — only the cleanup worker can.
                 val deleteBody = """{"prefixes":["$storagePath"]}"""
                     .toRequestBody("application/json".toMediaType())
                 client.newCall(
                     Request.Builder()
                         .url("${BuildConfig.SUPABASE_URL}/storage/v1/object/delete/shared-clips")
-                        .addHeader("Authorization", "Bearer ${BuildConfig.SUPABASE_ANON_KEY}")
-                        .addHeader("apikey", BuildConfig.SUPABASE_ANON_KEY)
+                        .addHeader("Authorization", "Bearer ${BuildConfig.SUPABASE_SERVICE_ROLE_KEY}")
+                        .addHeader("apikey", BuildConfig.SUPABASE_SERVICE_ROLE_KEY)
                         .post(deleteBody)
                         .build()
                 ).execute()

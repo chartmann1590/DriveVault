@@ -9,6 +9,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
@@ -47,11 +48,8 @@ class BugReportRepo(private val context: Context) {
 
     suspend fun getBugReportsList(): List<BugReport> {
         return try {
-            var result: List<BugReport> = emptyList()
-            context.feedbackDataStore.edit { prefs ->
-                result = parseReports(prefs[key])
-            }
-            result
+            val prefs = context.feedbackDataStore.data.first()
+            parseReports(prefs[key])
         } catch (_: Exception) {
             emptyList()
         }

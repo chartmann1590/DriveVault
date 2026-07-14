@@ -13,7 +13,7 @@ jobs:
       - name: Validate required secrets are present
         run: |
           missing=0
-          for secret in GH_API_TOKEN GH_REPO_OWNER GH_REPO_NAME FIREBASE_PROJECT_ID FIREBASE_PROJECT_NUMBER FIREBASE_DEBUG_APP_ID FIREBASE_DEBUG_API_KEY FIREBASE_RELEASE_APP_ID FIREBASE_RELEASE_API_KEY FIREBASE_STORAGE_BUCKET SUPABASE_URL SUPABASE_ANON_KEY; do
+          for secret in GH_API_TOKEN GH_REPO_OWNER GH_REPO_NAME FIREBASE_PROJECT_ID FIREBASE_PROJECT_NUMBER FIREBASE_DEBUG_APP_ID FIREBASE_DEBUG_API_KEY FIREBASE_RELEASE_APP_ID FIREBASE_RELEASE_API_KEY FIREBASE_STORAGE_BUCKET SUPABASE_URL SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY; do
             value=$(printenv "${secret}" || true)
             if [ -z "$value" ]; then
               echo "Missing secret: $secret"
@@ -37,6 +37,7 @@ jobs:
           FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
 
   build-debug:
     runs-on: ubuntu-latest
@@ -69,6 +70,7 @@ jobs:
           echo "FIREBASE_STORAGE_BUCKET=${{ secrets.FIREBASE_STORAGE_BUCKET }}" >> local.properties
           echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> local.properties
           echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> local.properties
+          echo "SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" >> local.properties
 
       - name: Generate google-services.json
         run: python scripts/generate_google_services_json.py
@@ -116,6 +118,7 @@ jobs:
           echo "FIREBASE_STORAGE_BUCKET=${{ secrets.FIREBASE_STORAGE_BUCKET }}" >> local.properties
           echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> local.properties
           echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> local.properties
+          echo "SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" >> local.properties
 
       - name: Generate google-services.json
         run: python scripts/generate_google_services_json.py
@@ -166,6 +169,7 @@ jobs:
           echo "FIREBASE_STORAGE_BUCKET=${{ secrets.FIREBASE_STORAGE_BUCKET }}" >> local.properties
           echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> local.properties
           echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> local.properties
+          echo "SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" >> local.properties
 
       - name: Generate google-services.json
         run: python scripts/generate_google_services_json.py
@@ -220,6 +224,7 @@ jobs:
           echo "FIREBASE_STORAGE_BUCKET=${{ secrets.FIREBASE_STORAGE_BUCKET }}" >> local.properties
           echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> local.properties
           echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> local.properties
+          echo "SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" >> local.properties
 
       - name: Generate google-services.json
         run: python scripts/generate_google_services_json.py
@@ -237,38 +242,5 @@ jobs:
           name: unit-test-results
           path: app/build/test-results/testDebugUnitTest/
 
-  deploy:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    needs: [build-debug, build-release, lint, unit-tests]
-
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Generate viewer page from template
-        run: |
-          sed \
-            -e "s|%%SUPABASE_URL%%|${{ secrets.SUPABASE_URL }}|g" \
-            -e "s|%%SUPABASE_ANON_KEY%%|${{ secrets.SUPABASE_ANON_KEY }}|g" \
-            docs/view.html.template > docs/view.html
-
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+# GitHub Pages deploys are owned by .github/workflows/pages.yml to avoid
+# duplicate concurrent deployments racing against this build pipeline.

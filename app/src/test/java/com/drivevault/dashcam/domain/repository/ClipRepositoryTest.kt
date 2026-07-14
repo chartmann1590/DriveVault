@@ -135,7 +135,7 @@ class ClipRepositoryTest {
     @Test
     fun updateImmichStatus_delegatesWithCorrectParams() = runTest {
         repo.updateImmichStatus(1, "UPLOADED", "asset-123")
-        verify(clipDao).updateImmichStatus(1, "UPLOADED", "asset-123")
+        verify(clipDao).updateImmichStatus(eq(1L), eq("UPLOADED"), eq("asset-123"), any())
     }
 
     @Test

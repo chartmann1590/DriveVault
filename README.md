@@ -146,3 +146,23 @@ For more details, read the official [Privacy Policy](https://chartmann1590.githu
    ```
 
 *Note: For security best practices and key handling, see [SECURITY.md](SECURITY.md).*
+
+### Required GitHub Actions Secrets
+
+The CI workflow (`.github/workflows/build.yml`) reads these repository secrets to populate `local.properties` at build time. Add them under **Settings → Secrets and variables → Actions**:
+
+| Secret | Purpose |
+| --- | --- |
+| `GH_API_TOKEN` | GitHub PAT for in-app bug report submission (mapped to `github.api.token`). |
+| `GH_REPO_OWNER` | Owner of the target issues repo (`github.repo.owner`). |
+| `GH_REPO_NAME` | Target repo name for feedback issues (`github.repo.name`). |
+| `FIREBASE_PROJECT_ID` | Firebase project ID. |
+| `FIREBASE_PROJECT_NUMBER` | Firebase project number (FCM sender). |
+| `FIREBASE_STORAGE_BUCKET` | Firebase Storage bucket name. |
+| `FIREBASE_DEBUG_APP_ID` / `FIREBASE_DEBUG_API_KEY` | Debug Android client credentials. |
+| `FIREBASE_RELEASE_APP_ID` / `FIREBASE_RELEASE_API_KEY` | Release Android client credentials. |
+| `SUPABASE_URL` | Supabase project base URL (used by app + Pages viewer). |
+| `SUPABASE_ANON_KEY` | Supabase anon key (client-side uploads + viewer reads). |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key — **only** used by `ShareCleanupWorker` to delete expired storage objects. Treat as a server secret: never expose it in the client UI or log it. |
+
+The `validate-secrets` job fails CI early if any of these are missing.

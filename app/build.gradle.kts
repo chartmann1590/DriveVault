@@ -48,6 +48,7 @@ android {
         buildConfigField("String", "FEEDBACK_ASSETS_DIR", "\"feedback-assets\"")
         buildConfigField("String", "SUPABASE_URL", "\"${localProp("SUPABASE_URL")}\"")
         buildConfigField("String", "SUPABASE_ANON_KEY", "\"${localProp("SUPABASE_ANON_KEY")}\"")
+        buildConfigField("String", "SUPABASE_SERVICE_ROLE_KEY", "\"${localProp("SUPABASE_SERVICE_ROLE_KEY")}\"")
         buildConfigField(
             "String",
             "SHARE_VIEWER_URL",

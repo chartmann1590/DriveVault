@@ -24,6 +24,10 @@ FIREBASE_RELEASE_API_KEY=your-release-api-key
 # Supabase anonymous clip sharing
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your-anon-key
+# Service role key — used ONLY by the share-cleanup worker to delete expired
+# storage objects. Never ship this key in the client UI; keep it out of BuildConfig
+# surfaces that are exposed to the user. Only the ShareCleanupWorker reads it.
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 
 # Optional: custom GitHub Pages viewer URL for shared clips
 # SHARE_VIEWER_URL=https://your-username.github.io/DriveVault

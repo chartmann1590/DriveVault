@@ -21,17 +21,10 @@ create policy "anon_insert" on shared_clips
 create policy "anon_delete_expired" on shared_clips
   for delete to anon using (expires_at < now());
 
--- Storage bucket and object policies (run via Supabase dashboard SQL editor)
--- The storage.buckets table is managed by Supabase; create the bucket via the dashboard
--- or with `supabase storage bucket create shared-clips --public`.
+-- Storage bucket and object policies are created by the follow-up migration
+-- 20260713000000_fix_shared_clips_storage_policies.sql, which also drops the
+-- unsafe `anon_delete_objects` policy that was previously suggested here.
 --
--- After creating the bucket, run these policies in the SQL editor:
---
--- create policy "public_read_objects" on storage.objects
---   for select to anon using (bucket_id = 'shared-clips');
---
--- create policy "anon_insert_objects" on storage.objects
---   for insert to anon with check (bucket_id = 'shared-clips');
---
--- create policy "anon_delete_objects" on storage.objects
---   for delete to anon using (bucket_id = 'shared-clips');
+-- IMPORTANT: storage object deletes are performed ONLY by the ShareCleanupWorker
+-- using the Supabase service role key (which bypasses RLS). Anon is never
+-- granted delete permission on storage.objects.
