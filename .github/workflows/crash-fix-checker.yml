@@ -30,7 +30,8 @@ jobs:
             const REPO = context.repo.repo;
             const BUG_LABEL = 'bug';
 
-            const execPromise = util.promisify(require('child_process').exec);
+            const { promisify } = require('util');
+            const execPromise = promisify(require('child_process').exec);
 
             // -----------------------------------------------------------------
             // Shared helpers
