@@ -48,3 +48,8 @@ feedback-assets/
 
 # Supabase local CLI cache
 supabase/.temp/
+
+# Transient Supabase CLI login scratch files (should never be committed)
+sb_login.log
+sb_login.done
+sb_enter.txt
