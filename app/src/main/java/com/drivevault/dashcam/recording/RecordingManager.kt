@@ -83,6 +83,20 @@ class RecordingManager(
     @Volatile private var primarySurfaceProvider: Preview.SurfaceProvider? = null
     @Volatile private var secondarySurfaceProvider: Preview.SurfaceProvider? = null
 
+    // Preview use cases are kept alive across clip rotations (every ~60s) instead of being
+    // torn down and recreated. Rebuilding Preview on every rotation caused CameraX to stop
+    // streaming to the PreviewView's surface, leaving the live preview permanently black even
+    // though the underlying recording continued fine. Passing the same bound Preview instance
+    // back into bindToLifecycle lets CameraX's diffing recognize it's already bound and leave
+    // its surface untouched; only the VideoCapture use case actually needs to change.
+    private var boundPreview: Preview? = null
+    private var boundSecondaryPreview: Preview? = null
+    private var boundSelector: CameraSelector? = null
+    private var boundDual: Boolean = false
+    private var boundVideoCapture: VideoCapture<Recorder>? = null
+    private var boundSecondaryVideoCapture: VideoCapture<Recorder>? = null
+    private var boundImageAnalysis: ImageAnalysis? = null
+
     fun setVehicleDetectionEnabled(enabled: Boolean) {
         vehicleDetectionEnabled = enabled
     }
@@ -289,6 +303,13 @@ class RecordingManager(
 
     private fun releaseCamera() {
         cameraProvider?.unbindAll()
+        boundPreview = null
+        boundSecondaryPreview = null
+        boundSelector = null
+        boundDual = false
+        boundVideoCapture = null
+        boundSecondaryVideoCapture = null
+        boundImageAnalysis = null
     }
 
     @androidx.camera.core.ExperimentalGetImage
@@ -300,12 +321,32 @@ class RecordingManager(
         }
 
         withContext(Dispatchers.Main) {
-            provider.unbindAll()
-            val preview = primarySurfaceProvider?.let { sp ->
-                Preview.Builder().build().also { it.setSurfaceProvider(sp) }
+            if (boundSelector != selector || boundDual) {
+                provider.unbindAll()
+                boundPreview = null
+                boundSecondaryPreview = null
+                boundVideoCapture = null
+                boundImageAnalysis = null
             }
+            boundSelector = selector
+            boundDual = false
+
+            // Retire only the previous VideoCapture/ImageAnalysis use cases from the last clip.
+            // bindToLifecycle does not implicitly replace same-typed use cases it was already
+            // given in an earlier call - passing a new VideoCapture alongside the still-bound
+            // old one exceeds the camera's supported concurrent-surface combination. Preview is
+            // deliberately left bound and untouched so its surface never stops streaming.
+            boundVideoCapture?.let { provider.unbind(it) }
+            boundImageAnalysis?.let { provider.unbind(it) }
+            boundImageAnalysis = null
+
+            val preview = boundPreview ?: primarySurfaceProvider?.let { sp ->
+                Preview.Builder().build().also { it.setSurfaceProvider(sp) }
+            }.also { boundPreview = it }
+
             if (vehicleDetectionEnabled && _state.value.cameraMode == "BACK") {
                 val imageAnalysis = buildImageAnalysisUseCase()
+                boundImageAnalysis = imageAnalysis
                 if (preview != null) {
                     provider.bindToLifecycle(lifecycleOwner, selector, capture, imageAnalysis, preview)
                 } else {
@@ -318,6 +359,7 @@ class RecordingManager(
                     provider.bindToLifecycle(lifecycleOwner, selector, capture)
                 }
             }
+            boundVideoCapture = capture
         }
     }
 
@@ -348,13 +390,21 @@ class RecordingManager(
             throw IllegalStateException("Concurrent front/back camera is not supported")
         }
         withContext(Dispatchers.Main) {
+            // Concurrent-camera binding is always a full session reconfigure (unlike the
+            // single-camera path, it has no incremental-diffing behavior to rely on), so this
+            // deliberately still tears down and rebuilds Preview every rotation.
             provider.unbindAll()
+            boundDual = true
+            boundSelector = null
+            boundVideoCapture = null
+            boundImageAnalysis = null
+
             val primaryPreview = primarySurfaceProvider?.let { sp ->
                 Preview.Builder().build().also { it.setSurfaceProvider(sp) }
-            }
+            }.also { boundPreview = it }
             val secondaryPreview = secondarySurfaceProvider?.let { sp ->
                 Preview.Builder().build().also { it.setSurfaceProvider(sp) }
-            }
+            }.also { boundSecondaryPreview = it }
             provider.bindToLifecycle(
                 listOf(
                     SingleCameraConfig(
