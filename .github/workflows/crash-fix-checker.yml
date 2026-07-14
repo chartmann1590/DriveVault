@@ -30,13 +30,13 @@ jobs:
             const REPO = context.repo.repo;
             const BUG_LABEL = 'bug';
 
-            const exec = util.promisify(require('child_process').exec);
+            const execPromise = util.promisify(require('child_process').exec);
 
             // -----------------------------------------------------------------
             // Shared helpers
             // -----------------------------------------------------------------
             async function sh(cmd) {
-              const { stdout, stderr } = await exec(cmd, { cwd: process.env.GITHUB_WORKSPACE });
+              const { stdout, stderr } = await execPromise(cmd, { cwd: process.env.GITHUB_WORKSPACE });
               if (stderr && !stderr.trimStart().startsWith('warning:')) {
                 console.warn('stderr:', stderr.trim());
               }
