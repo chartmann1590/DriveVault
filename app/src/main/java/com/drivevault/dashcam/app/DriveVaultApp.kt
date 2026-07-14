@@ -1,6 +1,8 @@
 ﻿package com.drivevault.dashcam.app
 
 import android.app.Application
+import com.drivevault.dashcam.BuildConfig
+import com.drivevault.dashcam.ads.AdManager
 import com.drivevault.dashcam.data.local.DriveVaultDatabase
 import com.drivevault.dashcam.data.repository.SettingsRepository
 import com.drivevault.dashcam.firebase.DriveVaultFirebase
@@ -24,6 +26,9 @@ class DriveVaultApp : Application() {
         DriveVaultFirebase.initialize(this)
         observeFirebaseSettings()
         ShareCleanupWorker.schedule(this)
+        if (BuildConfig.ADMOB_APP_ID.isNotBlank()) {
+            AdManager.initialize(this, BuildConfig.ADMOB_INTERSTITIAL_ID)
+        }
     }
 
     private fun observeFirebaseSettings() {

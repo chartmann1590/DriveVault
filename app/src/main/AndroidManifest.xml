@@ -53,6 +53,11 @@
         <!-- Pre-download the ML Kit object detection model at install time -->
         <meta-data android:name="com.google.mlkit.vision.DEPENDENCIES" android:value="object_detection" />
 
+        <!-- AdMob application ID; blank in builds without ADMOB_APP_ID configured -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${adMobAppId}"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

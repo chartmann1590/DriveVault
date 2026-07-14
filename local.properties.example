@@ -31,3 +31,11 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 
 # Optional: custom GitHub Pages viewer URL for shared clips
 # SHARE_VIEWER_URL=https://your-username.github.io/DriveVault
+
+# Release signing (only needed to build signed release APKs/AABs locally).
+# CI reads the equivalent RELEASE_KEYSTORE_PATH/PASSWORD/ALIAS from GitHub
+# secrets instead of this file.
+RELEASE_KEYSTORE_PATH=/path/to/release.jks
+RELEASE_KEYSTORE_PASSWORD=your-keystore-password
+RELEASE_KEY_ALIAS=your-key-alias
+RELEASE_KEY_PASSWORD=your-key-password

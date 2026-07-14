@@ -40,6 +40,23 @@ android {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
 
+        manifestPlaceholders["adMobAppId"] = localProp(
+            "ADMOB_APP_ID",
+            "ca-app-pub-3940256099942544~3347511713"
+        )
+
+        buildConfigField("String", "ADMOB_APP_ID", "\"${localProp("ADMOB_APP_ID")}\"")
+        buildConfigField(
+            "String",
+            "ADMOB_BANNER_ID",
+            "\"${localProp("ADMOB_BANNER_ID", "ca-app-pub-3940256099942544/9214589741")}\""
+        )
+        buildConfigField(
+            "String",
+            "ADMOB_INTERSTITIAL_ID",
+            "\"${localProp("ADMOB_INTERSTITIAL_ID", "ca-app-pub-3940256099942544/1033173712")}\""
+        )
+
         buildConfigField("String", "FIREBASE_PROJECT_ID", "\"${localProp("FIREBASE_PROJECT_ID")}\"")
         buildConfigField("String", "FIREBASE_PROJECT_NUMBER", "\"${localProp("FIREBASE_PROJECT_NUMBER")}\"")
 
@@ -57,10 +74,27 @@ android {
         )
     }
 
+    signingConfigs {
+        create("release") {
+            val keystorePath = System.getenv("RELEASE_KEYSTORE_PATH") ?: localProp("RELEASE_KEYSTORE_PATH")
+            if (keystorePath.isNotBlank()) {
+                storeFile = file(keystorePath)
+                storePassword = System.getenv("RELEASE_KEYSTORE_PASSWORD") ?: localProp("RELEASE_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("RELEASE_KEY_ALIAS") ?: localProp("RELEASE_KEY_ALIAS")
+                keyPassword = System.getenv("RELEASE_KEY_PASSWORD") ?: localProp("RELEASE_KEY_PASSWORD")
+                    .ifBlank { System.getenv("RELEASE_KEYSTORE_PASSWORD") ?: localProp("RELEASE_KEYSTORE_PASSWORD") }
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            val keystorePath = System.getenv("RELEASE_KEYSTORE_PATH") ?: localProp("RELEASE_KEYSTORE_PATH")
+            if (keystorePath.isNotBlank()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             buildConfigField("String", "FIREBASE_APP_ID", "\"${localProp("FIREBASE_RELEASE_APP_ID")}\"")
             buildConfigField("String", "FIREBASE_API_KEY", "\"${localProp("FIREBASE_RELEASE_API_KEY")}\"")
             proguardFiles(
@@ -153,6 +187,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.14.0")
 
     implementation("com.google.android.gms:play-services-location:21.4.0")
+    implementation("com.google.android.gms:play-services-ads:25.4.0")
     implementation("androidx.security:security-crypto:1.1.0")
     implementation("org.osmdroid:osmdroid-android:6.1.20")
     implementation("androidx.core:core-splashscreen:1.2.0")
