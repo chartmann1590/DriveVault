@@ -53,3 +53,13 @@ supabase/.temp/
 sb_login.log
 sb_login.done
 sb_enter.txt
+
+# Transient Supabase end-to-end test scratch files (should never be committed)
+test_upload.bin
+test_id.txt
+test_loc.txt
+test_path.txt
+cleanup_id.txt
+cleanup_path.txt
+build_v*.log
+build_v*.done

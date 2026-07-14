@@ -5,10 +5,8 @@ import androidx.work.*
 import com.drivevault.dashcam.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import java.time.Instant
 import java.util.concurrent.TimeUnit
@@ -49,19 +47,28 @@ class ShareCleanupWorker(context: Context, params: WorkerParameters) : Coroutine
                 val id = record.getString("id")
                 val storagePath = record.getString("storage_path")
 
-                // Delete storage file using the service role key so we bypass the
-                // public-only storage RLS policies. The anon key intentionally
+                // Delete the storage object using the service role key so we bypass
+                // the public-only storage RLS policies. The anon key intentionally
                 // cannot delete storage objects — only the cleanup worker can.
-                val deleteBody = """{"prefixes":["$storagePath"]}"""
-                    .toRequestBody("application/json".toMediaType())
-                client.newCall(
+                //
+                // We use the single-object DELETE endpoint
+                //   DELETE /storage/v1/object/{bucketId}/{objectPath}
+                // rather than the batch POST /object/delete/{bucketId} endpoint:
+                // the batch endpoint's body schema has changed across Supabase
+                // storage versions and has been observed returning 400 for the
+                // documented {prefixes:[...]} body on current projects, while the
+                // single-object DELETE consistently returns 200 on success. The
+                // worker deletes one object per expired record anyway, so the
+                // batch endpoint offered no advantage here.
+                val deleteResp = client.newCall(
                     Request.Builder()
-                        .url("${BuildConfig.SUPABASE_URL}/storage/v1/object/delete/shared-clips")
+                        .url("${BuildConfig.SUPABASE_URL}/storage/v1/object/shared-clips/$storagePath")
                         .addHeader("Authorization", "Bearer ${BuildConfig.SUPABASE_SERVICE_ROLE_KEY}")
                         .addHeader("apikey", BuildConfig.SUPABASE_SERVICE_ROLE_KEY)
-                        .post(deleteBody)
+                        .delete()
                         .build()
                 ).execute()
+                deleteResp.close()
 
                 // Delete DB record
                 client.newCall(
