@@ -11,6 +11,14 @@ on:
         description: "Release notes (optional; defaults to recent commits or fallback)"
         required: false
         type: string
+      release_status:
+        description: "draft = uploads to production but requires a manual 'Send for review' click in Play Console; completed = rolls out immediately"
+        required: false
+        type: choice
+        options:
+          - draft
+          - completed
+        default: draft
 
 jobs:
   publish:
@@ -142,6 +150,6 @@ jobs:
           packageName: com.drivevault.dashcam
           releaseFiles: app/build/outputs/bundle/release/app-release.aab
           track: production
-          status: completed
+          status: ${{ github.event.inputs.release_status }}
           whatsNewDirectory: distribution/whatsnew
           mappingFile: app/build/outputs/mapping/release/mapping.txt
