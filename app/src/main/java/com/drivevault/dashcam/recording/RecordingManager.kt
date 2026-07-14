@@ -46,6 +46,7 @@ class RecordingManager(
     private val locationSampleDao by lazy { db.locationSampleDao() }
     private val headingSampleDao by lazy { db.headingSampleDao() }
     private val settings by lazy { SettingsRepository(context) }
+    private val storageManager by lazy { com.drivevault.dashcam.storage.StorageManager(context) }
 
     private val telemetryManager by lazy {
         TelemetryManager(context, LocationServices.getFusedLocationProviderClient(context))
@@ -72,6 +73,13 @@ class RecordingManager(
     private val clipFinalized = AtomicBoolean(false)
     private var isRecording = false
     private var clipStartTime = 0L
+
+    // Snapshot of cameraMode/locked taken once per clip at startNewClip(). _state.cameraMode and
+    // _state.locked are session-wide and can change mid-clip (user edits Settings or taps Lock
+    // while a ~60s segment is still recording); saving must use what was actually true for THIS
+    // clip, not whatever the live state happens to be when finishCurrentClip() runs.
+    private var currentClipCameraMode: String = "BACK"
+    private var currentClipLocked: Boolean = false
     private val locationSamples = mutableListOf<LocationSampleEntity>()
     private val headingSamples = mutableListOf<HeadingSampleEntity>()
 
@@ -189,7 +197,10 @@ class RecordingManager(
     @SuppressLint("MissingPermission")
     @androidx.camera.core.ExperimentalGetImage
     private suspend fun startNewClip() {
-        Log.d("RecordingManager", "startNewClip mode=${_state.value.cameraMode}")
+        currentClipCameraMode = _state.value.cameraMode
+        currentClipLocked = false
+        _state.update { it.copy(locked = false) }
+        Log.d("RecordingManager", "startNewClip mode=$currentClipCameraMode")
         clipFinalized.set(false)
         locationSamples.clear()
         headingSamples.clear()
@@ -203,7 +214,7 @@ class RecordingManager(
         primaryFinalize = CompletableDeferred()
         secondaryFinalize = null
 
-        val primaryQualitySelector = qualitySelectorForMode(_state.value.cameraMode)
+        val primaryQualitySelector = qualitySelectorForMode(currentClipCameraMode)
         val recorder = Recorder.Builder()
             .setQualitySelector(primaryQualitySelector)
             .build()
@@ -213,10 +224,10 @@ class RecordingManager(
         try {
             val primaryCapture = videoCapture ?: return
             DriveVaultFirebase.logRecordingStarted(
-                cameraMode = _state.value.cameraMode,
-                dualStreamRequested = _state.value.cameraMode == "DUAL"
+                cameraMode = currentClipCameraMode,
+                dualStreamRequested = currentClipCameraMode == "DUAL"
             )
-            if (_state.value.cameraMode == "DUAL") {
+            if (currentClipCameraMode == "DUAL") {
                 Log.d("RecordingManager", "binding dual video capture")
                 secondaryFile = File(clipsDir, "DriveVault_${stamp}_front.mp4")
                 secondaryFinalize = CompletableDeferred()
@@ -236,6 +247,7 @@ class RecordingManager(
                     secondaryVideoCapture = null
                     secondaryFile = null
                     secondaryFinalize = null
+                    currentClipCameraMode = "BACK"
                     _state.update {
                         it.copy(
                             cameraMode = "BACK",
@@ -315,7 +327,7 @@ class RecordingManager(
     @androidx.camera.core.ExperimentalGetImage
     private suspend fun bindSingleVideoCaptureUseCase(capture: VideoCapture<Recorder>) {
         val provider = cameraProvider ?: awaitCameraProvider().also { cameraProvider = it }
-        val selector = when (_state.value.cameraMode) {
+        val selector = when (currentClipCameraMode) {
             "FRONT" -> CameraSelector.DEFAULT_FRONT_CAMERA
             else -> CameraSelector.DEFAULT_BACK_CAMERA
         }
@@ -344,7 +356,7 @@ class RecordingManager(
                 Preview.Builder().build().also { it.setSurfaceProvider(sp) }
             }.also { boundPreview = it }
 
-            if (vehicleDetectionEnabled && _state.value.cameraMode == "BACK") {
+            if (vehicleDetectionEnabled && currentClipCameraMode == "BACK") {
                 val imageAnalysis = buildImageAnalysisUseCase()
                 boundImageAnalysis = imageAnalysis
                 if (preview != null) {
@@ -464,10 +476,15 @@ class RecordingManager(
             }
             saveClipToDatabase()
             DriveVaultFirebase.logRecordingStopped(
-                cameraMode = _state.value.cameraMode,
+                cameraMode = currentClipCameraMode,
                 durationMillis = System.currentTimeMillis() - clipStartTime,
                 hasSecondaryStream = secondaryFile?.exists() == true
             )
+            try {
+                storageManager.enforceStorageLimit()
+            } catch (error: Exception) {
+                Log.e("RecordingManager", "enforceStorageLimit failed", error)
+            }
         }
     }
 
@@ -487,13 +504,24 @@ class RecordingManager(
         val avgSpeed = if (speeds.isNotEmpty()) speeds.average() else 0.0
         val maxSpeed = speeds.maxOrNull() ?: 0.0
 
+        // Auto-queue for Immich sync so the periodic ImmichSyncWorker actually has something to
+        // upload; without this, clips default to NOT_CONFIGURED forever and "Immich Sync" never
+        // uploads anything unless the user manually selects clips in the library. Whether a
+        // PENDING clip is *actually* eligible for upload right now (e.g. immichUploadLockedOnly)
+        // is decided by the worker at upload time, not here.
+        val immichStatus = if (settings.immichEnabled.first() && settings.immichUploadVideos.first()) {
+            "PENDING"
+        } else {
+            "NOT_CONFIGURED"
+        }
+
         val entity = ClipEntity(
             fileUri = file.absolutePath,
             secondaryFileUri = secondaryFile?.takeIf { it.exists() }?.absolutePath,
             startTimeMillis = clipStartTime,
             endTimeMillis = endTime,
             durationMillis = endTime - clipStartTime,
-            cameraMode = _state.value.cameraMode,
+            cameraMode = currentClipCameraMode,
             fileSizeBytes = file.length() + (secondaryFile?.takeIf { it.exists() }?.length() ?: 0L),
             startLatitude = startLoc?.latitude ?: 0.0,
             startLongitude = startLoc?.longitude ?: 0.0,
@@ -506,8 +534,9 @@ class RecordingManager(
             audioEnabled = _state.value.audioEnabled,
             overlayEnabled = _state.value.overlayEnabled,
             miniMapEnabled = _state.value.miniMapEnabled,
-            locked = _state.value.locked,
-            interrupted = interrupted
+            locked = currentClipLocked,
+            interrupted = interrupted,
+            immichStatus = immichStatus
         )
 
         currentClipId = clipDao.insert(entity)
@@ -587,7 +616,8 @@ class RecordingManager(
     }
 
     fun lockCurrentClip() {
-        _state.update { it.copy(locked = !it.locked) }
+        currentClipLocked = !currentClipLocked
+        _state.update { it.copy(locked = currentClipLocked) }
     }
 
     fun getCurrentTelemetry() = telemetryManager.telemetryState

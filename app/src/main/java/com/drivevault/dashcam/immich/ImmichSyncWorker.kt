@@ -25,10 +25,13 @@ class ImmichSyncWorker(
 
         if (!settings.immichEnabled.first()) return@withContext Result.success()
 
-        val pending = clipDao.getPendingUploads() + clipDao.getFailedUploads()
+        val lockedOnly = settings.immichUploadLockedOnly.first()
+        val pending = (clipDao.getPendingUploads() + clipDao.getFailedUploads())
+            .distinctBy { it.id }
+            .filter { !lockedOnly || it.locked }
         if (pending.isEmpty()) return@withContext Result.success()
 
-        for (clip in pending.distinctBy { it.id }) {
+        for (clip in pending) {
             val file = File(clip.fileUri)
             if (!file.exists()) {
                 clipDao.updateImmichStatus(clip.id, "FAILED", clip.immichAssetId)

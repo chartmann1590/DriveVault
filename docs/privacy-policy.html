@@ -261,7 +261,7 @@
 <section class="header">
     <div class="container">
         <h1>Privacy Policy</h1>
-        <p>Last updated: June 22, 2026</p>
+        <p>Last updated: July 14, 2026</p>
     </div>
 </section>
 
@@ -270,7 +270,7 @@
 
         <div class="highlight-box green">
             <h4>The short version</h4>
-            <p>DriveVault stores all your recordings, GPS data, and settings locally on your device. Nothing is uploaded to any server unless you explicitly configure a sync destination. We do not sell, share, or monetize your data.</p>
+            <p>DriveVault stores all your recordings, GPS data, and settings locally on your device. Nothing is uploaded to any server unless you explicitly configure a sync destination. We do not sell your data. The app is ad-supported: Google AdMob shows banner and interstitial ads on non-recording screens and collects advertising data as described in Section 3 below &mdash; ads never appear on the recording screen and are never shown while a recording is in progress.</p>
         </div>
 
         <h2>1. Data We Collect</h2>
@@ -330,6 +330,11 @@
                     <td>Receive push notifications (if enabled)</td>
                     <td><span class="tag tag-amber">Device token only</span></td>
                 </tr>
+                <tr>
+                    <td>Advertising ID &amp; device info (Google AdMob)</td>
+                    <td>Serve and measure banner/interstitial ads</td>
+                    <td><span class="tag tag-amber">Advertising ID</span></td>
+                </tr>
             </tbody>
         </table>
 
@@ -343,9 +348,10 @@
                 Collect, upload, or transmit your video recordings to any cloud service by default<br>
                 Track your GPS location remotely<br>
                 Require you to create an account or provide personal information<br>
-                Share your data with third parties for advertising or any other purpose<br>
+                Sell your data to third parties<br>
+                Show ads on the recording screen or while a recording is in progress<br>
                 Access your contacts, messages, or other app data<br>
-                Use any third-party analytics beyond Firebase (which uses anonymized data)
+                Use any third-party analytics beyond Firebase (which uses anonymized data) and AdMob (see Section 3)
             </p>
         </div>
 
@@ -396,6 +402,16 @@
             <li><strong>Communication:</strong> The app queries the GitHub API to display comments from developers and allows you to submit replies directly from the app.</li>
         </ul>
         <p>GitHub data processing is governed by GitHub's privacy statement: <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement</a></p>
+
+        <h3>Google AdMob (Advertising)</h3>
+        <p>DriveVault is ad-supported. We use Google AdMob to show banner and interstitial ads on secondary screens (clip library, clip detail, settings). Key points:</p>
+        <ul>
+            <li><strong>Ads never appear on the recording screen</strong>, in any state, and are never shown while a recording is actively in progress &mdash; even if you navigate to another screen while the foreground recording service keeps running.</li>
+            <li><strong>Data collected by AdMob:</strong> to serve and measure ads, Google AdMob may collect your advertising ID, IP address, device and app information, and general location (derived from IP), and may use this data (and data from other Google services) to personalize ads, subject to your device's ad settings.</li>
+            <li><strong>Your controls:</strong> you can opt out of personalized advertising and reset or delete your advertising ID at any time in your device's Settings &rarr; Privacy &rarr; Ads (or Google Settings &rarr; Ads on older Android versions).</li>
+            <li>AdMob does not have access to your video recordings, GPS telemetry, or clip library contents &mdash; that data is never sent to Google or any ad network.</li>
+        </ul>
+        <p>AdMob's data collection and use is governed by Google's privacy policy (<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a>) and How Google uses data when you use partner sites or apps (<a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener">policies.google.com/technologies/partner-sites</a>).</p>
 
         <h3>OpenStreetMap</h3>
         <p>The mini map overlay uses OpenStreetMap tile servers to render map images. When the map is visible, your device may request map tiles from OSM servers. These requests contain approximate viewport coordinates but no personally identifiable information. See <a href="https://wiki.osmfoundation.org/wiki/Privacy_Policy" target="_blank" rel="noopener">OSM's privacy policy</a>.</p>
@@ -478,13 +494,14 @@
 
         <h2>6. Data Sharing</h2>
 
-        <p>DriveVault will only share your data when you take an explicit action:</p>
+        <p>DriveVault will only share your data when you take an explicit action, with one exception for advertising:</p>
         <ul>
             <li><strong>Share button</strong> &mdash; Uses Android's share sheet to send clips to apps you choose</li>
             <li><strong>Export</strong> &mdash; Saves video, GPX, or JSON files to a location you select</li>
             <li><strong>Immich sync</strong> &mdash; Uploads to your self-hosted Immich server (only when configured)</li>
+            <li><strong>Google AdMob</strong> &mdash; Automatically, to serve ads on non-recording screens (see Section 3). This is the only data sharing that is not user-initiated; you can limit it via your device's ad settings as described above.</li>
         </ul>
-        <p>We never share your data without your direct action.</p>
+        <p>We never share your video recordings, GPS telemetry, or clip library contents with anyone, and we never sell your data.</p>
 
         <h2>7. Children's Privacy</h2>
         <p>DriveVault is not directed at children under 13. We do not knowingly collect personal information from children. If you believe a child has used the app and you have concerns, please uninstall the app to remove all local data.</p>

@@ -44,6 +44,8 @@ class StorageManager(private val context: Context) {
     }
 
     suspend fun enforceStorageLimit() = withContext(Dispatchers.IO) {
+        if (!settings.autoDeleteOldest.first()) return@withContext
+
         val maxMb = settings.maxStorageMb.first()
         val maxBytes = maxMb * 1024 * 1024
         var currentUsage = db.clipDao().getTotalStorageUsed() ?: 0L

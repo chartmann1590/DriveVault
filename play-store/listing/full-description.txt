@@ -1,4 +1,4 @@
-DriveVault Dashcam turns your Android phone into a privacy-first dashcam. No accounts, no cloud uploads, no tracking — your data stays on your device unless you choose to share.
+DriveVault Dashcam turns your Android phone into a privacy-first dashcam. No accounts, no cloud uploads — your recordings, GPS data, and clip library stay on your device unless you choose to share.
 
 RECORDING
 - Continuous loop recording in 60-second segments
@@ -40,7 +40,10 @@ AI DETECTION (Optional)
 PRIVACY
 - No cloud uploads by default
 - No accounts or sign-up required
-- No ads, no data selling
+- We never sell your data
 - Encrypted storage for sensitive settings
+- Ads never appear on the recording screen and are never shown while a recording is in progress
 
 Perfect for daily commuters, rideshare drivers, and road trip enthusiasts who value their privacy.
+
+DriveVault is free and supported by ads shown on the clip library, clip detail, and settings screens only.

@@ -78,7 +78,12 @@ class RecordingService : LifecycleService() {
             }
         }
 
-        if (_recordingState.value.isRecording) return START_STICKY
+        // recordingManager is checked (not just _recordingState.value.isRecording) because it is
+        // assigned synchronously below, before any suspension point. _recordingState.value only
+        // flips to isRecording=true asynchronously once the RecordingManager's flow starts
+        // emitting, so a rapid double-tap of the record button could otherwise pass this guard
+        // twice and spin up two concurrent RecordingManager instances fighting over the camera.
+        if (_recordingState.value.isRecording || recordingManager != null) return START_STICKY
 
         val notification = createNotification("Recording in progress")
         try {
