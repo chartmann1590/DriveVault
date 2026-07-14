@@ -22,10 +22,10 @@ import java.util.*
 fun ClipCard(
     clip: Clip,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     onLongClick: () -> Unit = {},
     isSelected: Boolean = false,
-    isSelectMode: Boolean = false,
-    modifier: Modifier = Modifier
+    isSelectMode: Boolean = false
 ) {
     GlassCard(
         modifier = modifier

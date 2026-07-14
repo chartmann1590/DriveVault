@@ -23,6 +23,7 @@ import androidx.core.content.FileProvider
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import java.util.Locale
 import com.drivevault.dashcam.domain.model.Clip
 import com.drivevault.dashcam.export.ClipTrimManager
 import com.drivevault.dashcam.firebase.ClipShareState
@@ -305,7 +306,7 @@ fun ClipDetailScreen(
                     DetailRow("Audio", if (clip.audioEnabled) "Yes" else "No")
                     DetailRow("Locked", if (clip.locked) "Yes" else "No")
                     if (clip.startLatitude != 0.0 && clip.startLongitude != 0.0) {
-                        DetailRow("Start Location", String.format("%.5f, %.5f", clip.startLatitude, clip.startLongitude))
+                        DetailRow("Start Location", String.format(Locale.US, "%.5f, %.5f", clip.startLatitude, clip.startLongitude))
                     }
                     if (clip.maxSpeedMps > 0) {
                         DetailRow("Max Speed", "${(clip.maxSpeedMps * 2.2394).toInt()} mph")

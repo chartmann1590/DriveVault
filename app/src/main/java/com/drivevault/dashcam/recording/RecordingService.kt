@@ -1,5 +1,6 @@
 package com.drivevault.dashcam.recording
 
+import android.annotation.SuppressLint
 import android.app.*
 import android.content.Intent
 import android.content.pm.ServiceInfo
@@ -61,7 +62,10 @@ class RecordingService : LifecycleService() {
         contentPendingIntent = PendingIntent.getActivity(this, 0, Intent(this, MainActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
     }
 
+    @SuppressLint("InlinedApi")
+    @androidx.camera.core.ExperimentalGetImage
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
         Log.d("RecordingService", "onStartCommand action=${intent?.action}")
         when (intent?.action) {
             ACTION_STOP -> {

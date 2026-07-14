@@ -1,6 +1,7 @@
 package com.drivevault.dashcam.recording
 
 import android.graphics.RectF
+import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.objects.ObjectDetection
@@ -32,6 +33,7 @@ class ObjectDetectionManager {
     private val _detectedObjects = MutableStateFlow<List<DetectedObjectResult>>(emptyList())
     val detectedObjects: StateFlow<List<DetectedObjectResult>> = _detectedObjects.asStateFlow()
 
+    @ExperimentalGetImage
     fun processImage(imageProxy: ImageProxy) {
         val mediaImage = imageProxy.image
         if (mediaImage == null) {
