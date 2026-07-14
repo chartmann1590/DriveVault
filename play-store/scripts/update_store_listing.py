@@ -78,6 +78,21 @@ def upload_images(service, edit_id, image_type, paths):
         ).execute()
 
 
+def validate_lengths(title, short_description, full_description):
+    limits = {
+        "title": (title, 30),
+        "short-description": (short_description, 80),
+        "full-description": (full_description, 4000),
+    }
+    errors = [
+        f"{name}.txt is {len(value)} chars, exceeds the {limit}-char Play Store limit"
+        for name, (value, limit) in limits.items()
+        if len(value) > limit
+    ]
+    if errors:
+        raise SystemExit("Fix these before running:\n  " + "\n  ".join(errors))
+
+
 def main():
     credentials = load_credentials()
     service = build("androidpublisher", "v3", credentials=credentials)
@@ -87,6 +102,8 @@ def main():
     full_description = read_text(LISTING_DIR / "full-description.txt")
     website_url = read_text(LISTING_DIR / "website-url.txt")
     support_email = read_text(LISTING_DIR / "support-email.txt")
+
+    validate_lengths(title, short_description, full_description)
 
     print(f"Package: {PACKAGE_NAME}")
     print(f"Title: {title}")
