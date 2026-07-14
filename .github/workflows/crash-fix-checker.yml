@@ -1,0 +1,428 @@
+name: Crash Fix Checker
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  crash-fix-check:
+    runs-on: ubuntu-latest
+    if: github.repository == 'chartmann1590/DriveVault'
+
+    steps:
+      - name: Checkout repository (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run crash-fix checker
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const SCRIPT_START = new Date();
+            const OWNER = context.repo.owner;
+            const REPO = context.repo.repo;
+            const BUG_LABEL = 'bug';
+
+            const exec = util.promisify(require('child_process').exec);
+
+            // -----------------------------------------------------------------
+            // Shared helpers
+            // -----------------------------------------------------------------
+            async function sh(cmd) {
+              const { stdout, stderr } = await exec(cmd, { cwd: process.env.GITHUB_WORKSPACE });
+              if (stderr && !stderr.trimStart().startsWith('warning:')) {
+                console.warn('stderr:', stderr.trim());
+              }
+              return stdout.trim();
+            }
+
+            function extractCrashlyticsIssueId(body) {
+              if (!body) return null;
+              const m = body.match(/<!--\s*crashlytics-issue-id:\s*([a-f0-9-]+)\s*-->/);
+              return m ? m[1] : null;
+            }
+
+            async function closeCrashlyticsIssue(crashlyticsId, projectId, accessToken) {
+              if (!accessToken) throw new Error('ACCESS_TOKEN not set');
+              const url = `https://firebasecrashlytics.googleapis.com/v1alpha/projects/${projectId}/apps/*/issues/${crashlyticsId}`;
+              const resp = await fetch(url, {
+                method: 'PATCH',
+                headers: {
+                  'Authorization': `Bearer ${accessToken}`,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ type: 'CLOSED' }),
+              });
+              if (!resp.ok) {
+                const text = await resp.text();
+                throw new Error(`Crashlytics API error ${resp.status}: ${text.substring(0, 200)}`);
+              }
+              console.log(`Crashlytics issue ${crashlyticsId} closed upstream.`);
+            }
+
+            // -----------------------------------------------------------------
+            // 1. Collect fix commits from the last 90 days
+            // -----------------------------------------------------------------
+            const FIX_KEYWORDS = [
+              /\bfix\s*[:=-]/i,
+              /\bfix(?:es|ed)?\s+(?:crash|bug|issue|recording|storage|overlay|camera|notification|coroutine|animation|compose|permission)/i,
+              /\bresolve[sd]?\s*(?:crash|bug|issue|dependabot)/i,
+              /\bNPE\b/,
+              /\bNullPointer(?:Exception)?\b/,
+              /\bRuntimeException\b/,
+              /\bIndexOutOfBounds(?:Exception)?\b/,
+              /\bIllegalState(?:Exception)?\b/,
+              /\bIllegalArgument(?:Exception)?\b/,
+              /\bClassCast(?:Exception)?\b/,
+              /\bConcurrentModification(?:Exception)?\b/,
+              /\bANR\b/,
+              /\bKeyframesSpec\b/,
+            ];
+
+            function isFixCommit(message) {
+              for (const re of FIX_KEYWORDS) {
+                if (re.test(message)) return true;
+              }
+              return false;
+            }
+
+            const fixCommitsRaw = [];
+            const gitLog = await sh(`git log --since="90 days ago" --format="%H-----%h-----%s-----%ai" --name-only`);
+
+            if (gitLog) {
+              const blocks = gitLog.split(/\n(?=[0-9a-f]{40}-----)/);
+              for (const block of blocks) {
+                const lines = block.split('\n').filter(Boolean);
+                if (lines.length < 1) continue;
+                const parts = lines[0].split('-----');
+                if (parts.length < 4) continue;
+                const [fullHash, shortHash, subject, dateIso] = parts;
+                const message = subject || '';
+                if (!isFixCommit(message)) continue;
+                const files = lines.slice(1).map(f => f.trim()).filter(Boolean);
+                fixCommitsRaw.push({ fullHash, shortHash, message, date: dateIso, files });
+              }
+            }
+
+            console.log(`Found ${fixCommitsRaw.length} fix commits in the last 90 days.`);
+            for (const c of fixCommitsRaw) {
+              console.log(`  ${c.shortHash} ${c.message}`);
+            }
+
+            // -----------------------------------------------------------------
+            // 2. Load all open issues labeled "bug"
+            // -----------------------------------------------------------------
+            const issuesIterator = github.paginate.iterator(
+              github.rest.issues.listForRepo,
+              {
+                owner: OWNER,
+                repo: REPO,
+                state: 'open',
+                labels: BUG_LABEL,
+                per_page: 100,
+              }
+            );
+
+            const issues = [];
+            for await (const page of issuesIterator) {
+              for (const issue of page.data) {
+                if (issue.pull_request) continue;
+                issues.push(issue);
+              }
+            }
+
+            console.log(`Found ${issues.length} open issues labeled "${BUG_LABEL}".`);
+
+            if (issues.length === 0 && fixCommitsRaw.length === 0) {
+              return { message: 'No open bug issues and no fix commits found.' };
+            }
+
+            // -----------------------------------------------------------------
+            // Build known source file index once
+            // -----------------------------------------------------------------
+            let knownFiles = [];
+            try {
+              const allFiles = await sh('git ls-files -- "*.kt" "*.java"');
+              knownFiles = allFiles.split('\n').filter(Boolean);
+            } catch (e) {
+              console.warn('Could not build file index:', e.message);
+              knownFiles = [];
+            }
+
+            // -----------------------------------------------------------------
+            // Issue-processing helpers
+            // -----------------------------------------------------------------
+            const HIDDEN_MARKER_PROCESSED = '<!-- crash-fix-checked -->';
+
+            function parseLastSeen(body) {
+              if (!body) return null;
+              const m = body.match(/<!--\s*crash-last-seen:\s*(\d{4}-\d{2}-\d{2})\s*-->/);
+              return m ? m[1] : null;
+            }
+
+            function fqcnToPath(fqcn) {
+              const pkgPath = fqcn.replace(/\./g, '/');
+              return `app/src/main/java/${pkgPath}.kt`;
+            }
+
+            function classNameToPaths(className) {
+              return knownFiles.filter(f => f.endsWith(`/${className}.kt`) || f.endsWith(`/${className}.java`));
+            }
+
+            function extractAffectedFiles(body) {
+              if (!body) return [];
+              const files = new Set();
+
+              // FQCN: com.drivevault.dashcam.foo.Bar -> app/src/main/java/com/drivevault/dashcam/foo/Bar.kt
+              const fqcnRe = /(com\.drivevault\.dashcam(?:\.[a-zA-Z0-9_]+)+(?:\.[A-Z][a-zA-Z0-9_]*))/g;
+              let m;
+              while ((m = fqcnRe.exec(body)) !== null) {
+                files.add(fqcnToPath(m[1]));
+              }
+
+              // Direct class name references (e.g. RecordingManager, RecordingScreen)
+              const classRe = /\b([A-Z][a-zA-Z0-9_]*(?:Manager|Service|Screen|Worker|Provider|Receiver|View|ViewModel|Model|Helper|Client|Factory|Repo|Repository|Database|Fragment|Activity|Adapter|Interceptor|Handler|Listener|Observer|Delegate|Mapper|Converter))\b/g;
+              while ((m = classRe.exec(body)) !== null) {
+                const className = m[1];
+                const paths = classNameToPaths(className);
+                for (const p of paths) files.add(p);
+              }
+
+              // Stack trace: at com.drivevault.dashcam...
+              const stackRe = /\bat\s+(com\.drivevault\.dashcam(?:\.[a-zA-Z0-9_]+)+(?:\.[A-Z][a-zA-Z0-9_]*))(?:\(|\.|$)/gm;
+              while ((m = stackRe.exec(body)) !== null) {
+                files.add(fqcnToPath(m[1]));
+              }
+
+              return [...files];
+            }
+
+            function commitsTouchingFile(commits, targetFile) {
+              const targetLower = targetFile.toLowerCase();
+              const targetBase = targetFile.split('/').pop().toLowerCase();
+              return commits.filter(c =>
+                c.files.some(f => {
+                  const fLower = f.toLowerCase();
+                  return fLower === targetLower || fLower.endsWith('/' + targetBase);
+                })
+              );
+            }
+
+            async function checkIfAlreadyProcessed(issueNumber) {
+              const commentsIter = github.paginate.iterator(
+                github.rest.issues.listComments,
+                { owner: OWNER, repo: REPO, issue_number: issueNumber, per_page: 100 }
+              );
+              for await (const page of commentsIter) {
+                for (const comment of page.data) {
+                  const body = comment.body || '';
+                  if (
+                    body.includes(HIDDEN_MARKER_PROCESSED) ||
+                    body.includes('pending review') ||
+                    body.includes('pending deploy') ||
+                    body.includes('pending store review')
+                  ) {
+                    return true;
+                  }
+                }
+              }
+              return false;
+            }
+
+            function extractSummary(body) {
+              if (!body) return { description: 'No description', package: 'unknown', version: 'unknown' };
+
+              const descMatch = body.match(/##\s*Description\s*\n([\s\S]*?)(?=\n##\s|$)/i);
+              const pkgMatch = body.match(/- Package:\s*(.+)/);
+              const verMatch = body.match(/- Version:\s*(.+)/);
+
+              return {
+                description: descMatch ? descMatch[1].trim().substring(0, 300) : 'No description',
+                package: pkgMatch ? pkgMatch[1].trim() : 'unknown',
+                version: verMatch ? verMatch[1].trim() : 'unknown',
+              };
+            }
+
+            function formatCommitLink(shortHash, message) {
+              const line1 = message.split('\n')[0].substring(0, 80);
+              return `- [\`${shortHash}\`](https://github.com/${OWNER}/${REPO}/commit/${shortHash}) — ${line1}`;
+            }
+
+            function formatDate(d) {
+              return d.toISOString().split('T')[0];
+            }
+
+            // -----------------------------------------------------------------
+            // 3. Process each open bug issue
+            // -----------------------------------------------------------------
+            let processedCount = 0;
+            let closedCount = 0;
+            const todayStr = formatDate(SCRIPT_START);
+            const firebaseProjectId = process.env.FIREBASE_PROJECT_ID || '';
+
+            for (const issue of issues) {
+              const body = issue.body || '';
+              const issueNumber = issue.number;
+
+              // Skip PRs
+              if (issue.pull_request) continue;
+
+              // Skip if the issue body itself has the processed marker
+              if (body.includes(HIDDEN_MARKER_PROCESSED)) {
+                console.log(`Issue #${issueNumber}: already marked as processed in body. Skipping.`);
+                continue;
+              }
+
+              // Check if already processed via comment
+              const alreadyProcessed = await checkIfAlreadyProcessed(issueNumber);
+              if (alreadyProcessed) {
+                console.log(`Issue #${issueNumber}: already processed (comment marker found). Skipping.`);
+                continue;
+              }
+
+              // --- 3a. Stale crash check (5-day silence) ---
+              const lastSeen = parseLastSeen(body);
+              if (lastSeen) {
+                const lastSeenDate = new Date(lastSeen + 'T00:00:00Z');
+                const today = new Date(todayStr + 'T00:00:00Z');
+                const diffDays = Math.floor((today - lastSeenDate) / (1000 * 60 * 60 * 24));
+
+                if (diffDays >= 5) {
+                  console.log(`Issue #${issueNumber}: last crash seen ${lastSeen} (${diffDays} days ago) — closing as stale.`);
+
+                  await github.rest.issues.createComment({
+                    owner: OWNER,
+                    repo: REPO,
+                    issue_number: issueNumber,
+                    body: [
+                      '## Auto-Closed: Crash Inactivity',
+                      '',
+                      `This issue has had no new crash events for **${diffDays} consecutive days** (last seen: ${lastSeen}).`,
+                      '',
+                      'The issue is being automatically closed. If the crash reappears, a new issue will be opened or this one can be reopened.',
+                      '',
+                      '| Status |',
+                      '|--------|',
+                      '| Closed due to inactivity |',
+                      '',
+                      HIDDEN_MARKER_PROCESSED,
+                    ].join('\n'),
+                  });
+
+                  await github.rest.issues.update({
+                    owner: OWNER,
+                    repo: REPO,
+                    issue_number: issueNumber,
+                    state: 'closed',
+                  });
+
+                  const crashlyticsIssId = extractCrashlyticsIssueId(body);
+                  const accessToken = process.env.ACCESS_TOKEN;
+                  if (crashlyticsIssId && accessToken && firebaseProjectId) {
+                    try {
+                      await closeCrashlyticsIssue(crashlyticsIssId, firebaseProjectId, accessToken);
+                    } catch (e) {
+                      console.warn(`Failed to close Crashlytics issue for #${issueNumber}: ${e.message}`);
+                    }
+                  }
+
+                  closedCount++;
+                  continue;
+                }
+              }
+
+              // --- 3b. Extract affected files and find fix commits ---
+              const affectedFiles = extractAffectedFiles(body);
+              console.log(`Issue #${issueNumber}: extracted ${affectedFiles.length} affected files.`);
+
+              let matchedCommits = [];
+              if (affectedFiles.length > 0) {
+                for (const af of affectedFiles) {
+                  const hits = commitsTouchingFile(fixCommitsRaw, af);
+                  for (const h of hits) {
+                    if (!matchedCommits.some(mc => mc.fullHash === h.fullHash)) {
+                      matchedCommits.push(h);
+                    }
+                  }
+                }
+              }
+
+              // Fallback: keyword overlap between issue description and commit subjects
+              if (matchedCommits.length === 0) {
+                const descWords = new Set(body.toLowerCase().split(/\W+/).filter(w => w.length > 3));
+                for (const c of fixCommitsRaw) {
+                  const subjectWords = c.message.toLowerCase().split(/\W+/).filter(w => w.length > 3);
+                  const overlap = subjectWords.filter(w => descWords.has(w));
+                  if (overlap.length >= 2) {
+                    matchedCommits.push(c);
+                  }
+                }
+              }
+
+              if (matchedCommits.length > 0) {
+                console.log(`Issue #${issueNumber}: found ${matchedCommits.length} matching fix commits.`);
+
+                const summary = extractSummary(body);
+                const commitLines = matchedCommits.map(c => formatCommitLink(c.shortHash, c.message));
+                const changedFiles = [...new Set(matchedCommits.flatMap(c => c.files))].sort();
+
+                const commentBody = [
+                  '## Fix Detected for This Crash/Bug',
+                  '',
+                  '### Summary',
+                  '',
+                  `- **Description**: ${summary.description}`,
+                  `- **Package**: ${summary.package}`,
+                  `- **Version**: ${summary.version}`,
+                  '',
+                  '### Fix Commits',
+                  '',
+                  ...commitLines,
+                  '',
+                  '### Files Changed',
+                  '',
+                  ...changedFiles.map(f => `- \`${f}\``),
+                  '',
+                  '### Status',
+                  '',
+                  '| Stage | Status |',
+                  '|-------|--------|',
+                  '| Fix committed | :white_check_mark: |',
+                  '| Review / deploy pending | :hourglass: |',
+                  '| Live for users | :hourglass: |',
+                  '',
+                  '> This issue will be automatically closed once the fix is confirmed live for users. If the crash continues after the fix is deployed, a new issue will be filed.',
+                  '',
+                  HIDDEN_MARKER_PROCESSED,
+                ].join('\n');
+
+                await github.rest.issues.createComment({
+                  owner: OWNER,
+                  repo: REPO,
+                  issue_number: issueNumber,
+                  body: commentBody,
+                });
+
+                processedCount++;
+              } else {
+                console.log(`Issue #${issueNumber}: no matching fix commits found.`);
+              }
+            }
+
+            return {
+              message: `Processed ${processedCount} issues with fix notifications, closed ${closedCount} stale issues.`,
+              processed: processedCount,
+              closed: closedCount,
+              fixCommitsFound: fixCommitsRaw.length,
+              issuesEvaluated: issues.length,
+            };
+        env:
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
