@@ -114,20 +114,29 @@ jobs:
 
       - name: Generate release notes
         run: |
-          mkdir -p distribution/whatsnew/whatsnew-en-US
+          # whatsnew-en-US must be a FILE directly inside distribution/whatsnew/,
+          # not a directory - `mkdir -p .../whatsnew-en-US` here previously created
+          # a directory at that exact path, so the later `>` redirect into the same
+          # path failed with "Is a directory".
+          mkdir -p distribution/whatsnew
+          NOTES_FILE=distribution/whatsnew/whatsnew-en-US
           INPUT_NOTES="${{ github.event.inputs.release_notes }}"
           if [ -n "$INPUT_NOTES" ]; then
-            echo "$INPUT_NOTES" > distribution/whatsnew/whatsnew-en-US
+            echo "$INPUT_NOTES" > "$NOTES_FILE"
           else
             PREV_TAG="$(git describe --tags --abbrev=0 2>/dev/null || true)"
             if [ -n "$PREV_TAG" ]; then
-              git log --oneline "${PREV_TAG}..HEAD" > distribution/whatsnew/whatsnew-en-US
+              git log --oneline "${PREV_TAG}..HEAD" > "$NOTES_FILE"
             else
-              git log --oneline HEAD~10..HEAD > distribution/whatsnew/whatsnew-en-US 2>/dev/null || echo "Bug fixes and performance improvements." > distribution/whatsnew/whatsnew-en-US
+              git log --oneline HEAD~10..HEAD > "$NOTES_FILE" 2>/dev/null || true
             fi
           fi
+          # Play Store "what's new" text has a 500-character limit per locale.
+          if [ ! -s "$NOTES_FILE" ] || [ "$(wc -c < "$NOTES_FILE")" -gt 500 ]; then
+            echo "Bug fixes and performance improvements." > "$NOTES_FILE"
+          fi
           echo "Release notes:"
-          cat distribution/whatsnew/whatsnew-en-US
+          cat "$NOTES_FILE"
 
       - name: Upload App Bundle artifact
         uses: actions/upload-artifact@v7
