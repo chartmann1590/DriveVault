@@ -107,8 +107,10 @@ jobs:
 
       - name: Verify AAB signature
         run: |
-          BUILD_TOOLS="$(ls -d "${ANDROID_SDK_ROOT}"/build-tools/* | sort -V | tail -1)"
-          "${BUILD_TOOLS}/apksigner" verify --print-certs app/build/outputs/bundle/release/*.aab
+          # apksigner only understands APKs, not AABs (it fails with "Missing
+          # AndroidManifest.xml" against a bundle) - AABs are plain signed JARs,
+          # so jarsigner is the correct tool to verify one.
+          jarsigner -verify -verbose:summary app/build/outputs/bundle/release/*.aab
 
       - name: Generate release notes
         run: |
