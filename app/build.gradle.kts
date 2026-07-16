@@ -154,8 +154,8 @@ dependencies {
     androidTestImplementation(composeBom)
 
     implementation("androidx.core:core-ktx:1.15.0")
-    implementation("androidx.concurrent:concurrent-futures:1.2.0")
-    implementation("androidx.concurrent:concurrent-futures-ktx:1.2.0")
+    implementation("androidx.concurrent:concurrent-futures:1.3.0")
+    implementation("androidx.concurrent:concurrent-futures-ktx:1.3.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
