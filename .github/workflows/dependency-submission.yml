@@ -21,7 +21,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v3
+      uses: gradle/actions/setup-gradle@v6
 
     - name: Create local.properties
       run: |
@@ -32,4 +32,4 @@ jobs:
       run: python scripts/generate_google_services_json.py
 
     - name: Submit Dependency Graph
-      uses: gradle/actions/dependency-submission@v3
+      uses: gradle/actions/dependency-submission@v6
