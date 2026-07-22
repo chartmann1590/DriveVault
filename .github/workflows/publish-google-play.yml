@@ -162,5 +162,9 @@ jobs:
           releaseFiles: app/build/outputs/bundle/release/app-release.aab
           track: production
           status: ${{ github.event.inputs.release_status }}
+          # draft releases are committed without being sent for review (reviewed manually
+          # later in Play Console); the Play Developer API refuses to commit the edit
+          # otherwise. completed releases go through review/rollout immediately as before.
+          changesNotSentForReview: ${{ github.event.inputs.release_status == 'draft' }}
           whatsNewDirectory: distribution/whatsnew
           mappingFile: app/build/outputs/mapping/release/mapping.txt
