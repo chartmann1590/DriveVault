@@ -1,13 +1,16 @@
 package com.drivevault.dashcam.recording
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.*
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.util.Log
 import androidx.camera.core.Preview
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.drivevault.dashcam.MainActivity
@@ -88,7 +91,22 @@ class RecordingService : LifecycleService() {
         val notification = createNotification("Recording in progress")
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA)
+                // Only declare the microphone/location types when their runtime permission is
+                // actually granted - RECORDING_START_PERMISSIONS lets recording begin with just
+                // CAMERA, and declaring a type without its permission throws a SecurityException
+                // on API 34+.
+                var foregroundServiceType = ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) ==
+                    PackageManager.PERMISSION_GRANTED
+                ) {
+                    foregroundServiceType = foregroundServiceType or ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
+                }
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    foregroundServiceType = foregroundServiceType or ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
+                }
+                startForeground(NOTIFICATION_ID, notification, foregroundServiceType)
             } else {
                 startForeground(NOTIFICATION_ID, notification)
             }
