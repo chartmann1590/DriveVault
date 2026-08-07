@@ -1,5 +1,6 @@
 ﻿package com.drivevault.dashcam.ui.screens
 
+import android.app.Activity
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,8 +15,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.drivevault.dashcam.data.review.ReviewPrompter
 import com.drivevault.dashcam.ui.components.ClipCard
 import com.drivevault.dashcam.ui.components.StorageUsageCard
 import com.drivevault.dashcam.ui.theme.*
@@ -34,6 +37,15 @@ fun ClipLibraryScreen(
     val uiState by viewModel.uiState.collectAsState()
     var showDeleteDialog by remember { mutableStateOf(false) }
     var deleteTarget by remember { mutableStateOf<Long?>(null) }
+    val activity = LocalContext.current as? Activity
+
+    // Seeing real saved clips is proof the dashcam is working — a genuine moment of delivered
+    // value, unlike an empty-state app-open.
+    LaunchedEffect(uiState.clips.isNotEmpty()) {
+        if (uiState.clips.isNotEmpty()) {
+            activity?.let { ReviewPrompter.maybeRequestReview(it) }
+        }
+    }
 
     Scaffold(
         topBar = {

@@ -196,6 +196,7 @@ dependencies {
 
     implementation("com.google.android.gms:play-services-location:21.4.0")
     implementation("com.google.android.gms:play-services-ads:25.4.0")
+    implementation("com.google.android.play:review-ktx:2.0.2")
     implementation("androidx.security:security-crypto:1.1.0")
     implementation("org.osmdroid:osmdroid-android:6.1.20")
     implementation("androidx.core:core-splashscreen:1.2.0")
