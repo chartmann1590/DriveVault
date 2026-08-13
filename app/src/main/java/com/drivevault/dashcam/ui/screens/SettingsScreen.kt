@@ -1,5 +1,6 @@
 package com.drivevault.dashcam.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -22,6 +23,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel,
     feedbackViewModel: FeedbackViewModel,
     onNavigateBack: () -> Unit,
+    onNavigateToMoreApps: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -188,6 +190,18 @@ fun SettingsScreen(
             Text("DriveVault Dashcam v1.0.0", style = MaterialTheme.typography.bodyMedium, color = OnSurfaceVariant)
             Text("A privacy-first dashcam application.", style = MaterialTheme.typography.bodySmall, color = OnSurfaceVariant)
             Text("SAFETY DISCLAIMER: This app is not a substitute for safe driving practices. Always obey local traffic laws.", style = MaterialTheme.typography.bodySmall, color = AmberWarning)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onNavigateToMoreApps),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("More apps from this developer", style = MaterialTheme.typography.bodyLarge, color = OnSurface)
+            }
 
             Spacer(modifier = Modifier.height(32.dp))
         }

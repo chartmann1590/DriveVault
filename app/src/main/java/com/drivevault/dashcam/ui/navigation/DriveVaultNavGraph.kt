@@ -9,4 +9,5 @@ sealed class Screen(val route: String) {
         fun createRoute(clipId: Long) = "clip_detail/$clipId"
     }
     data object Settings : Screen("settings")
+    data object MoreApps : Screen("more_apps")
 }

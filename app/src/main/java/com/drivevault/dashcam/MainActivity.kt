@@ -151,8 +151,12 @@ class MainActivity : ComponentActivity() {
                                 SettingsScreen(
                                     viewModel = settingsViewModel,
                                     feedbackViewModel = feedbackViewModel,
-                                    onNavigateBack = { navController.popBackStack() }
+                                    onNavigateBack = { navController.popBackStack() },
+                                    onNavigateToMoreApps = { navController.navigate(Screen.MoreApps.route) }
                                 )
+                            }
+                            composable(Screen.MoreApps.route) {
+                                MoreAppsScreen(onNavigateBack = { navController.popBackStack() })
                             }
                         }
 
