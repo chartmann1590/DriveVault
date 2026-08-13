@@ -35,7 +35,7 @@ jobs:
 
     - name: Setup Gradle
       if: matrix.language == 'java-kotlin'
-      uses: gradle/actions/setup-gradle@v3
+      uses: gradle/actions/setup-gradle@v6
 
     - name: Create local.properties
       if: matrix.language == 'java-kotlin'
