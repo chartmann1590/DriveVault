@@ -49,9 +49,6 @@ jobs:
       - name: Create local.properties
         run: |
           echo "sdk.dir=${ANDROID_SDK_ROOT}" > local.properties
-          echo "github.api.token=${{ secrets.GH_API_TOKEN }}" >> local.properties
-          echo "github.repo.owner=${{ secrets.GH_REPO_OWNER }}" >> local.properties
-          echo "github.repo.name=${{ secrets.GH_REPO_NAME }}" >> local.properties
           echo "FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}" >> local.properties
           echo "FIREBASE_PROJECT_NUMBER=${{ secrets.FIREBASE_PROJECT_NUMBER }}" >> local.properties
           echo "FIREBASE_DEBUG_APP_ID=${{ secrets.FIREBASE_DEBUG_APP_ID }}" >> local.properties

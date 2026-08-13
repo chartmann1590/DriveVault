@@ -13,7 +13,7 @@ jobs:
       - name: Validate required secrets are present
         run: |
           missing=0
-          for secret in GH_API_TOKEN GH_REPO_OWNER GH_REPO_NAME FIREBASE_PROJECT_ID FIREBASE_PROJECT_NUMBER FIREBASE_DEBUG_APP_ID FIREBASE_DEBUG_API_KEY FIREBASE_RELEASE_APP_ID FIREBASE_RELEASE_API_KEY FIREBASE_STORAGE_BUCKET SUPABASE_URL SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY; do
+          for secret in FIREBASE_PROJECT_ID FIREBASE_PROJECT_NUMBER FIREBASE_DEBUG_APP_ID FIREBASE_DEBUG_API_KEY FIREBASE_RELEASE_APP_ID FIREBASE_RELEASE_API_KEY FIREBASE_STORAGE_BUCKET SUPABASE_URL SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY; do
             value=$(printenv "${secret}" || true)
             if [ -z "$value" ]; then
               echo "Missing secret: $secret"
@@ -25,9 +25,6 @@ jobs:
             exit 1
           fi
         env:
-          GH_API_TOKEN: ${{ secrets.GH_API_TOKEN }}
-          GH_REPO_OWNER: ${{ secrets.GH_REPO_OWNER }}
-          GH_REPO_NAME: ${{ secrets.GH_REPO_NAME }}
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
           FIREBASE_PROJECT_NUMBER: ${{ secrets.FIREBASE_PROJECT_NUMBER }}
           FIREBASE_DEBUG_APP_ID: ${{ secrets.FIREBASE_DEBUG_APP_ID }}
@@ -58,9 +55,6 @@ jobs:
       - name: Create local.properties
         run: |
           echo "sdk.dir=${ANDROID_SDK_ROOT}" > local.properties
-          echo "github.api.token=${{ secrets.GH_API_TOKEN }}" >> local.properties
-          echo "github.repo.owner=${{ secrets.GH_REPO_OWNER }}" >> local.properties
-          echo "github.repo.name=${{ secrets.GH_REPO_NAME }}" >> local.properties
           echo "FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}" >> local.properties
           echo "FIREBASE_PROJECT_NUMBER=${{ secrets.FIREBASE_PROJECT_NUMBER }}" >> local.properties
           echo "FIREBASE_DEBUG_APP_ID=${{ secrets.FIREBASE_DEBUG_APP_ID }}" >> local.properties
@@ -106,9 +100,6 @@ jobs:
       - name: Create local.properties
         run: |
           echo "sdk.dir=${ANDROID_SDK_ROOT}" > local.properties
-          echo "github.api.token=${{ secrets.GH_API_TOKEN }}" >> local.properties
-          echo "github.repo.owner=${{ secrets.GH_REPO_OWNER }}" >> local.properties
-          echo "github.repo.name=${{ secrets.GH_REPO_NAME }}" >> local.properties
           echo "FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}" >> local.properties
           echo "FIREBASE_PROJECT_NUMBER=${{ secrets.FIREBASE_PROJECT_NUMBER }}" >> local.properties
           echo "FIREBASE_DEBUG_APP_ID=${{ secrets.FIREBASE_DEBUG_APP_ID }}" >> local.properties
@@ -157,9 +148,6 @@ jobs:
       - name: Create local.properties
         run: |
           echo "sdk.dir=${ANDROID_SDK_ROOT}" > local.properties
-          echo "github.api.token=${{ secrets.GH_API_TOKEN }}" >> local.properties
-          echo "github.repo.owner=${{ secrets.GH_REPO_OWNER }}" >> local.properties
-          echo "github.repo.name=${{ secrets.GH_REPO_NAME }}" >> local.properties
           echo "FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}" >> local.properties
           echo "FIREBASE_PROJECT_NUMBER=${{ secrets.FIREBASE_PROJECT_NUMBER }}" >> local.properties
           echo "FIREBASE_DEBUG_APP_ID=${{ secrets.FIREBASE_DEBUG_APP_ID }}" >> local.properties
@@ -212,9 +200,6 @@ jobs:
       - name: Create local.properties
         run: |
           echo "sdk.dir=${ANDROID_SDK_ROOT}" > local.properties
-          echo "github.api.token=${{ secrets.GH_API_TOKEN }}" >> local.properties
-          echo "github.repo.owner=${{ secrets.GH_REPO_OWNER }}" >> local.properties
-          echo "github.repo.name=${{ secrets.GH_REPO_NAME }}" >> local.properties
           echo "FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}" >> local.properties
           echo "FIREBASE_PROJECT_NUMBER=${{ secrets.FIREBASE_PROJECT_NUMBER }}" >> local.properties
           echo "FIREBASE_DEBUG_APP_ID=${{ secrets.FIREBASE_DEBUG_APP_ID }}" >> local.properties

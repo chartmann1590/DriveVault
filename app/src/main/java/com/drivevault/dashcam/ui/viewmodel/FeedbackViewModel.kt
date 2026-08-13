@@ -5,7 +5,6 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.drivevault.dashcam.BuildConfig
 import com.drivevault.dashcam.data.feedback.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -54,17 +53,7 @@ class FeedbackViewModel(application: Application) : AndroidViewModel(application
     }
 
     private fun checkConfig() {
-        val token = BuildConfig.GITHUB_API_TOKEN
-        val owner = BuildConfig.GITHUB_REPO_OWNER
-        val repoName = BuildConfig.GITHUB_REPO_NAME
-        val configured = token.isNotBlank() && owner.isNotBlank() && repoName.isNotBlank()
-        val error = when {
-            token.isBlank() -> "GitHub API token is not configured. Cannot submit reports."
-            owner.isBlank() -> "GitHub repository owner is not configured."
-            repoName.isBlank() -> "GitHub repository name is not configured."
-            else -> null
-        }
-        _uiState.update { it.copy(isConfigured = configured, configError = error) }
+        _uiState.update { it.copy(isConfigured = true, configError = null) }
     }
 
     fun showReportDialog() {

@@ -41,8 +41,8 @@ data class PostCommentRequest(
 )
 
 data class UploadAssetRequest(
-    val message: String,
-    val content: String
+    val filename: String,
+    val contentBase64: String
 )
 
 data class UploadContentInfo(

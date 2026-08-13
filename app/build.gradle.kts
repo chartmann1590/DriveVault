@@ -68,10 +68,6 @@ android {
         buildConfigField("String", "FIREBASE_PROJECT_ID", "\"${localProp("FIREBASE_PROJECT_ID")}\"")
         buildConfigField("String", "FIREBASE_PROJECT_NUMBER", "\"${localProp("FIREBASE_PROJECT_NUMBER")}\"")
 
-        buildConfigField("String", "GITHUB_API_TOKEN", "\"${localProp("github.api.token")}\"")
-        buildConfigField("String", "GITHUB_REPO_OWNER", "\"${localProp("github.repo.owner")}\"")
-        buildConfigField("String", "GITHUB_REPO_NAME", "\"${localProp("github.repo.name")}\"")
-        buildConfigField("String", "FEEDBACK_ASSETS_DIR", "\"feedback-assets\"")
         buildConfigField("String", "SUPABASE_URL", "\"${localProp("SUPABASE_URL")}\"")
         buildConfigField("String", "SUPABASE_ANON_KEY", "\"${localProp("SUPABASE_ANON_KEY")}\"")
         buildConfigField("String", "SUPABASE_SERVICE_ROLE_KEY", "\"${localProp("SUPABASE_SERVICE_ROLE_KEY")}\"")

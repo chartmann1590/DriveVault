@@ -1,7 +1,5 @@
 package com.drivevault.dashcam.data.feedback
 
-import android.content.Context
-import com.drivevault.dashcam.BuildConfig
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
@@ -13,11 +11,16 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
 
+/**
+ * Talks to the cloudflare-worker/ feedback relay, not api.github.com directly. See
+ * cloudflare-worker/src/index.ts, which holds the GitHub token server-side as a Worker
+ * secret. Previously this embedded BuildConfig.GITHUB_API_TOKEN client-side as a Bearer
+ * header, which shipped a real repo-write PAT in every release build (extractable from
+ * the APK).
+ */
 object GithubApiClient {
 
-    private const val BASE_URL = "https://api.github.com/"
-    private const val ACCEPT = "application/vnd.github+json"
-    private const val API_VERSION = "2022-11-28"
+    private const val BASE_URL = "https://drivevault-github-feedback.charles-h-hartmann1.workers.dev"
 
     private val gson = Gson()
 
@@ -33,38 +36,15 @@ object GithubApiClient {
             .build()
     }
 
-    private fun token(): String = BuildConfig.GITHUB_API_TOKEN
-    private fun owner(): String = BuildConfig.GITHUB_REPO_OWNER
-    private fun repo(): String = BuildConfig.GITHUB_REPO_NAME
-
-    fun isConfigured(): Boolean {
-        return token().isNotBlank() && owner().isNotBlank() && repo().isNotBlank()
-    }
-
-    private fun Request.Builder.addAuth(): Request.Builder {
-        val t = token()
-        if (t.isNotBlank()) {
-            addHeader("Authorization", "Bearer $t")
-        }
-        return this
-    }
-
-    private fun Request.Builder.addCommonHeaders(): Request.Builder {
-        addHeader("Accept", ACCEPT)
-        addHeader("X-GitHub-Api-Version", API_VERSION)
-        addHeader("User-Agent", "DriveVault-Android/1.0")
-        return this
-    }
+    fun isConfigured(): Boolean = true
 
     suspend fun createIssue(title: String, body: String): Result<GithubIssue> = withContext(Dispatchers.IO) {
         runCatching {
             val request = CreateIssueRequest(title, body)
             val json = gson.toJson(request)
             val req = Request.Builder()
-                .url("${BASE_URL}repos/${owner()}/${repo()}/issues")
+                .url("$BASE_URL/issue")
                 .post(json.toRequestBody("application/json".toMediaType()))
-                .addAuth()
-                .addCommonHeaders()
                 .build()
             client.newCall(req).execute().use { response ->
                 val responseBody = response.body?.string() ?: ""
@@ -80,10 +60,8 @@ object GithubApiClient {
     suspend fun getIssue(issueNumber: Int): Result<GithubIssue> = withContext(Dispatchers.IO) {
         runCatching {
             val req = Request.Builder()
-                .url("${BASE_URL}repos/${owner()}/${repo()}/issues/$issueNumber")
+                .url("$BASE_URL/issue/$issueNumber")
                 .get()
-                .addAuth()
-                .addCommonHeaders()
                 .build()
             client.newCall(req).execute().use { response ->
                 val responseBody = response.body?.string() ?: ""
@@ -99,10 +77,8 @@ object GithubApiClient {
     suspend fun getComments(issueNumber: Int): Result<List<GithubComment>> = withContext(Dispatchers.IO) {
         runCatching {
             val req = Request.Builder()
-                .url("${BASE_URL}repos/${owner()}/${repo()}/issues/$issueNumber/comments")
+                .url("$BASE_URL/issue/$issueNumber/comments")
                 .get()
-                .addAuth()
-                .addCommonHeaders()
                 .build()
             client.newCall(req).execute().use { response ->
                 val responseBody = response.body?.string() ?: ""
@@ -120,10 +96,8 @@ object GithubApiClient {
             val request = PostCommentRequest(body)
             val json = gson.toJson(request)
             val req = Request.Builder()
-                .url("${BASE_URL}repos/${owner()}/${repo()}/issues/$issueNumber/comments")
+                .url("$BASE_URL/issue/$issueNumber/comments")
                 .post(json.toRequestBody("application/json".toMediaType()))
-                .addAuth()
-                .addCommonHeaders()
                 .build()
             client.newCall(req).execute().use { response ->
                 val responseBody = response.body?.string() ?: ""
@@ -141,18 +115,14 @@ object GithubApiClient {
         base64Content: String
     ): Result<String> = withContext(Dispatchers.IO) {
         runCatching {
-            val assetDir = BuildConfig.FEEDBACK_ASSETS_DIR
-            val path = "$assetDir/$filename"
             val request = UploadAssetRequest(
-                message = "Add feedback attachment: $filename",
-                content = base64Content
+                filename = filename,
+                contentBase64 = base64Content
             )
             val json = gson.toJson(request)
             val req = Request.Builder()
-                .url("${BASE_URL}repos/${owner()}/${repo()}/contents/$path")
-                .put(json.toRequestBody("application/json".toMediaType()))
-                .addAuth()
-                .addCommonHeaders()
+                .url("$BASE_URL/upload-image")
+                .post(json.toRequestBody("application/json".toMediaType()))
                 .build()
             client.newCall(req).execute().use { response ->
                 val responseBody = response.body?.string() ?: ""
