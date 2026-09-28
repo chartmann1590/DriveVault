@@ -1,4 +1,4 @@
-﻿plugins {
+plugins {
     id("com.android.application") version "8.13.2" apply false
     id("org.jetbrains.kotlin.android") version "2.3.21" apply false
     id("org.jetbrains.kotlin.plugin.compose") version "2.3.21" apply false
@@ -16,17 +16,17 @@ buildscript {
     configurations.classpath {
         resolutionStrategy {
             force(
-                "io.netty:netty-common:4.1.136.Final",
-                "io.netty:netty-buffer:4.1.136.Final",
-                "io.netty:netty-transport:4.1.136.Final",
-                "io.netty:netty-resolver:4.1.136.Final",
-                "io.netty:netty-codec:4.1.136.Final",
-                "io.netty:netty-codec-http:4.1.136.Final",
-                "io.netty:netty-codec-http2:4.1.136.Final",
-                "io.netty:netty-codec-socks:4.1.136.Final",
-                "io.netty:netty-handler:4.1.136.Final",
-                "io.netty:netty-handler-proxy:4.1.136.Final",
-                "io.netty:netty-transport-native-unix-common:4.1.136.Final",
+                "io.netty:netty-common:4.2.16.Final",
+                "io.netty:netty-buffer:4.2.16.Final",
+                "io.netty:netty-transport:4.2.16.Final",
+                "io.netty:netty-resolver:4.2.16.Final",
+                "io.netty:netty-codec:4.2.16.Final",
+                "io.netty:netty-codec-http:4.2.16.Final",
+                "io.netty:netty-codec-http2:4.2.16.Final",
+                "io.netty:netty-codec-socks:4.2.16.Final",
+                "io.netty:netty-handler:4.2.16.Final",
+                "io.netty:netty-handler-proxy:4.2.16.Final",
+                "io.netty:netty-transport-native-unix-common:4.2.16.Final",
                 "org.bouncycastle:bcprov-jdk18on:1.85",
                 "org.bouncycastle:bcpkix-jdk18on:1.85",
                 "org.bouncycastle:bcutil-jdk18on:1.85",
