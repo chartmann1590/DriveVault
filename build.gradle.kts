@@ -3,7 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android") version "2.3.21" apply false
     id("org.jetbrains.kotlin.plugin.compose") version "2.3.21" apply false
     id("com.google.devtools.ksp") version "2.3.10" apply false
-    id("com.google.firebase.crashlytics") version "3.0.7" apply false
+    id("com.google.firebase.crashlytics") version "3.0.8" apply false
     id("com.google.firebase.firebase-perf") version "2.0.2" apply false
     id("com.google.gms.google-services") version "4.5.0" apply false
 }
@@ -27,9 +27,9 @@ buildscript {
                 "io.netty:netty-handler:4.2.18.Final",
                 "io.netty:netty-handler-proxy:4.2.18.Final",
                 "io.netty:netty-transport-native-unix-common:4.2.18.Final",
-                "org.bouncycastle:bcprov-jdk18on:1.85",
-                "org.bouncycastle:bcpkix-jdk18on:1.85",
-                "org.bouncycastle:bcutil-jdk18on:1.85",
+                "org.bouncycastle:bcprov-jdk18on:1.86",
+                "org.bouncycastle:bcpkix-jdk18on:1.86",
+                "org.bouncycastle:bcutil-jdk18on:1.86",
                 "org.apache.commons:commons-compress:1.28.0",
                 "org.bitbucket.b_c:jose4j:0.9.6",
                 "org.jdom:jdom2:2.0.6.1"
