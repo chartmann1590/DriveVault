@@ -55,7 +55,7 @@ jobs:
           fi
 
       - name: Sync to GitHub Issues
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           FIREBASE_PROJECT_ID: ${{ env.FIREBASE_PROJECT_ID }}
           FIREBASE_APP_ID: ${{ env.FIREBASE_APP_ID }}
