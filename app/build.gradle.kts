@@ -182,7 +182,7 @@ dependencies {
     ksp("androidx.room:room-compiler:2.8.5")
 
     implementation("androidx.datastore:datastore-preferences:1.2.1")
-    implementation("androidx.work:work-runtime-ktx:2.11.2")
+    implementation("androidx.work:work-runtime-ktx:2.12.0")
 
     implementation("com.squareup.okhttp3:okhttp:5.4.0")
     implementation("com.squareup.retrofit2:retrofit:3.0.0")
