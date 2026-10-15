@@ -1,0 +1,20 @@
+Permissions for Foreground Services: Permission use is either not declared or incorrectly declared
+We found that one or more of the use cases utilizing the foreground service permission in your app has either been incorrectly submitted or is missing from your Console declaration.
+Your in-app experience or video does not match the Camera - Background Camera Stream & Microphone - Background Audio Input in your declaration.
+
+How to fix
+Please submit an updated declaration, being sure to include all uses of the foreground service permission in your app.
+Ensure that all use cases declared match the app experience.
+Review the list of foreground service type permissions to ensure that the appropriate type is being used for each declared use case.
+Remove the use of FOREGROUND_SERVICE in cases where it is not required.
+To make APK/App bundle-level updates, follow these steps:
+Go to App bundle explorer and search for the noncompliant version codes. Click on the details page to navigate to the track(s) with the policy issue (Closed / Open testing / Production). Click Manage track > Create new release.
+If the release with the violating app bundles/APKs are in a draft state, discard the release.
+Otherwise, add the policy-compliant version of app bundles/APKs.
+Make sure that the noncompliant version is under the "Not included" section of this release.
+Enter a release name and click Save. Once saved, click Review release, and then proceed to roll out the release to 100% and completely deactivate the noncompliant APK.
+If the noncompliant versions are released to multiple tracks, repeat step 1 on each track.
+You can check the App bundle explorer page again, and the noncompliant version code should show as “Inactive” and “0 releases” in the details page.
+If all declared use cases are impacted, the FOREGROUND_SERVICE permission must also be removed.
+
+
