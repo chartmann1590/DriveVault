@@ -27,6 +27,19 @@ class LocationProvider(private val fusedClient: FusedLocationProviderClient, pri
             return@callbackFlow
         }
 
+        // Amazon Appstore (Fire) build: no Google Play services there, so the fused provider
+        // can't run; use the platform LocationManager (GPS when the device has one, else network).
+        if (com.drivevault.dashcam.BuildConfig.STORE == "amazon") {
+            val lm = context.getSystemService(android.content.Context.LOCATION_SERVICE) as android.location.LocationManager
+            val providers = runCatching { lm.getProviders(true) }.getOrDefault(emptyList())
+                .filter { it != android.location.LocationManager.PASSIVE_PROVIDER }
+            val listener = android.location.LocationListener { loc -> trySend(platformData(loc)) }
+            if (providers.isEmpty()) trySend(null)
+            providers.forEach { p -> runCatching { lm.requestLocationUpdates(p, 500L, 0f, listener, Looper.getMainLooper()) } }
+            awaitClose { runCatching { lm.removeUpdates(listener) } }
+            return@callbackFlow
+        }
+
         val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 500L)
             .setMinUpdateIntervalMillis(200L)
             .setWaitForAccurateLocation(false)
@@ -59,6 +72,13 @@ class LocationProvider(private val fusedClient: FusedLocationProviderClient, pri
     @SuppressLint("MissingPermission")
     suspend fun getLastKnownLocation(): LocationData? {
         if (!hasLocationPermission) return null
+        if (com.drivevault.dashcam.BuildConfig.STORE == "amazon") {
+            val lm = context.getSystemService(android.content.Context.LOCATION_SERVICE) as android.location.LocationManager
+            return runCatching {
+                lm.getProviders(true).mapNotNull { p -> runCatching { lm.getLastKnownLocation(p) }.getOrNull() }
+                    .maxByOrNull { it.time }?.let { platformData(it) }
+            }.getOrNull()
+        }
         return try {
             val loc = fusedClient.getLastLocation().await() ?: return null
             LocationData(
@@ -72,6 +92,17 @@ class LocationProvider(private val fusedClient: FusedLocationProviderClient, pri
             )
         } catch (_: Exception) { null }
     }
+
+    private fun platformData(loc: Location) = LocationData(
+        latitude = loc.latitude,
+        longitude = loc.longitude,
+        altitude = loc.altitude,
+        accuracy = loc.accuracy,
+        speedMps = if (loc.hasSpeed()) loc.speed else 0f,
+        bearing = if (loc.hasBearing()) loc.bearing else 0f,
+        hasBearing = loc.hasBearing(),
+        timestampMillis = loc.time
+    )
 
     private suspend fun <T> com.google.android.gms.tasks.Task<T>.await(): T = kotlinx.coroutines.suspendCancellableCoroutine { cont ->
         addOnSuccessListener { cont.resumeWith(Result.success(it)) }

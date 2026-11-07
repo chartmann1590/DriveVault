@@ -1,0 +1,55 @@
+launch
+wait 15
+shot 01-welcome
+tap (?i)^next$
+wait 2
+tap (?i)^next$
+wait 2
+shot 02-onboarding-mid
+tap (?i)^next$
+wait 2
+tap (?i)^next$
+wait 2
+tap (?i)^next$
+wait 2
+tap (?i)^get started$
+wait 4
+shot 03-permissions
+tap (?i)^(grant permissions|continue)$
+wait 3
+taploop (?i)^(allow|ok|while using the app|only this time|allow all the time|continue|grant permissions)$
+wait 3
+taploop (?i)^(allow|ok|while using the app|only this time|continue)$
+adclose
+wait 8
+shot 04-recording
+tap (?i)^(record|start|start recording)$
+wait 12
+shot 05-recording-on
+tap (?i)^(stop|stop recording)$
+wait 5
+adclose
+shot 06-after-stop
+tap (?i)(clips|library|recordings)
+wait 5
+adclose
+shot 07-library
+back
+wait 2
+tap (?i)^settings$
+wait 4
+adclose
+shot 08-settings
+swipeup
+swipeup
+shot 09-settings-mid
+swipeup
+swipeup
+shot 10-settings-bottom
+tap (?i)more apps|other apps|our apps
+wait 3
+shot 11-more-apps
+back
+back
+wait 2
+shot 12-back
