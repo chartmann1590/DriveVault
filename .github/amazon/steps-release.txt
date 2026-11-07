@@ -17,44 +17,46 @@ taploop (?i)^(allow|ok|while using the app|only this time|continue|grant permiss
 adclose
 wait 8
 shot 02-camera-gps
-tap (?i)^(record|start|start recording)$
-wait 12
-shot 03-recording
-tapxy 500 500
-wait 1
-tapxy 500 875
-wait 6
-shot 04-stopped
-tapxy 500 500
-wait 1
-tapxy 91 878
-wait 6
-adclose
-shot 05-library
-tapxy 500 300
-wait 4
-shot 06-clip-detail
-back
-wait 2
-back
-wait 3
-tapxy 500 500
-wait 1
-tapxy 795 793
+tap (?i)^library$
 wait 5
 adclose
-shot 07-settings
+shot 03-library-empty
+back
+wait 3
+tap (?i)^settings$
+wait 5
+adclose
+shot 04-settings
 swipeup
 swipeup
-shot 08-settings-mid
+shot 05-settings-mid
 swipeup
 swipeup
-shot 09-settings-bottom
+shot 06-settings-bottom
 scrollto (?i)more apps|other apps|our apps
-tap (?i)more apps|other apps|our apps
 wait 4
-shot 10-more-apps
+shot 07-more-apps
 back
-back
+wait 3
+shot 07b-after-back
+tap (?i)^back$
 wait 2
-shot 11-back
+tap (?i)^start recording$
+wait 15
+shot 08-recording
+tapxy 500 500
+wait 1
+tap (?i)^stop recording$
+wait 2
+tapxy 500 500
+wait 1
+tap (?i)^stop recording$
+wait 6
+shot 09-stopped
+tap (?i)^library$
+wait 5
+adclose
+shot 10-library-with-clip
+tapxy 500 250
+wait 4
+shot 11-clip-detail
