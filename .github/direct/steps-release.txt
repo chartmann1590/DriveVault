@@ -1,0 +1,60 @@
+launch
+wait 15
+shot 01-welcome
+tap (?i)^next$
+wait 2
+tap (?i)^next$
+wait 2
+tap (?i)^next$
+wait 2
+tap (?i)^next$
+wait 2
+tap (?i)^next$
+wait 2
+tap (?i)^get started$
+wait 6
+taploop (?i)^(allow|ok|while using the app|only this time|continue|grant permissions)$
+adclose
+wait 8
+shot 02-camera-gps
+tap (?i)^(record|start|start recording)$
+wait 12
+shot 03-recording
+tapxy 500 500
+wait 1
+tapxy 500 875
+wait 6
+shot 04-stopped
+tapxy 500 500
+wait 1
+tapxy 91 878
+wait 6
+adclose
+shot 05-library
+tapxy 500 300
+wait 4
+shot 06-clip-detail
+back
+wait 2
+back
+wait 3
+tapxy 500 500
+wait 1
+tapxy 795 793
+wait 5
+adclose
+shot 07-settings
+swipeup
+swipeup
+shot 08-settings-mid
+swipeup
+swipeup
+shot 09-settings-bottom
+scrollto (?i)more apps|other apps|our apps
+tap (?i)more apps|other apps|our apps
+wait 4
+shot 10-more-apps
+back
+back
+wait 2
+shot 11-back
